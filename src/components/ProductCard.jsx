@@ -8,8 +8,13 @@ const ProductCard = ({ product }) => {
     const isPizza = product.categoria === 'Pizzas';
     const [selectedSize, setSelectedSize] = useState('Grande');
 
-    // Mmock price rule: Chica es más barata
-    const currentPrice = isPizza && selectedSize === 'Chica' ? product.precio * 0.7 : product.precio;
+    // Si es pizza, usamos precio_chica de la DB si existe, sino aplicamos un 30% desc.
+    const getChicaPrice = () => {
+        if (product.precio_chica) return product.precio_chica;
+        return product.precio * 0.7;
+    };
+
+    const currentPrice = isPizza && selectedSize === 'Chica' ? getChicaPrice() : product.precio;
     
     // Generar ID único para el carrito si tiene tamaño
     const cartItemId = isPizza ? `${product.id_producto}-${selectedSize}` : String(product.id_producto);
@@ -31,12 +36,12 @@ const ProductCard = ({ product }) => {
             {/* Imagen con Badge de Precio */}
             <div className="relative h-52 overflow-hidden">
                 <img
-                    src={product.imagen_url || 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=500'}
+                    src={product.img || 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=500'}
                     alt={product.nombre}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
                 <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-2xl shadow-sm">
-                    <span className="text-orange-600 font-black text-lg">${currentPrice.toLocaleString()}</span>
+                    <span className="text-orange-600 font-black text-lg">${parseFloat(currentPrice).toLocaleString()}</span>
                 </div>
             </div>
 

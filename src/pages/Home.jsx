@@ -1,16 +1,27 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import CategoryBar from '../components/CategoryBar';
 import ProductCard from '../components/ProductCard';
+import api from '../api/axiosConfig';
 
 const Home = () => {
     const [activeCategory, setActiveCategory] = useState('Todas');
+    const [productos, setProductos] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    // Datos de prueba (Luego vendrán de tu API en Railway)
-    const [productos] = useState([
-        { id_producto: 1, nombre: 'Muzza Clasica', categoria: 'Pizzas', precio: 8500, descripcion: 'Mucha muzzarella, salsa de la casa y aceitunas.' },
-        { id_producto: 2, nombre: 'Fugazzeta', categoria: 'Pizzas', precio: 9200, descripcion: 'Cebolla blanca, muzzarella y un toque de orégano.' },
-        { id_producto: 3, nombre: 'Coca Cola 1.5L', categoria: 'Bebidas', precio: 2500, descripcion: 'Bebida gaseosa refrescante.' },
-    ]);
+    useEffect(() => {
+        const fetchProductos = async () => {
+            try {
+                setLoading(true);
+                const response = await api.get('/productos');
+                setProductos(response.data);
+            } catch (error) {
+                console.error('Error al cargar productos:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchProductos();
+    }, []);
 
     const filteredProducts = activeCategory === 'Todas'
         ? productos
@@ -31,7 +42,11 @@ const Home = () => {
 
             {/* Grilla de Productos */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 pb-20">
-                {filteredProducts.map((p) => (
+                {loading ? (
+                    <div className="col-span-full py-20 text-center text-gray-400 font-bold uppercase tracking-widest animate-pulse">
+                        Cargando el menú...
+                    </div>
+                ) : filteredProducts.map((p) => (
                     <ProductCard key={p.id_producto} product={p} />
                 ))}
             </div>

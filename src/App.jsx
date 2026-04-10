@@ -32,7 +32,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/checkout" element={<Checkout />} />
-            <Route path="/status/:id" element={<OrderStatus />} />
+            <Route path="/status/:result" element={<OrderStatus />} />
             {/* Aquí podés agregar rutas como /contacto o /mis-pedidos*/}
           </Routes>
         </main>

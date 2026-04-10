@@ -11,6 +11,7 @@ import {
     ArrowLeft,
     ShieldCheck
 } from 'lucide-react';
+import api from '../api/axiosConfig';
 
 const Checkout = () => {
     const { cart, total, clearCart } = useCart();
@@ -27,45 +28,93 @@ const Checkout = () => {
     });
     const [otp, setOtp] = useState('');
 
+    const [clientId, setClientId] = useState(null);
+
     // Si el carrito está vacío, lo mandamos al Home
     if (cart.length === 0 && step === 1) {
         navigate('/');
     }
 
-    const handleCheckPhone = (e) => {
+    const handleCheckPhone = async (e) => {
         e.preventDefault();
         setLoading(true);
-        // Simulación: Buscamos si el teléfono existe en tu DB
-        setTimeout(() => {
-            setLoading(false);
-            // Lógica de mock: Si termina en "0" decimos que ya existe. Si no, es nuevo.
-            if (formData.telefono.endsWith('0')) {
-                setStep(3); // Ya existe -> Validar
+        try {
+            const response = await api.get(`/clientes/find/${formData.telefono}`);
+            if (response.data.found) {
+                const c = response.data.client;
+                setFormData({
+                    ...formData,
+                    nombre: c.nombre,
+                    direccion: c.direccion_principal,
+                });
+                setClientId(c.id_cliente);
+                setStep(3); // Ya existe -> Validar directamente
             } else {
-                setStep(2); // Nuevo -> Completar datos
+                setStep(2); // Nuevo -> Pedir datos
             }
-        }, 1200);
+        } catch (error) {
+            console.error('Error al verificar teléfono:', error);
+            alert('Error al conectar con el servidor.');
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const handleSaveData = (e) => {
+    const handleSaveData = async (e) => {
         e.preventDefault();
         setLoading(true);
-        // Simulamos guardado de datos nuevos
-        setTimeout(() => {
-            setLoading(false);
+        try {
+            const response = await api.post('/clientes', {
+                nombre: formData.nombre,
+                telefono: formData.telefono,
+                direccion_principal: formData.direccion
+            });
+            setClientId(response.data.id_cliente);
             setStep(3);
-        }, 1000);
+        } catch (error) {
+            console.error('Error al guardar cliente:', error);
+            alert('Hubo un error al guardar tus datos.');
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const handleFinalizeOrder = () => {
+    const handleFinalizeOrder = async () => {
         setLoading(true);
-        // Simulación de validación exitosa
-        setTimeout(() => {
-            console.log("Pedido confirmado:", { ...formData, cart, total });
+        try {
+            // 1. Guardar el pedido en nuestra base de datos
+            const orderData = {
+                id_cliente: clientId, 
+                total: total,
+                estado: 'Pendiente', 
+                items: cart.map(item => ({
+                    id_producto: item.id_producto,
+                    cantidad: item.quantity,
+                    precio: item.precio
+                }))
+            };
+
+            const orderResponse = await api.post('/pedidos', orderData);
+            const { id_pedido } = orderResponse.data;
+
+            // 2. Crear la preferencia de Mercado Pago
+            const paymentResponse = await api.post('/payments/create-preference', {
+                orderId: id_pedido,
+                items: cart
+            });
+
+            const { init_point } = paymentResponse.data;
+
+            // 3. Limpiar carrito y Redirigir a Mercado Pago
             clearCart();
-            alert("¡Pedido confirmado! Te avisaremos por WhatsApp cuando salga de la cocina.");
-            navigate('/');
-        }, 2000);
+            window.location.href = init_point; // Redirección directa al Checkout Pro
+
+        } catch (error) {
+            console.error('Error al procesar el pedido:', error);
+            alert('Hubo un error al procesar tu pedido. Por favor intenta de nuevo.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (

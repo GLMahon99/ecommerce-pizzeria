@@ -6,14 +6,18 @@ import {
     UtensilsCrossed,
     Bike,
     MessageCircle,
-    ChevronLeft
+    ChevronLeft,
+    X
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+import { useParams } from 'react-router-dom';
+
 const OrderStatus = () => {
+    const { result } = useParams();
     // En un caso real, estos datos vendrían del backend según el ID en la URL
-    const [status, setStatus] = useState('preparando'); // estados: 'recibido', 'preparando', 'en camino', 'entregado'
-    const [timeLeft, setTimeLeft] = useState(35); // minutos estimados
+    const [status, setStatus] = useState(result === 'success' ? 'recibido' : 'preparando'); 
+    const [timeLeft, setTimeLeft] = useState(35); 
 
     const steps = [
         { id: 'recibido', label: 'Pedido Recibido', icon: <CheckCircle2 size={20} />, time: '12:45' },
@@ -29,9 +33,33 @@ const OrderStatus = () => {
         <div className="pt-28 pb-20 px-4 max-w-2xl mx-auto min-h-screen">
 
             {/* Botón Volver */}
-            <Link to="/" className="inline-flex items-center gap-2 text-gray-400 font-bold text-sm mb-8 hover:text-orange-600 transition-colors">
+            <Link to="/" className="inline-flex items-center gap-2 text-gray-400 font-bold text-sm mb-6 hover:text-orange-600 transition-colors">
                 <ChevronLeft size={16} /> Volver al Menú
             </Link>
+
+            {result === 'success' && (
+                <div className="bg-green-100 border border-green-200 p-4 rounded-3xl mb-8 flex items-center gap-4 text-green-800 animate-in fade-in slide-in-from-top-4 duration-500">
+                    <div className="bg-green-600 p-2 rounded-full text-white">
+                        <CheckCircle2 size={24} />
+                    </div>
+                    <div>
+                        <p className="font-black text-sm uppercase tracking-widest">¡Pago Aprobado!</p>
+                        <p className="text-xs opacity-80 font-bold uppercase tracking-tight">Tu pedido ya entró en la fila de producción.</p>
+                    </div>
+                </div>
+            )}
+
+            {result === 'failure' && (
+                <div className="bg-red-100 border border-red-200 p-4 rounded-3xl mb-8 flex items-center gap-4 text-red-800 animate-in fade-in slide-in-from-top-4 duration-500">
+                    <div className="bg-red-600 p-2 rounded-full text-white">
+                        <X size={24} />
+                    </div>
+                    <div>
+                        <p className="font-black text-sm uppercase tracking-widest">Hubo un problema con el pago</p>
+                        <p className="text-xs opacity-80 font-bold uppercase tracking-tight">Intentá de nuevo o hablá con el local.</p>
+                    </div>
+                </div>
+            )}
 
             {/* Card Principal de Estado */}
             <div className="bg-white rounded-[2.5rem] shadow-xl shadow-orange-100/50 border border-orange-50 overflow-hidden">
