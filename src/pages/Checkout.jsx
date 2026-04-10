@@ -12,6 +12,10 @@ import {
     ShieldCheck
 } from 'lucide-react';
 import api from '../api/axiosConfig';
+import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
+
+// Inicializar MP con la Public Key
+initMercadoPago(import.meta.env.VITE_MP_PUBLIC_KEY);
 
 const Checkout = () => {
     const { cart, total, clearCart } = useCart();
@@ -29,6 +33,7 @@ const Checkout = () => {
     const [otp, setOtp] = useState('');
 
     const [clientId, setClientId] = useState(null);
+    const [preferenceId, setPreferenceId] = useState(null);
 
     // Si el carrito está vacío, lo mandamos al Home
     if (cart.length === 0 && step === 1) {
@@ -98,16 +103,17 @@ const Checkout = () => {
             const { id_pedido } = orderResponse.data;
 
             // 2. Crear la preferencia de Mercado Pago
+            console.log("Paso 2: Generando link de pago...");
             const paymentResponse = await api.post('/payments/create-preference', {
                 orderId: id_pedido,
                 items: cart
             });
 
-            const { init_point } = paymentResponse.data;
+            const { id } = paymentResponse.data;
+            setPreferenceId(id);
 
-            // 3. Limpiar carrito y Redirigir a Mercado Pago
-            clearCart();
-            window.location.href = init_point; // Redirección directa al Checkout Pro
+            // Nota: Ya no redirigimos por window.location, el botón Wallet lo hará
+            // clearCart(); -> Se limpia al volver o por webhook
 
         } catch (error) {
             console.error('Error al procesar el pedido:', error);
@@ -245,39 +251,59 @@ const Checkout = () => {
                         </div>
                     )}
 
-                    {/* STEP 3: VALIDACIÓN OTP */}
+                    {/* Paso 3: Validación WhatsApp */}
                     {step === 3 && (
-                        <div className="bg-white p-10 rounded-[2.5rem] shadow-sm border border-gray-100 text-center animate-in fade-in zoom-in duration-300">
-                            <div className="bg-green-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                                <ShieldCheck size={40} className="text-green-600" />
-                            </div>
-                            <h2 className="text-2xl font-black text-gray-800 mb-2">Verificá tu WhatsApp</h2>
-                            <p className="text-gray-400 mb-8">Enviamos un código de 4 dígitos al <span className="text-gray-800 font-bold">{formData.telefono}</span></p>
+                        <div className="bg-white p-8 md:p-12 rounded-[2.5rem] shadow-sm border border-gray-100 animate-in fade-in zoom-in duration-500">
+                            <div className="space-y-8">
+                                <div className="text-center space-y-2">
+                                    <div className="bg-orange-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 text-orange-600">
+                                        <ShieldCheck size={40} />
+                                    </div>
+                                    <h3 className="text-2xl font-black text-gray-800">Verificá tu WhatsApp</h3>
+                                    <p className="text-gray-400 font-medium leading-relaxed">
+                                        Enviamos un código de 4 dígitos al <br />
+                                        <span className="text-gray-800 font-black tracking-tight">{formData.telefono}</span>
+                                    </p>
+                                </div>
 
-                            <div className="max-w-xs mx-auto space-y-6">
-                                <input
-                                    type="text"
-                                    maxLength="4"
-                                    className="w-full text-center text-4xl font-black tracking-[1rem] p-6 bg-gray-50 border-2 border-dashed border-gray-200 rounded-3xl focus:border-orange-500 focus:ring-0 outline-none transition-all"
-                                    placeholder="0000"
-                                    onChange={(e) => setOtp(e.target.value)}
-                                />
+                                <div className="space-y-4 max-w-xs mx-auto">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Código de verificación</label>
+                                    <input
+                                        type="text"
+                                        maxLength="4"
+                                        value={otp}
+                                        onChange={(e) => setOtp(e.target.value)}
+                                        placeholder="0000"
+                                        className="w-full bg-gray-50 border-2 border-gray-100 p-6 rounded-3xl text-center text-4xl font-black tracking-[0.5em] focus:border-orange-600 focus:bg-white outline-none transition-all placeholder:text-gray-200"
+                                    />
+                                </div>
 
-                                <button
-                                    onClick={handleFinalizeOrder}
-                                    disabled={otp.length < 4 || loading}
-                                    className={`w-full py-5 rounded-3xl font-black text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${otp.length === 4 ? 'bg-orange-600 text-white shadow-orange-100' : 'bg-gray-100 text-gray-300 cursor-not-allowed'
-                                        }`}
-                                >
-                                    {loading ? 'Validando...' : 'Pedir Pizza ahora'} <CheckCircle2 size={20} />
-                                </button>
+                                <div className="max-w-xs mx-auto pt-4">
+                                    {!preferenceId ? (
+                                        <button
+                                            onClick={handleFinalizeOrder}
+                                            disabled={otp.length < 4 || loading}
+                                            className={`w-full py-5 rounded-3xl font-black text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${otp.length === 4 ? 'bg-orange-600 text-white shadow-orange-100' : 'bg-gray-100 text-gray-300 cursor-not-allowed'
+                                                }`}
+                                        >
+                                            {loading ? 'Preparando...' : 'Confirmar Pedido'} <CheckCircle2 size={20} />
+                                        </button>
+                                    ) : (
+                                        <div className="animate-in fade-in slide-in-from-top-4 duration-500">
+                                            <Wallet 
+                                                initialization={{ preferenceId }} 
+                                                customization={{ texts: { valueProp: 'smart_option' } }}
+                                            />
+                                        </div>
+                                    )}
 
-                                <button
-                                    onClick={() => setStep(1)}
-                                    className="text-gray-400 text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-1 mx-auto hover:text-orange-600"
-                                >
-                                    <ArrowLeft size={14} /> Corregir Teléfono
-                                </button>
+                                    <button
+                                        onClick={() => setStep(formData.nombre ? 1 : 2)}
+                                        className="w-full mt-6 text-center text-gray-400 text-xs font-black uppercase tracking-widest hover:text-orange-600 transition-all"
+                                    >
+                                        ¿Ese no es tu número? Volver
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     )}
