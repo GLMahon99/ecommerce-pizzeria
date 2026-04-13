@@ -19,6 +19,12 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('pizzeria_user', JSON.stringify(userData));
     };
 
+    const updateUser = (newFields) => {
+        const updatedUser = { ...user, ...newFields };
+        setUser(updatedUser);
+        localStorage.setItem('pizzeria_user', JSON.stringify(updatedUser));
+    };
+
     const logout = () => {
         setUser(null);
         localStorage.removeItem('pizzeria_user');

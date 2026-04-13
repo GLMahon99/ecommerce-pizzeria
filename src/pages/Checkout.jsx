@@ -20,11 +20,15 @@ initMercadoPago(import.meta.env.VITE_MP_PUBLIC_KEY);
 
 const Checkout = () => {
     const { cart, total, clearCart } = useCart();
-    const { user } = useAuth();
+    const { user, updateUser } = useAuth();
     const navigate = useNavigate();
 
     const [loading, setLoading] = useState(false);
     const [preferenceId, setPreferenceId] = useState(null);
+    
+    // Estados para edición de dirección
+    const [isEditingAddress, setIsEditingAddress] = useState(false);
+    const [newAddress, setNewAddress] = useState(user.direccion || user.direccion_principal || '');
 
     // Si el carrito está vacío, lo mandamos al Home
     useEffect(() => {
@@ -32,6 +36,21 @@ const Checkout = () => {
             navigate('/');
         }
     }, [cart, navigate]);
+
+    const handleUpdateAddress = async () => {
+        if (!newAddress.trim()) return;
+        setLoading(true);
+        try {
+            await api.put(`/clientes/${user.id_cliente}`, { direccion: newAddress });
+            updateUser({ direccion_principal: newAddress, direccion: newAddress });
+            setIsEditingAddress(false);
+        } catch (error) {
+            console.error('Error al actualizar dirección:', error);
+            alert('No se pudo actualizar la dirección.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleCreatePreference = async () => {
         setLoading(true);
@@ -108,12 +127,42 @@ const Checkout = () => {
                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">WhatsApp</p>
                                 <p className="font-bold text-gray-800">{user.telefono}</p>
                             </div>
-                            <div className="bg-gray-50 p-5 rounded-3xl border border-gray-100 md:col-span-2 flex justify-between items-center text-sm">
-                                <div>
-                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Direccion de Envio</p>
-                                    <p className="font-bold text-gray-800">{user.direccion || user.direccion_principal}</p>
-                                </div>
-                                <button className="text-orange-600 font-bold text-xs uppercase tracking-widest hover:underline">Cambiar</button>
+                            <div className="bg-gray-50 p-5 rounded-3xl border border-gray-100 md:col-span-2 flex flex-col gap-2">
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Direccion de Envio</p>
+                                {isEditingAddress ? (
+                                    <div className="flex gap-2">
+                                        <input 
+                                            type="text"
+                                            className="flex-1 bg-white border-2 border-orange-100 p-2 rounded-xl outline-none focus:border-orange-600 font-bold text-gray-800"
+                                            value={newAddress}
+                                            onChange={(e) => setNewAddress(e.target.value)}
+                                            autoFocus
+                                        />
+                                        <button 
+                                            onClick={handleUpdateAddress}
+                                            disabled={loading}
+                                            className="bg-orange-600 text-white px-4 py-2 rounded-xl font-black text-xs uppercase"
+                                        >
+                                            Guardar
+                                        </button>
+                                        <button 
+                                            onClick={() => setIsEditingAddress(false)}
+                                            className="bg-gray-200 text-gray-600 px-4 py-2 rounded-xl font-black text-xs uppercase"
+                                        >
+                                            X
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="flex justify-between items-center">
+                                        <p className="font-bold text-gray-800">{user.direccion || user.direccion_principal}</p>
+                                        <button 
+                                            onClick={() => setIsEditingAddress(true)}
+                                            className="text-orange-600 font-bold text-xs uppercase tracking-widest hover:underline"
+                                        >
+                                            Cambiar
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -133,9 +182,6 @@ const Checkout = () => {
                             </button>
                         ) : (
                             <div className="animate-in fade-in slide-in-from-top-4 duration-500">
-                                <div className="bg-blue-50 border border-blue-100 p-4 rounded-2xl mb-4 text-center">
-                                    <p className="text-xs font-bold text-blue-600 uppercase tracking-widest">Preferencia Generada</p>
-                                </div>
                                 <Wallet 
                                     initialization={{ preferenceId }} 
                                     customization={{ texts: { valueProp: 'smart_option' } }}
