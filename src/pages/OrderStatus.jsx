@@ -11,12 +11,20 @@ import {
 } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import api from '../api/axiosConfig';
+import { useCart } from '../context/CartContext';
 
 const OrderStatus = () => {
     const { result, id } = useParams();
+    const { clearCart, cart } = useCart();
     const [status, setStatus] = useState('recibido'); 
     const [orderData, setOrderData] = useState(null);
     const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        if (result === 'success' && cart.length > 0) {
+            clearCart();
+        }
+    }, [result, clearCart, cart.length]);
 
     useEffect(() => {
         if (id) {

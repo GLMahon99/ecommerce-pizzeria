@@ -1,12 +1,17 @@
-import { createContext, useState, useContext, useEffect } from 'react';
+import { createContext, useState, useContext, useEffect, useCallback } from 'react';
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
     // Estado inicial: intentamos cargar del LocalStorage o empezamos con array vacío
     const [cart, setCart] = useState(() => {
-        const savedCart = localStorage.getItem('pizza_cart');
-        return savedCart ? JSON.parse(savedCart) : [];
+        try {
+            const savedCart = localStorage.getItem('pizza_cart');
+            const parsed = savedCart ? JSON.parse(savedCart) : [];
+            return Array.isArray(parsed) ? parsed : [];
+        } catch (e) {
+            return [];
+        }
     });
 
     // Cada vez que el carrito cambie, lo guardamos en el storage (Persistencia)
@@ -49,7 +54,7 @@ export const CartProvider = ({ children }) => {
     };
 
     // Vaciar carrito (después de una compra exitosa)
-    const clearCart = () => setCart([]);
+    const clearCart = useCallback(() => setCart([]), []);
 
     // Cálculos derivados (Data Analysis puro)
     const total = cart.reduce((acc, item) => acc + item.precio * item.quantity, 0);
