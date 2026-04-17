@@ -16,14 +16,18 @@ import {
 import api from '../api/axiosConfig';
 import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
 
-// Inicializar MP con la Public Key
-initMercadoPago(import.meta.env.VITE_MP_PUBLIC_KEY);
-
 const Checkout = () => {
     const { cart, total, clearCart } = useCart();
     const { user, updateUser } = useAuth();
     const { tenant } = useTenant(); // Obtener datos del tenant
     const navigate = useNavigate();
+
+    // Inicializar MP con la Public Key de ESTA pizzería
+    useEffect(() => {
+        if (tenant?.mp_public_key) {
+            initMercadoPago(tenant.mp_public_key);
+        }
+    }, [tenant]);
 
     const [loading, setLoading] = useState(false);
     const [preferenceId, setPreferenceId] = useState(null);
