@@ -21,8 +21,8 @@ export const TenantProvider = ({ children }) => {
                     return;
                 }
 
-                // Configurar URL del backend (traída de .env)
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+                // Configurar URL del backend (usando el nombre correcto de tu .env)
+                const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
 
                 const response = await axios.get(`${apiUrl}/admin/config`, {
                     headers: { 'x-tenant': slug }
@@ -32,14 +32,14 @@ export const TenantProvider = ({ children }) => {
                 config.slug = slug;
                 setTenant(config);
 
-                // Aplicar Branding
-                const root = document.documentElement;
+                // Aplicar Branding con log para debug
+                console.log('Aplicando color de pizzería:', config.color_primario);
+                
                 if (config.color_primario) {
-                    root.style.setProperty('--brand-color', config.color_primario);
-                    // Opcional: Podríamos calcular un color más oscuro para el hover, 
-                    // pero por ahora usamos el mismo o uno fijo.
-                    root.style.setProperty('--brand-hover', config.color_primario + 'DD'); 
+                    document.documentElement.style.setProperty('--brand-color', config.color_primario);
+                    document.documentElement.style.setProperty('--brand-hover', config.color_primario + 'DD');
                 }
+                
                 if (config.nombre) document.title = config.nombre;
 
                 setLoading(false);
@@ -51,7 +51,7 @@ export const TenantProvider = ({ children }) => {
         };
 
         fetchTenantConfig();
-    }, []);
+    }, [window.location.pathname]); // SE RECARGA SI CAMBIA LA URL
 
     return (
         <TenantContext.Provider value={{ tenant, loading, error }}>
