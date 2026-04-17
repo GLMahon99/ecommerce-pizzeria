@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useTenant } from '../context/TenantContext'; // Importar Tenant
 import { ShoppingCart, Pizza, Menu, X, MapPin, User as UserIcon } from 'lucide-react';
 
 const Navbar = ({ onOpenCart }) => {
     const { itemCount } = useCart();
     const { user } = useAuth();
+    const { tenant } = useTenant(); // Obtener los datos de la pizzería
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     return (
@@ -16,12 +18,12 @@ const Navbar = ({ onOpenCart }) => {
 
                     {/* LADO IZQUIERDO: Logo y Ubicación */}
                     <div className="flex items-center gap-8">
-                        <Link to="/" className="flex items-center gap-2 group">
+                        <Link to={`/${tenant?.slug}`} className="flex items-center gap-2 group">
                             <div className="bg-orange-600 p-2 rounded-xl group-hover:rotate-12 transition-transform duration-300">
                                 <Pizza className="text-white" size={24} />
                             </div>
                             <span className="text-2xl font-black text-gray-800 tracking-tighter uppercase">
-                                PIZZA<span className="text-orange-600">APP</span>
+                                {tenant?.nombre || 'PIZZAAPP'}
                             </span>
                         </Link>
 
@@ -41,7 +43,7 @@ const Navbar = ({ onOpenCart }) => {
 
                     {/* CENTRO/DERECHA: Navegación Desktop */}
                     <div className="hidden md:flex items-center gap-8 font-bold text-sm text-gray-600 uppercase tracking-tight">
-                        <Link to="/" className="hover:text-orange-600 transition-colors">Menú</Link>
+                        <Link to={`/${tenant?.slug}`} className="hover:text-orange-600 transition-colors">Menú</Link>
                         <a href="#contacto" className="hover:text-orange-600 transition-colors">Contacto</a>
 
                         {/* Botón Carrito Desktop */}
@@ -89,7 +91,7 @@ const Navbar = ({ onOpenCart }) => {
             {isMenuOpen && (
                 <div className="md:hidden bg-white border-t border-gray-100 p-6 space-y-4 shadow-xl animate-in slide-in-from-top duration-300">
                     <Link
-                        to="/"
+                        to={`/${tenant?.slug}`}
                         className="block py-4 px-6 text-center font-black text-lg text-gray-800 bg-orange-50 rounded-2xl border border-orange-100"
                         onClick={() => setIsMenuOpen(false)}
                     >

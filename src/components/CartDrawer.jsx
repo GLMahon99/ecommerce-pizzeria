@@ -1,9 +1,11 @@
 import { X, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useTenant } from '../context/TenantContext'; // Importar Tenant
 import { useNavigate } from 'react-router-dom';
 
 const CartDrawer = ({ isOpen, onClose }) => {
     const { cart, addToCart, decrementQuantity, removeFromCart, total } = useCart();
+    const { tenant } = useTenant(); // Obtener los datos de la pizzería
     const navigate = useNavigate();
 
     if (!isOpen) return null;
@@ -82,7 +84,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
                         <button
                             onClick={() => {
                                 onClose();
-                                navigate('/checkout');
+                                navigate(`/${tenant?.slug}/checkout`);
                             }}
                             className="w-full bg-orange-600 hover:bg-orange-700 text-white py-4 rounded-2xl font-bold text-lg shadow-lg shadow-orange-200 transition-all active:scale-95"
                         >

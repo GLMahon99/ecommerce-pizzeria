@@ -12,10 +12,12 @@ import {
 import { Link, useParams } from 'react-router-dom';
 import api from '../api/axiosConfig';
 import { useCart } from '../context/CartContext';
+import { useTenant } from '../context/TenantContext'; // Importar Tenant
 
 const OrderStatus = () => {
     const { result, id } = useParams();
     const { clearCart, cart } = useCart();
+    const { tenant } = useTenant(); // Obtener datos del tenant
     const [status, setStatus] = useState('recibido'); 
     const [orderData, setOrderData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -76,7 +78,7 @@ const OrderStatus = () => {
         <div className="pt-28 pb-20 px-4 max-w-2xl mx-auto min-h-screen">
 
             {/* Botón Volver */}
-            <Link to="/" className="inline-flex items-center gap-2 text-gray-400 font-bold text-sm mb-6 hover:text-orange-600 transition-colors">
+            <Link to={`/${tenant?.slug}`} className="inline-flex items-center gap-2 text-gray-400 font-bold text-sm mb-6 hover:text-orange-600 transition-colors">
                 <ChevronLeft size={16} /> Volver al Menú
             </Link>
 

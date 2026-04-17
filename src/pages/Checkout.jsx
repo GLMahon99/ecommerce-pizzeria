@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useTenant } from '../context/TenantContext'; // Importar Tenant
 import {
     MapPin,
     Phone,
@@ -21,6 +22,7 @@ initMercadoPago(import.meta.env.VITE_MP_PUBLIC_KEY);
 const Checkout = () => {
     const { cart, total, clearCart } = useCart();
     const { user, updateUser } = useAuth();
+    const { tenant } = useTenant(); // Obtener datos del tenant
     const navigate = useNavigate();
 
     const [loading, setLoading] = useState(false);
@@ -33,7 +35,7 @@ const Checkout = () => {
     // Si el carrito está vacío, lo mandamos al Home
     useEffect(() => {
         if (cart.length === 0) {
-            navigate('/');
+            navigate(`/${tenant?.slug}`);
         }
     }, [cart, navigate]);
 
@@ -93,7 +95,7 @@ const Checkout = () => {
             {/* Header de Checkout */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
                 <div>
-                    <button onClick={() => navigate('/')} className="flex items-center gap-2 text-gray-400 font-bold text-xs uppercase tracking-widest hover:text-orange-600 transition-colors mb-2">
+                    <button onClick={() => navigate(`/${tenant?.slug}`)} className="flex items-center gap-2 text-gray-400 font-bold text-xs uppercase tracking-widest hover:text-orange-600 transition-colors mb-2">
                         <ArrowLeft size={14} /> Volver al Menú
                     </button>
                     <h1 className="text-4xl font-black italic tracking-tighter text-gray-800">FINALIZAR COMPRA</h1>
