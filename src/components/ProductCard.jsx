@@ -41,7 +41,7 @@ const ProductCard = ({ product }) => {
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
                 <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-2xl shadow-sm">
-                    <span className="text-orange-600 font-black text-lg">${parseFloat(currentPrice).toLocaleString()}</span>
+                    <span className="text-brand font-black text-lg">${parseFloat(currentPrice).toLocaleString()}</span>
                 </div>
             </div>
 
@@ -57,13 +57,13 @@ const ProductCard = ({ product }) => {
                     <div className="flex bg-gray-100 p-1 rounded-xl mb-4">
                         <button
                             onClick={() => setSelectedSize('Chica')}
-                            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${selectedSize === 'Chica' ? 'bg-white text-orange-600 shadow-sm' : 'text-gray-400'}`}
+                            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${selectedSize === 'Chica' ? 'bg-white text-brand shadow-sm' : 'text-gray-400'}`}
                         >
                             Chica
                         </button>
                         <button
                             onClick={() => setSelectedSize('Grande')}
-                            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${selectedSize === 'Grande' ? 'bg-white text-orange-600 shadow-sm' : 'text-gray-400'}`}
+                            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${selectedSize === 'Grande' ? 'bg-white text-brand shadow-sm' : 'text-gray-400'}`}
                         >
                             Grande
                         </button>
@@ -77,14 +77,14 @@ const ProductCard = ({ product }) => {
                             <Minus size={20} />
                         </button>
                         <span className="font-black text-gray-800 text-lg w-8 text-center">{quantity}</span>
-                        <button onClick={handleAddToCart} className="p-2 bg-orange-600 text-white rounded-xl hover:bg-orange-700 shadow-sm transition-all active:scale-95">
+                        <button onClick={handleAddToCart} className="p-2 bg-brand text-white rounded-xl hover:bg-brand-hover shadow-sm transition-all active:scale-95">
                             <Plus size={20} />
                         </button>
                     </div>
                 ) : (
                     <button
                         onClick={handleAddToCart}
-                        className="w-full flex items-center justify-center gap-2 bg-gray-900 hover:bg-orange-600 text-white py-4 rounded-2xl font-bold transition-all active:scale-95"
+                        className="w-full flex items-center justify-center gap-2 bg-gray-900 hover:bg-brand text-white py-4 rounded-2xl font-bold transition-all active:scale-95"
                     >
                         <Plus size={20} /> Agregar
                     </button>

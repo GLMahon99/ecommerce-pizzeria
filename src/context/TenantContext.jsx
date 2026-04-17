@@ -34,7 +34,12 @@ export const TenantProvider = ({ children }) => {
 
                 // Aplicar Branding
                 const root = document.documentElement;
-                if (config.color_primario) root.style.setProperty('--color-primary', config.color_primario);
+                if (config.color_primario) {
+                    root.style.setProperty('--brand-color', config.color_primario);
+                    // Opcional: Podríamos calcular un color más oscuro para el hover, 
+                    // pero por ahora usamos el mismo o uno fijo.
+                    root.style.setProperty('--brand-hover', config.color_primario + 'DD'); 
+                }
                 if (config.nombre) document.title = config.nombre;
 
                 setLoading(false);
