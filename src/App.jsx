@@ -39,6 +39,14 @@ function App() {
     );
   }
 
+  // VALIDACIÓN GLOBAL DE USUARIO (BASES)
+  // Si no hay usuario y no estamos ya en la página de login, forzamos ir al login.
+  const isLoginPage = window.location.pathname.includes('/login');
+  if (!user && !isLoginPage && tenant) {
+     window.location.href = `/${tenant.slug}/login`;
+     return null;
+  }
+
   const toggleCart = () => setIsCartOpen(!isCartOpen);
 
   return (
@@ -49,15 +57,14 @@ function App() {
 
         <main className="flex-grow">
           <Routes>
-            {/* Todas las rutas ahora dependen del SLUG */}
+            {/* ÚNICAS RUTAS VÁLIDAS: Todas requieren un :slug */}
             <Route path="/:slug" element={<Home />} />
             <Route path="/:slug/login" element={<Login />} />
             <Route path="/:slug/checkout" element={<Checkout />} />
             <Route path="/:slug/status/:result" element={<OrderStatus />} />
             <Route path="/:slug/status/:result/:id" element={<OrderStatus />} />
             
-            {/* Si entran a una URL vieja o sin nada, podríamos mandarlos a una página general o login */}
-            <Route path="/login" element={<Login />} />
+            {/* Cualquier otra ruta que no coincida con lo anterior no mostrará nada o error */}
           </Routes>
         </main>
 

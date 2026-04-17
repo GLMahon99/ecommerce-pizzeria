@@ -130,11 +130,11 @@ const Checkout = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="bg-gray-50 p-5 rounded-3xl border border-gray-100">
                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Nombre</p>
-                                <p className="font-bold text-gray-800">{user.nombre}</p>
+                                <p className="font-bold text-gray-800">{user?.nombre}</p>
                             </div>
                             <div className="bg-gray-50 p-5 rounded-3xl border border-gray-100">
                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">WhatsApp</p>
-                                <p className="font-bold text-gray-800">{user.telefono}</p>
+                                <p className="font-bold text-gray-800">{user?.telefono}</p>
                             </div>
                             <div className="bg-gray-50 p-5 rounded-3xl border border-gray-100 md:col-span-2 flex flex-col gap-2">
                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Direccion de Envio</p>
@@ -163,7 +163,7 @@ const Checkout = () => {
                                     </div>
                                 ) : (
                                     <div className="flex justify-between items-center">
-                                        <p className="font-bold text-gray-800">{user.direccion || user.direccion_principal}</p>
+                                        <p className="font-bold text-gray-800">{user?.direccion || user?.direccion_principal}</p>
                                         <button 
                                             onClick={() => setIsEditingAddress(true)}
                                             className="text-orange-600 font-bold text-xs uppercase tracking-widest hover:underline"

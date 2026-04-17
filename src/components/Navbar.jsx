@@ -35,7 +35,7 @@ const Navbar = ({ onOpenCart }) => {
                             </div>
                             {user && (
                                 <p className="text-[11px] font-black text-gray-800 uppercase tracking-tight ml-2">
-                                    Hola, <span className="text-orange-600">{user.nombre.split(' ')[0]}</span>
+                                    Hola, <span className="text-orange-600">{user?.nombre?.split(' ')[0]}</span>
                                 </p>
                             )}
                         </div>

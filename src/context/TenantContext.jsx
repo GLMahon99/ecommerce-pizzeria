@@ -15,8 +15,8 @@ export const TenantProvider = ({ children }) => {
                 const pathParts = window.location.pathname.split('/');
                 const slug = pathParts[1]; // El primer segmento tras el dominio
 
-                if (!slug || slug === 'login' || slug === 'register') {
-                    // Si no hay slug, podrías mostrar una página de error o redirigir
+                if (!slug) {
+                    setError('Acceso denegado. Se requiere una identificación de pizzería válida.');
                     setLoading(false);
                     return;
                 }
