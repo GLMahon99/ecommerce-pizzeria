@@ -51,11 +51,12 @@ function App() {
           <Routes>
             {/* Todas las rutas ahora dependen del SLUG */}
             <Route path="/:slug" element={<Home />} />
+            <Route path="/:slug/login" element={<Login />} />
             <Route path="/:slug/checkout" element={<Checkout />} />
             <Route path="/:slug/status/:result" element={<OrderStatus />} />
             <Route path="/:slug/status/:result/:id" element={<OrderStatus />} />
             
-            {/* Redirección por defecto si no hay nada en la raíz (opcional) */}
+            {/* Si entran a una URL vieja o sin nada, podríamos mandarlos a una página general o login */}
             <Route path="/login" element={<Login />} />
           </Routes>
         </main>

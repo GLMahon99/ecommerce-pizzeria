@@ -10,9 +10,13 @@ import {
 } from 'lucide-react';
 import api from '../api/axiosConfig';
 import { useAuth } from '../context/AuthContext';
+import { useTenant } from '../context/TenantContext';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
     const { login } = useAuth();
+    const { tenant } = useTenant();
+    const navigate = useNavigate();
     const [step, setStep] = useState(1); // 1: Tel, 2: Registro, 3: OTP
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -84,6 +88,8 @@ const Login = () => {
                 }
 
                 login(finalUser);
+                // Una vez logueado, lo mandamos al checkout de su pizzería
+                navigate(`/${tenant?.slug}/checkout`);
             } catch (err) {
                 setError('Error al iniciar sesión. Intentá de nuevo.');
             } finally {
@@ -103,9 +109,13 @@ const Login = () => {
                 {/* Logo / Header */}
                 <div className="text-center mb-10">
                     <div className="w-20 h-20 bg-orange-600 rounded-3xl rotate-12 flex items-center justify-center mx-auto mb-6 shadow-xl shadow-orange-200">
-                        <span className="text-white text-4xl font-black italic -rotate-12">P</span>
+                        <span className="text-white text-4xl font-black italic -rotate-12">
+                            {(tenant?.nombre || 'P')[0]}
+                        </span>
                     </div>
-                    <h1 className="text-3xl font-black italic tracking-tighter text-gray-800">PIZZERÍA FLORIDA</h1>
+                    <h1 className="text-3xl font-black italic tracking-tighter text-gray-800 uppercase">
+                        {tenant?.nombre || 'PIZZERÍA'}
+                    </h1>
                     <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] mt-2">Acceso Exclusivo Clientes</p>
                 </div>
 

@@ -30,14 +30,21 @@ const Checkout = () => {
     
     // Estados para edición de dirección
     const [isEditingAddress, setIsEditingAddress] = useState(false);
-    const [newAddress, setNewAddress] = useState(user.direccion || user.direccion_principal || '');
+    const [newAddress, setNewAddress] = useState(user?.direccion || user?.direccion_principal || '');
 
-    // Si el carrito está vacío, lo mandamos al Home
+    // 1. SI NO HAY USUARIO, REDIRIGIR AL LOGIN
+    useEffect(() => {
+        if (!user) {
+            navigate(`/${tenant?.slug}/login`);
+        }
+    }, [user, navigate, tenant]);
+
+    // 2. Si el carrito está vacío, lo mandamos al Home
     useEffect(() => {
         if (cart.length === 0) {
             navigate(`/${tenant?.slug}`);
         }
-    }, [cart, navigate]);
+    }, [cart, navigate, tenant]);
 
     const handleUpdateAddress = async () => {
         if (!newAddress.trim()) return;
