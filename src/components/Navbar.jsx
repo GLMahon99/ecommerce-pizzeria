@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { ShoppingCart, Pizza, Menu, X, MapPin } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { ShoppingCart, Pizza, Menu, X, MapPin, User as UserIcon } from 'lucide-react';
 
 const Navbar = ({ onOpenCart }) => {
     const { itemCount } = useCart();
+    const { user } = useAuth();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     return (
@@ -24,9 +26,16 @@ const Navbar = ({ onOpenCart }) => {
                         </Link>
 
                         {/* Solo visible en Desktop - El toque local de Florida */}
-                        <div className="hidden md:flex items-center gap-1 text-gray-400 text-[10px] font-black uppercase tracking-widest bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100">
-                            <MapPin size={12} className="text-orange-500" />
-                            Florida, Vicente López
+                        <div className="hidden md:flex flex-col gap-0.5">
+                            <div className="flex items-center gap-1 text-gray-400 text-[10px] font-black uppercase tracking-widest bg-gray-50 px-3 py-1 rounded-full border border-gray-100 w-fit">
+                                <MapPin size={10} className="text-orange-500" />
+                                Florida, Vicente López
+                            </div>
+                            {user && (
+                                <p className="text-[11px] font-black text-gray-800 uppercase tracking-tight ml-2">
+                                    Hola, <span className="text-orange-600">{user.nombre.split(' ')[0]}</span>
+                                </p>
+                            )}
                         </div>
                     </div>
 
@@ -95,6 +104,12 @@ const Navbar = ({ onOpenCart }) => {
                     </a>
 
                     <div className="pt-4 border-t border-gray-50 flex flex-col items-center gap-2">
+                        {user && (
+                            <div className="flex items-center gap-2 mb-2 bg-gray-50 px-4 py-2 rounded-2xl">
+                                <UserIcon size={16} className="text-orange-600" />
+                                <span className="text-sm font-black text-gray-800 uppercase">Hola, {user.nombre}</span>
+                            </div>
+                        )}
                         <p className="text-[10px] text-gray-300 font-black uppercase tracking-widest">Abierto hasta las 23:30 hs</p>
                     </div>
                 </div>
