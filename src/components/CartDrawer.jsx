@@ -20,7 +20,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
                 {/* Header */}
                 <div className="p-6 border-b border-gray-100 flex justify-between items-center shrink-0">
                     <div className="flex items-center gap-2">
-                        <ShoppingBag className="text-orange-600" size={24} />
+                        <ShoppingBag className="text-brand" size={24} />
                         <h2 className="text-xl font-black text-gray-800 uppercase tracking-tighter">Tu Pedido</h2>
                     </div>
                     <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
@@ -32,8 +32,8 @@ const CartDrawer = ({ isOpen, onClose }) => {
                 <div className="flex-1 overflow-y-auto p-6 space-y-6">
                     {cart.length === 0 ? (
                         <div className="h-full flex flex-col items-center justify-center text-center space-y-4">
-                            <div className="bg-orange-50 p-6 rounded-full">
-                                <ShoppingBag size={48} className="text-orange-200" />
+                            <div className="bg-brand/10 p-6 rounded-full">
+                                <ShoppingBag size={48} className="text-brand/30" />
                             </div>
                             <p className="text-gray-400 font-bold">Tu carrito está vacío.<br />¡Pedite una de Muzza!</p>
                         </div>
@@ -48,7 +48,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
                                     <div className="flex justify-between">
                                         <div>
                                             <h3 className="font-bold text-gray-800 leading-tight">{item.nombre}</h3>
-                                            {item.tamano && <span className="text-[10px] uppercase font-black text-orange-500 tracking-widest">{item.tamano}</span>}
+                                            {item.tamano && <span className="text-[10px] uppercase font-black text-brand tracking-widest">{item.tamano}</span>}
                                         </div>
                                         <button onClick={() => removeFromCart(item.cartItemId || item.id_producto)} className="text-gray-300 hover:text-red-500 h-fit">
                                             <Trash2 size={16} />
@@ -57,9 +57,9 @@ const CartDrawer = ({ isOpen, onClose }) => {
 
                                     <div className="flex justify-between items-center">
                                         <div className="flex items-center gap-3 bg-gray-50 px-3 py-1.5 rounded-xl border border-gray-100">
-                                            <button onClick={() => decrementQuantity(item.cartItemId || item.id_producto)} className="text-orange-600 hover:scale-125 transition-transform"><Minus size={14} /></button>
+                                            <button onClick={() => decrementQuantity(item.cartItemId || item.id_producto)} className="text-brand hover:scale-125 transition-transform"><Minus size={14} /></button>
                                             <span className="font-black text-sm w-4 text-center">{item.quantity}</span>
-                                            <button onClick={() => addToCart(item)} className="text-orange-600 hover:scale-125 transition-transform"><Plus size={14} /></button>
+                                            <button onClick={() => addToCart(item)} className="text-brand hover:scale-125 transition-transform"><Plus size={14} /></button>
                                         </div>
                                         <span className="font-black text-gray-800">${(item.precio * item.quantity).toLocaleString()}</span>
                                     </div>
@@ -86,7 +86,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
                                 onClose();
                                 navigate(`/${tenant?.slug}/checkout`);
                             }}
-                            className="w-full bg-orange-600 hover:bg-orange-700 text-white py-4 rounded-2xl font-bold text-lg shadow-lg shadow-orange-200 transition-all active:scale-95"
+                            className="w-full bg-brand hover:bg-brand-hover text-white py-4 rounded-2xl font-bold text-lg shadow-lg shadow-brand/20 transition-all active:scale-95"
                         >
                             Finalizar Compra
                         </button>

@@ -106,17 +106,17 @@ const Checkout = () => {
             {/* Header de Checkout */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
                 <div>
-                    <button onClick={() => navigate(`/${tenant?.slug}`)} className="flex items-center gap-2 text-gray-400 font-bold text-xs uppercase tracking-widest hover:text-orange-600 transition-colors mb-2">
+                    <button onClick={() => navigate(`/${tenant?.slug}`)} className="flex items-center gap-2 text-gray-400 font-bold text-xs uppercase tracking-widest hover:text-brand transition-colors mb-2">
                         <ArrowLeft size={14} /> Volver al Menú
                     </button>
                     <h1 className="text-4xl font-black italic tracking-tighter text-gray-800">FINALIZAR COMPRA</h1>
                 </div>
-                <div className="bg-orange-50 border border-orange-100 px-6 py-3 rounded-2xl flex items-center gap-3">
-                    <div className="bg-orange-600 p-2 rounded-full text-white">
+                <div className="bg-brand/10 border border-brand/20 px-6 py-3 rounded-2xl flex items-center gap-3">
+                    <div className="bg-brand p-2 rounded-full text-white">
                         <ShieldCheck size={20} />
                     </div>
                     <div>
-                        <p className="text-[10px] font-black text-orange-600 uppercase tracking-widest">Compra Segura</p>
+                        <p className="text-[10px] font-black text-brand uppercase tracking-widest">Compra Segura</p>
                         <p className="text-xs font-bold text-gray-700">Tu sesión está activa</p>
                     </div>
                 </div>
@@ -128,7 +128,7 @@ const Checkout = () => {
                 <div className="lg:col-span-2 space-y-6">
                     <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
                         <h2 className="text-xl font-black text-gray-800 mb-6 flex items-center gap-3">
-                            <MapPin className="text-orange-600" /> Datos de Entrega
+                            <MapPin className="text-brand" /> Datos de Entrega
                         </h2>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -146,7 +146,7 @@ const Checkout = () => {
                                     <div className="flex gap-2">
                                         <input 
                                             type="text"
-                                            className="flex-1 bg-white border-2 border-orange-100 p-2 rounded-xl outline-none focus:border-orange-600 font-bold text-gray-800"
+                                            className="flex-1 bg-white border-2 border-brand/20 p-2 rounded-xl outline-none focus:border-brand font-bold text-gray-800"
                                             value={newAddress}
                                             onChange={(e) => setNewAddress(e.target.value)}
                                             autoFocus
@@ -154,7 +154,7 @@ const Checkout = () => {
                                         <button 
                                             onClick={handleUpdateAddress}
                                             disabled={loading}
-                                            className="bg-orange-600 text-white px-4 py-2 rounded-xl font-black text-xs uppercase"
+                                            className="bg-brand text-white px-4 py-2 rounded-xl font-black text-xs uppercase"
                                         >
                                             Guardar
                                         </button>
@@ -170,7 +170,7 @@ const Checkout = () => {
                                         <p className="font-bold text-gray-800">{user?.direccion || user?.direccion_principal}</p>
                                         <button 
                                             onClick={() => setIsEditingAddress(true)}
-                                            className="text-orange-600 font-bold text-xs uppercase tracking-widest hover:underline"
+                                            className="text-brand font-bold text-xs uppercase tracking-widest hover:underline"
                                         >
                                             Cambiar
                                         </button>
@@ -182,14 +182,14 @@ const Checkout = () => {
 
                     <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
                         <h2 className="text-xl font-black text-gray-800 mb-6 flex items-center gap-3">
-                            <CreditCard className="text-orange-600" /> Método de Pago
+                            <CreditCard className="text-brand" /> Método de Pago
                         </h2>
                         
                         {!preferenceId ? (
                             <button
                                 onClick={handleCreatePreference}
                                 disabled={loading}
-                                className="w-full bg-orange-600 hover:bg-orange-700 text-white py-6 rounded-3xl font-black text-xl shadow-xl shadow-orange-100 flex items-center justify-center gap-3 transition-all active:scale-95 animate-in fade-in"
+                                className="w-full bg-brand hover:bg-brand-hover text-white py-6 rounded-3xl font-black text-xl shadow-xl shadow-brand/10 flex items-center justify-center gap-3 transition-all active:scale-95 animate-in fade-in"
                             >
                                 {loading ? 'Preparando Pago...' : 'Pagar con Mercado Pago'} <CheckCircle2 size={24} />
                             </button>
@@ -212,7 +212,7 @@ const Checkout = () => {
                 <div className="lg:col-span-1">
                     <div className="bg-gray-900 rounded-[2.5rem] p-8 text-white sticky top-28 shadow-xl">
                         <h3 className="text-lg font-black uppercase tracking-widest mb-6 flex items-center gap-2">
-                            <MessageCircle className="text-orange-500" size={20} /> Resumen
+                            <MessageCircle className="text-brand" size={20} /> Resumen
                         </h3>
 
                         <div className="space-y-4 mb-8 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
@@ -237,7 +237,7 @@ const Checkout = () => {
                             </div>
                             <div className="flex justify-between items-center pt-2">
                                 <span className="text-xl font-black">Total</span>
-                                <span className="text-3xl font-black text-orange-500">${total.toLocaleString()}</span>
+                                <span className="text-3xl font-black text-brand">${total.toLocaleString()}</span>
                             </div>
                         </div>
                     </div>

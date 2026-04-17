@@ -19,7 +19,7 @@ const Navbar = ({ onOpenCart }) => {
                     {/* LADO IZQUIERDO: Logo y Ubicación */}
                     <div className="flex items-center gap-8">
                         <Link to={`/${tenant?.slug}`} className="flex items-center gap-2 group">
-                            <div className="bg-orange-600 p-2 rounded-xl group-hover:rotate-12 transition-transform duration-300">
+                            <div className="bg-brand p-2 rounded-xl group-hover:rotate-12 transition-transform duration-300">
                                 <Pizza className="text-white" size={24} />
                             </div>
                             <span className="text-2xl font-black text-gray-800 tracking-tighter uppercase">
@@ -30,12 +30,12 @@ const Navbar = ({ onOpenCart }) => {
                         {/* Solo visible en Desktop - El toque local de Florida */}
                         <div className="hidden md:flex flex-col gap-0.5">
                             <div className="flex items-center gap-1 text-gray-400 text-[10px] font-black uppercase tracking-widest bg-gray-50 px-3 py-1 rounded-full border border-gray-100 w-fit">
-                                <MapPin size={10} className="text-orange-500" />
+                                <MapPin size={10} className="text-brand" />
                                 Florida, Vicente López
                             </div>
                             {user && (
                                 <p className="text-[11px] font-black text-gray-800 uppercase tracking-tight ml-2">
-                                    Hola, <span className="text-orange-600">{user?.nombre?.split(' ')[0]}</span>
+                                    Hola, <span className="text-brand">{user?.nombre?.split(' ')[0]}</span>
                                 </p>
                             )}
                         </div>
@@ -54,7 +54,7 @@ const Navbar = ({ onOpenCart }) => {
                             <ShoppingCart size={18} />
                             <span className="hidden lg:block text-xs">Tu Pedido</span>
                             {itemCount > 0 && (
-                                <span className="absolute -top-2 -right-2 bg-orange-600 text-white text-[10px] font-black w-6 h-6 flex items-center justify-center rounded-full border-4 border-white animate-in zoom-in">
+                                <span className="absolute -top-2 -right-2 bg-brand text-white text-[10px] font-black w-6 h-6 flex items-center justify-center rounded-full border-4 border-white animate-in zoom-in">
                                     {itemCount}
                                 </span>
                             )}
@@ -66,11 +66,11 @@ const Navbar = ({ onOpenCart }) => {
                         {/* Botón Carrito Mobile */}
                         <button
                             onClick={onOpenCart}
-                            className="relative p-2.5 bg-orange-50 text-orange-600 rounded-xl"
+                            className="relative p-2.5 bg-brand/10 text-brand rounded-xl"
                         >
                             <ShoppingCart size={22} />
                             {itemCount > 0 && (
-                                <span className="absolute -top-1 -right-1 bg-orange-600 text-white text-[9px] font-black w-5 h-5 flex items-center justify-center rounded-full border-2 border-white">
+                                <span className="absolute -top-1 -right-1 bg-brand text-white text-[9px] font-black w-5 h-5 flex items-center justify-center rounded-full border-2 border-white">
                                     {itemCount}
                                 </span>
                             )}
@@ -92,7 +92,7 @@ const Navbar = ({ onOpenCart }) => {
                 <div className="md:hidden bg-white border-t border-gray-100 p-6 space-y-4 shadow-xl animate-in slide-in-from-top duration-300">
                     <Link
                         to={`/${tenant?.slug}`}
-                        className="block py-4 px-6 text-center font-black text-lg text-gray-800 bg-orange-50 rounded-2xl border border-orange-100"
+                        className="block py-4 px-6 text-center font-black text-lg text-gray-800 bg-brand/10 rounded-2xl border border-brand/20"
                         onClick={() => setIsMenuOpen(false)}
                     >
                         VER EL MENÚ
