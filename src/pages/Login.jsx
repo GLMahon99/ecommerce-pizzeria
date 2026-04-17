@@ -77,7 +77,8 @@ const Login = () => {
                     const regResponse = await api.post('/clientes/registrar', {
                         nombre: formData.nombre,
                         telefono: formData.telefono,
-                        direccion: formData.direccion
+                        direccion: formData.direccion,
+                        empresa_id: tenant.id_empresa // Vincular al cliente con esta pizzería
                     });
                     finalUser = { 
                         id_cliente: regResponse.data.id_cliente,
