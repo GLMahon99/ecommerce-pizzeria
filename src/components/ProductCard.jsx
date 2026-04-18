@@ -36,7 +36,7 @@ const ProductCard = ({ product }) => {
             {/* Imagen con Badge de Precio */}
             <div className="relative h-52 overflow-hidden">
                 <img
-                    src={product.img || 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=500'}
+                    src={product.img || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=500'}
                     alt={product.nombre}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />

@@ -35,7 +35,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
                             <div className="bg-brand/10 p-6 rounded-full">
                                 <ShoppingBag size={48} className="text-brand/30" />
                             </div>
-                            <p className="text-gray-400 font-bold">Tu carrito está vacío.<br />¡Pedite una de Muzza!</p>
+                            <p className="text-gray-400 font-bold">Tu carrito está vacío.<br />¡Elegí algo rico para comer!</p>
                         </div>
                     ) : (
                         cart.map((item) => (

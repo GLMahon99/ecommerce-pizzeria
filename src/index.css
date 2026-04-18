@@ -7,8 +7,8 @@
 }
 
 :root {
-  --brand-color: #ea580c;
-  --brand-hover: #c2410c;
+  --brand-color: #374151; /* Gris oscuro neutral por defecto hasta que cargue el tenant */
+  --brand-hover: #1f2937;
   --brand-secondary: #1f2937;
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
