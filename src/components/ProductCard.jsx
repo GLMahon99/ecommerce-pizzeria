@@ -72,8 +72,8 @@ const ProductCard = ({ product }) => {
 
                 {/* Botón de Acción */}
                 {quantity > 0 ? (
-                    <div className="w-full flex items-center justify-between bg-orange-50 border border-orange-100 py-2 px-2 rounded-2xl">
-                        <button onClick={() => decrementQuantity(cartItemId)} className="p-2 bg-white text-orange-600 rounded-xl hover:bg-orange-100 shadow-sm transition-all active:scale-95">
+                    <div className="w-full flex items-center justify-between bg-brand/10 border border-brand/20 py-2 px-2 rounded-2xl">
+                        <button onClick={() => decrementQuantity(cartItemId)} className="p-2 bg-white text-brand rounded-xl hover:bg-brand/10 shadow-sm transition-all active:scale-95">
                             <Minus size={20} />
                         </button>
                         <span className="font-black text-brand-secondary text-lg w-8 text-center">{quantity}</span>

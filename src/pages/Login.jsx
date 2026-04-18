@@ -102,10 +102,10 @@ const Login = () => {
     return (
         <div className="min-h-screen bg-[#fafafa] flex items-center justify-center p-4 relative overflow-hidden">
             {/* Círculos decorativos de fondo */}
-            <div className="absolute -top-24 -left-24 w-96 h-96 bg-orange-100 rounded-full blur-3xl opacity-50"></div>
-            <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-orange-100 rounded-full blur-3xl opacity-50"></div>
+            <div className="absolute -top-24 -left-24 w-96 h-96 bg-brand/10 rounded-full blur-3xl opacity-50"></div>
+            <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-brand/10 rounded-full blur-3xl opacity-50"></div>
 
-            <div className="w-full max-w-md bg-white rounded-[3rem] shadow-2xl shadow-orange-100/50 border border-white p-8 md:p-12 relative z-10 transition-all duration-500">
+            <div className="w-full max-w-md bg-white rounded-[3rem] shadow-2xl shadow-brand/20 border border-white p-8 md:p-12 relative z-10 transition-all duration-500">
                 
                 {/* Logo / Header */}
                 <div className="text-center mb-10">
@@ -118,7 +118,7 @@ const Login = () => {
                             />
                         </div>
                     ) : (
-                        <div className="w-20 h-20 bg-orange-600 rounded-3xl rotate-12 flex items-center justify-center mx-auto mb-6 shadow-xl shadow-orange-200">
+                        <div className="w-20 h-20 bg-brand rounded-3xl rotate-12 flex items-center justify-center mx-auto mb-6 shadow-xl shadow-brand/20">
                             <span className="text-white text-4xl font-black italic -rotate-12">
                                 {(tenant?.nombre || 'P')[0]}
                             </span>
@@ -141,7 +141,7 @@ const Login = () => {
                                     type="tel"
                                     required
                                     placeholder="Ej: 11 1234 5678"
-                                    className="w-full bg-gray-50 border-2 border-gray-100 p-5 pl-14 rounded-2xl focus:border-orange-600 focus:bg-white outline-none transition-all font-bold text-lg"
+                                    className="w-full bg-gray-50 border-2 border-gray-100 p-5 pl-14 rounded-2xl focus:border-brand focus:bg-white outline-none transition-all font-bold text-lg"
                                     value={formData.telefono}
                                     onChange={(e) => setFormData({...formData, telefono: e.target.value})}
                                 />
@@ -160,7 +160,7 @@ const Login = () => {
                 {/* Paso 2: Registro */}
                 {step === 2 && (
                     <form onSubmit={handleRegister} className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
-                        <button onClick={() => setStep(1)} className="flex items-center gap-2 text-gray-400 font-bold text-xs uppercase tracking-widest hover:text-orange-600 transition-colors">
+                        <button onClick={() => setStep(1)} className="flex items-center gap-2 text-gray-400 font-bold text-xs uppercase tracking-widest hover:text-brand transition-colors">
                             <ArrowLeft size={14} /> Volver
                         </button>
                         <h2 className="text-xl font-black text-brand-secondary">¡Bienvenido! Danos tus datos para el envío</h2>
@@ -173,7 +173,7 @@ const Login = () => {
                                     <input
                                         type="text"
                                         required
-                                        className="w-full bg-gray-50 border-2 border-gray-100 p-5 pl-14 rounded-2xl focus:border-orange-600 focus:bg-white outline-none transition-all font-bold"
+                                        className="w-full bg-gray-50 border-2 border-gray-100 p-5 pl-14 rounded-2xl focus:border-brand focus:bg-white outline-none transition-all font-bold"
                                         value={formData.nombre}
                                         onChange={(e) => setFormData({...formData, nombre: e.target.value})}
                                     />
@@ -186,7 +186,7 @@ const Login = () => {
                                     <input
                                         type="text"
                                         required
-                                        className="w-full bg-gray-50 border-2 border-gray-100 p-5 pl-14 rounded-2xl focus:border-orange-600 focus:bg-white outline-none transition-all font-bold"
+                                        className="w-full bg-gray-50 border-2 border-gray-100 p-5 pl-14 rounded-2xl focus:border-brand focus:bg-white outline-none transition-all font-bold"
                                         value={formData.direccion}
                                         onChange={(e) => setFormData({...formData, direccion: e.target.value})}
                                     />
@@ -195,7 +195,7 @@ const Login = () => {
                         </div>
                         <button
                             type="submit"
-                            className="w-full bg-orange-600 hover:bg-orange-700 text-white py-5 rounded-2xl font-black text-lg transition-all shadow-xl shadow-orange-100"
+                            className="w-full bg-brand hover:bg-brand-hover text-white py-5 rounded-2xl font-black text-lg transition-all shadow-xl shadow-brand/10"
                         >
                             Continuar
                         </button>
@@ -206,7 +206,7 @@ const Login = () => {
                 {step === 3 && (
                     <div className="space-y-8 animate-in fade-in zoom-in duration-500">
                         <div className="text-center space-y-2">
-                            <div className="bg-orange-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 text-orange-600 border-4 border-white shadow-lg">
+                            <div className="bg-brand/5 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 text-brand border-4 border-white shadow-lg">
                                 <ShieldCheck size={40} />
                             </div>
                             <h3 className="text-2xl font-black text-brand-secondary tracking-tight">Verificá tu WhatsApp</h3>
@@ -223,7 +223,7 @@ const Login = () => {
                                 value={otp}
                                 onChange={(e) => setOtp(e.target.value)}
                                 placeholder="0000"
-                                className="w-full bg-gray-50 border-2 border-gray-100 p-6 rounded-3xl text-center text-4xl font-black tracking-[0.5em] focus:border-orange-600 focus:bg-white outline-none transition-all placeholder:text-gray-200"
+                                className="w-full bg-gray-50 border-2 border-gray-100 p-6 rounded-3xl text-center text-4xl font-black tracking-[0.5em] focus:border-brand focus:bg-white outline-none transition-all placeholder:text-gray-200"
                             />
                         </div>
 
@@ -232,14 +232,14 @@ const Login = () => {
                             disabled={otp.length < 4 || loading}
                             className={`w-full py-5 rounded-2xl font-black text-lg transition-all flex items-center justify-center gap-2 shadow-xl ${
                                 otp.length === 4 
-                                ? 'bg-orange-600 text-white shadow-orange-100 hover:bg-orange-700' 
+                                ? 'bg-brand text-white shadow-brand/10 hover:bg-brand-hover' 
                                 : 'bg-gray-100 text-gray-300 cursor-not-allowed'
                             }`}
                         >
                             {loading ? 'Verificando...' : 'Confirmar y Entrar'} <CheckCircle2 size={20} />
                         </button>
 
-                        <button onClick={() => setStep(1)} className="w-full text-center text-gray-400 text-xs font-black uppercase tracking-widest hover:text-orange-600 transition-colors">
+                        <button onClick={() => setStep(1)} className="w-full text-center text-gray-400 text-xs font-black uppercase tracking-widest hover:text-brand transition-colors">
                             ¿Cambiar número?
                         </button>
                     </div>

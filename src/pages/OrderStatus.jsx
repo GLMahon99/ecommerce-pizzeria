@@ -67,7 +67,7 @@ const OrderStatus = () => {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
                 <div className="text-center">
-                    <div className="w-12 h-12 border-4 border-orange-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <div className="w-12 h-12 border-4 border-brand border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                     <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Cargando estado...</p>
                 </div>
             </div>
@@ -78,7 +78,7 @@ const OrderStatus = () => {
         <div className="pt-28 pb-20 px-4 max-w-2xl mx-auto min-h-screen">
 
             {/* Botón Volver */}
-            <Link to={`/${tenant?.slug}`} className="inline-flex items-center gap-2 text-gray-400 font-bold text-sm mb-6 hover:text-orange-600 transition-colors">
+            <Link to={`/${tenant?.slug}`} className="inline-flex items-center gap-2 text-gray-400 font-bold text-sm mb-6 hover:text-brand transition-colors">
                 <ChevronLeft size={16} /> Volver al Menú
             </Link>
 
@@ -107,10 +107,10 @@ const OrderStatus = () => {
             )}
 
             {/* Card Principal de Estado */}
-            <div className="bg-white rounded-[2.5rem] shadow-xl shadow-orange-100/50 border border-orange-50 overflow-hidden">
+            <div className="bg-white rounded-[2.5rem] shadow-xl shadow-brand/20 border border-brand/10 overflow-hidden">
 
                 {/* Header Animado */}
-                <div className="bg-orange-600 p-10 text-center text-white relative overflow-hidden">
+                <div className="bg-brand p-10 text-center text-white relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
                         <div className="grid grid-cols-6 gap-4 p-4">
                             {[...Array(12)].map((_, i) => <UtensilsCrossed key={i} size={40} />)}
@@ -126,7 +126,7 @@ const OrderStatus = () => {
                         <h1 className="text-3xl font-black italic tracking-tighter uppercase mb-1">
                             {steps[currentStepIndex].label}
                         </h1>
-                        <p className="text-orange-100 text-sm font-medium">{steps[currentStepIndex].subtext}</p>
+                        <p className="text-brand/80 text-sm font-medium">{steps[currentStepIndex].subtext}</p>
                     </div>
                 </div>
 
@@ -144,7 +144,7 @@ const OrderStatus = () => {
                                 <div key={step.id} className="flex items-start gap-6 relative">
                                     <div className={`
                                         z-10 w-10 h-10 rounded-full flex items-center justify-center border-4 transition-all duration-500
-                                        ${isCompleted ? 'bg-orange-600 border-orange-100 text-white' : 'bg-white border-gray-100 text-gray-200'}
+                                        ${isCompleted ? 'bg-brand border-brand/20 text-white' : 'bg-white border-gray-100 text-gray-200'}
                                         ${isCurrent ? 'ring-4 ring-orange-100 animate-pulse' : ''}
                                     `}>
                                         {step.icon}
@@ -154,7 +154,7 @@ const OrderStatus = () => {
                                         <h3 className={`font-black text-lg ${isCompleted ? 'text-brand-secondary' : 'text-gray-300'}`}>
                                             {step.label}
                                         </h3>
-                                        <p className={`text-sm font-bold ${isCurrent ? 'text-orange-600' : 'text-gray-400'}`}>
+                                        <p className={`text-sm font-bold ${isCurrent ? 'text-brand' : 'text-gray-400'}`}>
                                             {step.subtext}
                                         </p>
                                     </div>
@@ -195,7 +195,7 @@ const OrderStatus = () => {
                             </div>
                             <div className="text-right">
                                 <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Total Pagado</p>
-                                <p className="text-3xl font-black text-orange-500 tracking-tighter">${parseFloat(orderData.total).toLocaleString()}</p>
+                                <p className="text-3xl font-black text-brand tracking-tighter">${parseFloat(orderData.total).toLocaleString()}</p>
                             </div>
                         </div>
 
@@ -203,7 +203,7 @@ const OrderStatus = () => {
                             {orderData.detalle && orderData.detalle.map((item, idx) => (
                                 <div key={idx} className="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5">
                                     <div className="flex items-center gap-3">
-                                        <span className="bg-orange-600 w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-black">{item.cantidad}x</span>
+                                        <span className="bg-brand w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-black">{item.cantidad}x</span>
                                         <span className="text-sm font-bold text-gray-200">{item.producto_nombre}</span>
                                     </div>
                                     <span className="text-xs font-black text-gray-500">${(item.cantidad * item.precio_unitario).toLocaleString()}</span>

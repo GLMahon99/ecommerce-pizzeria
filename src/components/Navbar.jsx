@@ -51,8 +51,8 @@ const Navbar = ({ onOpenCart }) => {
 
                     {/* CENTRO/DERECHA: Navegación Desktop */}
                     <div className="hidden md:flex items-center gap-8 font-bold text-sm text-gray-600 uppercase tracking-tight">
-                        <Link to={`/${tenant?.slug}`} className="hover:text-orange-600 transition-colors">Menú</Link>
-                        <a href="#contacto" className="hover:text-orange-600 transition-colors">Contacto</a>
+                        <Link to={`/${tenant?.slug}`} className="hover:text-brand transition-colors">Menú</Link>
+                        <a href="#contacto" className="hover:text-brand transition-colors">Contacto</a>
 
                         {/* Botón Carrito Desktop */}
                         <button
@@ -107,7 +107,7 @@ const Navbar = ({ onOpenCart }) => {
                     </Link>
                     <a
                         href="#contacto"
-                        className="block py-4 text-center font-bold text-lg text-gray-500 hover:text-orange-600 transition-colors"
+                        className="block py-4 text-center font-bold text-lg text-gray-500 hover:text-brand transition-colors"
                         onClick={() => setIsMenuOpen(false)}
                     >
                         Ubicación y Contacto
@@ -116,7 +116,7 @@ const Navbar = ({ onOpenCart }) => {
                     <div className="pt-4 border-t border-gray-50 flex flex-col items-center gap-2">
                         {user && (
                             <div className="flex items-center gap-2 mb-2 bg-gray-50 px-4 py-2 rounded-2xl">
-                                <UserIcon size={16} className="text-orange-600" />
+                                <UserIcon size={16} className="text-brand" />
                                 <span className="text-sm font-black text-brand-secondary uppercase">Hola, {user.nombre}</span>
                             </div>
                         )}

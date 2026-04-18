@@ -32,11 +32,11 @@ const Footer = () => {
                     {/* Horarios */}
                     <div>
                         <h4 className="text-xs font-black text-brand-secondary uppercase tracking-widest mb-4 flex items-center gap-2">
-                            <Clock size={14} className="text-orange-600" /> Horarios
+                            <Clock size={14} className="text-brand" /> Horarios
                         </h4>
                         <ul className="text-gray-500 text-sm space-y-2 font-medium">
                             <li>Mar - Jue: 19:00 a 23:00</li>
-                            <li className="text-orange-600 font-bold">Vie - Dom: 19:00 a 00:00</li>
+                            <li className="text-brand font-bold">Vie - Dom: 19:00 a 00:00</li>
                             <li>Lunes: Cerrado</li>
                         </ul>
                     </div>
@@ -44,7 +44,7 @@ const Footer = () => {
                     {/* Contacto */}
                     <div>
                         <h4 className="text-xs font-black text-brand-secondary uppercase tracking-widest mb-4 flex items-center gap-2">
-                            <MapPin size={14} className="text-orange-600" /> Ubicación
+                            <MapPin size={14} className="text-brand" /> Ubicación
                         </h4>
                         <ul className="text-gray-500 text-sm space-y-2 font-medium">
                             <li>Florida, Vicente López</li>
