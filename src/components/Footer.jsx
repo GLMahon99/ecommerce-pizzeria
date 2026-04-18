@@ -1,4 +1,4 @@
-import { Pizza, Phone, MapPin, Clock } from 'lucide-react';
+import { Store, Phone, MapPin, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTenant } from '../context/TenantContext';
 
@@ -17,15 +17,15 @@ const Footer = () => {
                                 <img src={tenant.logo_url} alt={tenant.nombre} className="h-10 w-auto object-contain" />
                             ) : (
                                 <div className="bg-brand p-1.5 rounded-lg">
-                                    <Pizza className="text-white" size={20} />
+                                    <Store className="text-white" size={20} />
                                 </div>
                             )}
                             <span className="text-xl font-black text-brand-secondary tracking-tighter uppercase">
-                                {tenant?.nombre || 'PIZZAAPP'}
+                                {tenant?.nombre || 'TIENDAAPP'}
                             </span>
                         </Link>
                         <p className="text-gray-400 text-sm leading-relaxed">
-                            Llevando el sabor artesanal directo a tu mesa.
+                            Los mejores sabores directo a tu casa.
                         </p>
                     </div>
 
@@ -95,7 +95,7 @@ const Footer = () => {
 
                 {/* Créditos Finales */}
                 <div className="border-t border-gray-50 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-gray-400 font-black uppercase tracking-widest">
-                    <p>© 2026 {tenant?.nombre?.toUpperCase() || 'PIZZAAPP'} - TODOS LOS DERECHOS RESERVADOS</p>
+                    <p>© 2026 {tenant?.nombre?.toUpperCase() || 'TIENDAAPP'} - TODOS LOS DERECHOS RESERVADOS</p>
                     <p>DESARROLLADO POR <span className="text-brand-secondary">GASTON MAHON</span></p>
                 </div>
             </div>

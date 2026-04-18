@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useTenant } from '../context/TenantContext'; // Importar Tenant
-import { ShoppingCart, Pizza, Menu, X, MapPin, User as UserIcon } from 'lucide-react';
+import { ShoppingCart, Store, Menu, X, MapPin, User as UserIcon } from 'lucide-react';
 
 const Navbar = ({ onOpenCart }) => {
     const { itemCount } = useCart();
@@ -27,11 +27,11 @@ const Navbar = ({ onOpenCart }) => {
                                 />
                             ) : (
                                 <div className="bg-brand p-2 rounded-xl group-hover:rotate-12 transition-transform duration-300">
-                                    <Pizza className="text-white" size={24} />
+                                    <Store className="text-white" size={24} />
                                 </div>
                             )}
                             <span className="text-2xl font-black text-brand-secondary tracking-tighter uppercase">
-                                {tenant?.nombre || 'PIZZAAPP'}
+                                {tenant?.nombre || 'TIENDAAPP'}
                             </span>
                         </Link>
 

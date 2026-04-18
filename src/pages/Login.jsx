@@ -125,7 +125,7 @@ const Login = () => {
                         </div>
                     )}
                     <h1 className="text-3xl font-black italic tracking-tighter text-brand-secondary uppercase">
-                        {tenant?.nombre || 'PIZZERÍA'}
+                        {tenant?.nombre || 'TIENDA'}
                     </h1>
                     <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] mt-2">Acceso Exclusivo Clientes</p>
                 </div>
@@ -152,7 +152,7 @@ const Login = () => {
                             disabled={loading}
                             className="w-full bg-brand-secondary hover:bg-black text-white py-5 rounded-2xl font-black text-lg transition-all flex items-center justify-center gap-2 group shadow-xl"
                         >
-                            {loading ? 'Verificando...' : 'Entrar a la Pizzería'} <ChevronRight className="group-hover:translate-x-1 transition-transform" />
+                            {loading ? 'Verificando...' : 'Entrar a la Tienda'} <ChevronRight className="group-hover:translate-x-1 transition-transform" />
                         </button>
                     </form>
                 )}

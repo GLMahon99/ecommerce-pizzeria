@@ -34,7 +34,7 @@ const Home = () => {
                 <h2 className="text-4xl font-black text-brand-secondary mb-2">
                     ¿Qué comemos <span className="text-brand">hoy?</span>
                 </h2>
-                <p className="text-gray-400 font-medium">Las mejores pizzas de Florida directo a tu casa.</p>
+                <p className="text-gray-400 font-medium">Los mejores sabores de la ciudad directo a tu casa.</p>
             </div>
 
             {/* Barra de Categorías */}

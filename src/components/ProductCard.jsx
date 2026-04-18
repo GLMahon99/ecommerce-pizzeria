@@ -5,19 +5,19 @@ import { useCart } from '../context/CartContext';
 const ProductCard = ({ product }) => {
     const { cart, addToCart, decrementQuantity } = useCart();
 
-    const isPizza = product.categoria === 'Pizzas';
-    const [selectedSize, setSelectedSize] = useState('Grande');
+    const hasVariants = product.precio_chica !== null && product.precio_chica !== undefined;
+    const [selectedVariant, setSelectedVariant] = useState('Normal');
 
-    // Si es pizza, usamos precio_chica de la DB si existe, sino aplicamos un 30% desc.
-    const getChicaPrice = () => {
+    // Usa el precio secundario si existe
+    const getSecondaryPrice = () => {
         if (product.precio_chica) return product.precio_chica;
-        return product.precio * 0.7;
+        return product.precio;
     };
 
-    const currentPrice = isPizza && selectedSize === 'Chica' ? getChicaPrice() : product.precio;
+    const currentPrice = hasVariants && selectedVariant === 'Opción 2' ? getSecondaryPrice() : product.precio;
     
-    // Generar ID único para el carrito si tiene tamaño
-    const cartItemId = isPizza ? `${product.id_producto}-${selectedSize}` : String(product.id_producto);
+    // Generar ID único para el carrito si tiene variantes
+    const cartItemId = hasVariants ? `${product.id_producto}-${selectedVariant}` : String(product.id_producto);
 
     const cartItem = cart.find((item) => (item.cartItemId || String(item.id_producto)) === cartItemId);
     const quantity = cartItem ? cartItem.quantity : 0;
@@ -26,7 +26,7 @@ const ProductCard = ({ product }) => {
         addToCart({
             ...product,
             precio: currentPrice, // el precio final
-            tamano: isPizza ? selectedSize : null,
+            tamano: hasVariants ? selectedVariant : null,
             cartItemId
         });
     };
@@ -52,20 +52,20 @@ const ProductCard = ({ product }) => {
                     {product.descripcion || 'Sin descripción disponible.'}
                 </p>
 
-                {/* Selectores de Tamaño (Solo para Pizza) */}
-                {isPizza && (
+                {/* Selectores de Variante */}
+                {hasVariants && (
                     <div className="flex bg-gray-100 p-1 rounded-xl mb-4">
                         <button
-                            onClick={() => setSelectedSize('Chica')}
-                            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${selectedSize === 'Chica' ? 'bg-white text-brand shadow-sm' : 'text-gray-400'}`}
+                            onClick={() => setSelectedVariant('Opción 2')}
+                            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${selectedVariant === 'Opción 2' ? 'bg-white text-brand shadow-sm' : 'text-gray-400'}`}
                         >
-                            Chica
+                            Secundario
                         </button>
                         <button
-                            onClick={() => setSelectedSize('Grande')}
-                            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${selectedSize === 'Grande' ? 'bg-white text-brand shadow-sm' : 'text-gray-400'}`}
+                            onClick={() => setSelectedVariant('Normal')}
+                            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${selectedVariant === 'Normal' ? 'bg-white text-brand shadow-sm' : 'text-gray-400'}`}
                         >
-                            Grande
+                            Principal
                         </button>
                     </div>
                 )}

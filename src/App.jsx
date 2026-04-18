@@ -24,7 +24,7 @@ function App() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 uppercase tracking-[0.3em] font-black text-xs text-brand">
         <div className="w-12 h-12 border-4 border-brand border-t-transparent rounded-full animate-spin mr-4"></div>
-        Cargando Sabores...
+        Cargando experiencia...
       </div>
     );
   }

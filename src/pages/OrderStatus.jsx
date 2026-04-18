@@ -49,7 +49,7 @@ const OrderStatus = () => {
 
     const steps = [
         { id: 'recibido', label: 'Pedido Recibido', icon: <CheckCircle2 size={20} />, subtext: 'Estamos preparando su pedido' },
-        { id: 'en camino', label: 'Repartidor en camino', icon: <Bike size={20} />, subtext: 'Tu pizza está viajando' },
+        { id: 'en camino', label: 'Repartidor en camino', icon: <Bike size={20} />, subtext: 'Tu pedido está viajando' },
         { id: 'entregado', label: '¡Entregado!', icon: <MapPin size={20} />, subtext: '¡Que lo disfrutes!' },
     ];
 
