@@ -124,7 +124,7 @@ const Login = () => {
                             </span>
                         </div>
                     )}
-                    <h1 className="text-3xl font-black italic tracking-tighter text-gray-800 uppercase">
+                    <h1 className="text-3xl font-black italic tracking-tighter text-brand-secondary uppercase">
                         {tenant?.nombre || 'PIZZERÍA'}
                     </h1>
                     <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] mt-2">Acceso Exclusivo Clientes</p>
@@ -150,7 +150,7 @@ const Login = () => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-gray-900 hover:bg-black text-white py-5 rounded-2xl font-black text-lg transition-all flex items-center justify-center gap-2 group shadow-xl"
+                            className="w-full bg-brand-secondary hover:bg-black text-white py-5 rounded-2xl font-black text-lg transition-all flex items-center justify-center gap-2 group shadow-xl"
                         >
                             {loading ? 'Verificando...' : 'Entrar a la Pizzería'} <ChevronRight className="group-hover:translate-x-1 transition-transform" />
                         </button>
@@ -163,7 +163,7 @@ const Login = () => {
                         <button onClick={() => setStep(1)} className="flex items-center gap-2 text-gray-400 font-bold text-xs uppercase tracking-widest hover:text-orange-600 transition-colors">
                             <ArrowLeft size={14} /> Volver
                         </button>
-                        <h2 className="text-xl font-black text-gray-800">¡Bienvenido! Danos tus datos para el envío</h2>
+                        <h2 className="text-xl font-black text-brand-secondary">¡Bienvenido! Danos tus datos para el envío</h2>
                         
                         <div className="space-y-4">
                             <div className="space-y-2">
@@ -209,10 +209,10 @@ const Login = () => {
                             <div className="bg-orange-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 text-orange-600 border-4 border-white shadow-lg">
                                 <ShieldCheck size={40} />
                             </div>
-                            <h3 className="text-2xl font-black text-gray-800 tracking-tight">Verificá tu WhatsApp</h3>
+                            <h3 className="text-2xl font-black text-brand-secondary tracking-tight">Verificá tu WhatsApp</h3>
                             <p className="text-gray-400 font-medium text-sm">
                                 Te enviamos un código al <br />
-                                <span className="text-gray-800 font-black">{formData.telefono}</span>
+                                <span className="text-brand-secondary font-black">{formData.telefono}</span>
                             </p>
                         </div>
 

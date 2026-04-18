@@ -30,7 +30,7 @@ const Navbar = ({ onOpenCart }) => {
                                     <Pizza className="text-white" size={24} />
                                 </div>
                             )}
-                            <span className="text-2xl font-black text-gray-800 tracking-tighter uppercase">
+                            <span className="text-2xl font-black text-brand-secondary tracking-tighter uppercase">
                                 {tenant?.nombre || 'PIZZAAPP'}
                             </span>
                         </Link>
@@ -42,7 +42,7 @@ const Navbar = ({ onOpenCart }) => {
                                 Florida, Vicente López
                             </div>
                             {user && (
-                                <p className="text-[11px] font-black text-gray-800 uppercase tracking-tight ml-2">
+                                <p className="text-[11px] font-black text-brand-secondary uppercase tracking-tight ml-2">
                                     Hola, <span className="text-brand">{user?.nombre?.split(' ')[0]}</span>
                                 </p>
                             )}
@@ -57,7 +57,7 @@ const Navbar = ({ onOpenCart }) => {
                         {/* Botón Carrito Desktop */}
                         <button
                             onClick={onOpenCart}
-                            className="relative bg-gray-900 text-white p-3 rounded-2xl hover:bg-black transition-all shadow-lg shadow-gray-200 active:scale-95 flex items-center gap-2"
+                            className="relative bg-brand-secondary text-white p-3 rounded-2xl hover:bg-black transition-all shadow-lg shadow-gray-200 active:scale-95 flex items-center gap-2"
                         >
                             <ShoppingCart size={18} />
                             <span className="hidden lg:block text-xs">Tu Pedido</span>
@@ -87,7 +87,7 @@ const Navbar = ({ onOpenCart }) => {
                         {/* Botón Hamburguesa */}
                         <button
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
-                            className="p-2 text-gray-800 hover:bg-gray-100 rounded-xl transition-colors"
+                            className="p-2 text-brand-secondary hover:bg-gray-100 rounded-xl transition-colors"
                         >
                             {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
                         </button>
@@ -100,7 +100,7 @@ const Navbar = ({ onOpenCart }) => {
                 <div className="md:hidden bg-white border-t border-gray-100 p-6 space-y-4 shadow-xl animate-in slide-in-from-top duration-300">
                     <Link
                         to={`/${tenant?.slug}`}
-                        className="block py-4 px-6 text-center font-black text-lg text-gray-800 bg-brand/10 rounded-2xl border border-brand/20"
+                        className="block py-4 px-6 text-center font-black text-lg text-brand-secondary bg-brand/10 rounded-2xl border border-brand/20"
                         onClick={() => setIsMenuOpen(false)}
                     >
                         VER EL MENÚ
@@ -117,7 +117,7 @@ const Navbar = ({ onOpenCart }) => {
                         {user && (
                             <div className="flex items-center gap-2 mb-2 bg-gray-50 px-4 py-2 rounded-2xl">
                                 <UserIcon size={16} className="text-orange-600" />
-                                <span className="text-sm font-black text-gray-800 uppercase">Hola, {user.nombre}</span>
+                                <span className="text-sm font-black text-brand-secondary uppercase">Hola, {user.nombre}</span>
                             </div>
                         )}
                         <p className="text-[10px] text-gray-300 font-black uppercase tracking-widest">Abierto hasta las 23:30 hs</p>

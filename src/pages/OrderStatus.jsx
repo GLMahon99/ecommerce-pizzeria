@@ -151,7 +151,7 @@ const OrderStatus = () => {
                                     </div>
 
                                     <div className="flex-1 pt-1">
-                                        <h3 className={`font-black text-lg ${isCompleted ? 'text-gray-800' : 'text-gray-300'}`}>
+                                        <h3 className={`font-black text-lg ${isCompleted ? 'text-brand-secondary' : 'text-gray-300'}`}>
                                             {step.label}
                                         </h3>
                                         <p className={`text-sm font-bold ${isCurrent ? 'text-orange-600' : 'text-gray-400'}`}>
@@ -182,7 +182,7 @@ const OrderStatus = () => {
 
             {/* Resumen Dinámico del Pedido */}
             {orderData && (
-                <div className="mt-8 bg-gray-900 rounded-[2rem] p-8 text-white shadow-2xl relative overflow-hidden">
+                <div className="mt-8 bg-brand-secondary rounded-[2rem] p-8 text-white shadow-2xl relative overflow-hidden">
                     <div className="absolute top-0 right-0 p-8 opacity-10">
                         <ClipboardList size={80} />
                     </div>

@@ -40,6 +40,10 @@ export const TenantProvider = ({ children }) => {
                     document.documentElement.style.setProperty('--brand-hover', config.color_primario + 'DD');
                 }
 
+                if (config.color_secundario) {
+                    document.documentElement.style.setProperty('--brand-secondary', config.color_secundario);
+                }
+
                 if (config.nombre) document.title = config.nombre;
 
                 setLoading(false);

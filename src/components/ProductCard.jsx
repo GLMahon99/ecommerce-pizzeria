@@ -47,7 +47,7 @@ const ProductCard = ({ product }) => {
 
             {/* Contenido */}
             <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-800 mb-2">{product.nombre}</h3>
+                <h3 className="text-xl font-bold text-brand-secondary mb-2">{product.nombre}</h3>
                 <p className="text-gray-400 text-sm leading-relaxed mb-6 line-clamp-2">
                     {product.descripcion || 'Sin descripción disponible.'}
                 </p>
@@ -76,7 +76,7 @@ const ProductCard = ({ product }) => {
                         <button onClick={() => decrementQuantity(cartItemId)} className="p-2 bg-white text-orange-600 rounded-xl hover:bg-orange-100 shadow-sm transition-all active:scale-95">
                             <Minus size={20} />
                         </button>
-                        <span className="font-black text-gray-800 text-lg w-8 text-center">{quantity}</span>
+                        <span className="font-black text-brand-secondary text-lg w-8 text-center">{quantity}</span>
                         <button onClick={handleAddToCart} className="p-2 bg-brand text-white rounded-xl hover:bg-brand-hover shadow-sm transition-all active:scale-95">
                             <Plus size={20} />
                         </button>
@@ -84,7 +84,7 @@ const ProductCard = ({ product }) => {
                 ) : (
                     <button
                         onClick={handleAddToCart}
-                        className="w-full flex items-center justify-center gap-2 bg-gray-900 hover:bg-brand text-white py-4 rounded-2xl font-bold transition-all active:scale-95"
+                        className="w-full flex items-center justify-center gap-2 bg-brand-secondary hover:bg-brand text-white py-4 rounded-2xl font-bold transition-all active:scale-95"
                     >
                         <Plus size={20} /> Agregar
                     </button>

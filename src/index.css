@@ -3,11 +3,13 @@
 @theme {
   --color-brand: var(--brand-color);
   --color-brand-hover: var(--brand-hover);
+  --color-brand-secondary: var(--brand-secondary);
 }
 
 :root {
   --brand-color: #ea580c;
   --brand-hover: #c2410c;
+  --brand-secondary: #1f2937;
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -16,7 +18,7 @@
 body {
   margin: 0;
   background-color: #f9fafb; /* match App.jsx background */
-  color: #1f2937;
+  color: var(--brand-secondary);
 }
 
 /* Custom scrollbar utility */

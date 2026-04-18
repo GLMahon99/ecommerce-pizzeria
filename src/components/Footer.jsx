@@ -20,7 +20,7 @@ const Footer = () => {
                                     <Pizza className="text-white" size={20} />
                                 </div>
                             )}
-                            <span className="text-xl font-black text-gray-800 tracking-tighter uppercase">
+                            <span className="text-xl font-black text-brand-secondary tracking-tighter uppercase">
                                 {tenant?.nombre || 'PIZZAAPP'}
                             </span>
                         </Link>
@@ -31,7 +31,7 @@ const Footer = () => {
 
                     {/* Horarios */}
                     <div>
-                        <h4 className="text-xs font-black text-gray-800 uppercase tracking-widest mb-4 flex items-center gap-2">
+                        <h4 className="text-xs font-black text-brand-secondary uppercase tracking-widest mb-4 flex items-center gap-2">
                             <Clock size={14} className="text-orange-600" /> Horarios
                         </h4>
                         <ul className="text-gray-500 text-sm space-y-2 font-medium">
@@ -43,13 +43,13 @@ const Footer = () => {
 
                     {/* Contacto */}
                     <div>
-                        <h4 className="text-xs font-black text-gray-800 uppercase tracking-widest mb-4 flex items-center gap-2">
+                        <h4 className="text-xs font-black text-brand-secondary uppercase tracking-widest mb-4 flex items-center gap-2">
                             <MapPin size={14} className="text-orange-600" /> Ubicación
                         </h4>
                         <ul className="text-gray-500 text-sm space-y-2 font-medium">
                             <li>Florida, Vicente López</li>
                             <li>Buenos Aires, Argentina</li>
-                            <li className="flex items-center gap-2 mt-4 text-gray-800">
+                            <li className="flex items-center gap-2 mt-4 text-brand-secondary">
                                 <Phone size={14} className="text-green-500" /> 11 1234 5678
                             </li>
                         </ul>
@@ -57,7 +57,7 @@ const Footer = () => {
 
                     {/* Social */}
                     <div>
-                        <h4 className="text-xs font-black text-gray-800 uppercase tracking-widest mb-4">Seguinos</h4>
+                        <h4 className="text-xs font-black text-brand-secondary uppercase tracking-widest mb-4">Seguinos</h4>
                         <div className="flex gap-4">
                             <a href="#" className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 hover:text-green-600 hover:bg-green-50 transition-all">
                                 <Phone size={20} />
@@ -69,7 +69,7 @@ const Footer = () => {
                 {/* Créditos Finales */}
                 <div className="border-t border-gray-50 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-gray-400 font-black uppercase tracking-widest">
                     <p>© 2026 {tenant?.nombre?.toUpperCase() || 'PIZZAAPP'} - TODOS LOS DERECHOS RESERVADOS</p>
-                    <p>DESARROLLADO POR <span className="text-gray-800">GASTON MAHON</span></p>
+                    <p>DESARROLLADO POR <span className="text-brand-secondary">GASTON MAHON</span></p>
                 </div>
             </div>
         </footer>

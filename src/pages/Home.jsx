@@ -31,7 +31,7 @@ const Home = () => {
         <div className="pt-28 px-4 max-w-7xl mx-auto min-h-screen">
             {/* Texto de Bienvenida */}
             <div className="mb-10">
-                <h2 className="text-4xl font-black text-gray-800 mb-2">
+                <h2 className="text-4xl font-black text-brand-secondary mb-2">
                     ¿Qué comemos <span className="text-brand">hoy?</span>
                 </h2>
                 <p className="text-gray-400 font-medium">Las mejores pizzas de Florida directo a tu casa.</p>
