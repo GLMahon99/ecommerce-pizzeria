@@ -109,11 +109,21 @@ const Login = () => {
                 
                 {/* Logo / Header */}
                 <div className="text-center mb-10">
-                    <div className="w-20 h-20 bg-orange-600 rounded-3xl rotate-12 flex items-center justify-center mx-auto mb-6 shadow-xl shadow-orange-200">
-                        <span className="text-white text-4xl font-black italic -rotate-12">
-                            {(tenant?.nombre || 'P')[0]}
-                        </span>
-                    </div>
+                    {tenant?.logo_url ? (
+                        <div className="mb-6">
+                            <img 
+                                src={tenant.logo_url} 
+                                alt={tenant?.nombre} 
+                                className="h-24 w-auto mx-auto object-contain rounded-2xl drop-shadow-xl"
+                            />
+                        </div>
+                    ) : (
+                        <div className="w-20 h-20 bg-orange-600 rounded-3xl rotate-12 flex items-center justify-center mx-auto mb-6 shadow-xl shadow-orange-200">
+                            <span className="text-white text-4xl font-black italic -rotate-12">
+                                {(tenant?.nombre || 'P')[0]}
+                            </span>
+                        </div>
+                    )}
                     <h1 className="text-3xl font-black italic tracking-tighter text-gray-800 uppercase">
                         {tenant?.nombre || 'PIZZERÍA'}
                     </h1>

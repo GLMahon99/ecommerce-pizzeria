@@ -34,12 +34,12 @@ export const TenantProvider = ({ children }) => {
 
                 // Aplicar Branding con log para debug
                 console.log('Aplicando color de pizzería:', config.color_primario);
-                
+
                 if (config.color_primario) {
                     document.documentElement.style.setProperty('--brand-color', config.color_primario);
                     document.documentElement.style.setProperty('--brand-hover', config.color_primario + 'DD');
                 }
-                
+
                 if (config.nombre) document.title = config.nombre;
 
                 setLoading(false);

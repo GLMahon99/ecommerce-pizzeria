@@ -18,10 +18,18 @@ const Navbar = ({ onOpenCart }) => {
 
                     {/* LADO IZQUIERDO: Logo y Ubicación */}
                     <div className="flex items-center gap-8">
-                        <Link to={`/${tenant?.slug}`} className="flex items-center gap-2 group">
-                            <div className="bg-brand p-2 rounded-xl group-hover:rotate-12 transition-transform duration-300">
-                                <Pizza className="text-white" size={24} />
-                            </div>
+                        <Link to={`/${tenant?.slug}`} className="flex items-center gap-3 group">
+                            {tenant?.logo_url ? (
+                                <img 
+                                    src={tenant.logo_url} 
+                                    alt={tenant?.nombre} 
+                                    className="h-12 w-auto object-contain rounded-lg transition-transform duration-300 group-hover:scale-105"
+                                />
+                            ) : (
+                                <div className="bg-brand p-2 rounded-xl group-hover:rotate-12 transition-transform duration-300">
+                                    <Pizza className="text-white" size={24} />
+                                </div>
+                            )}
                             <span className="text-2xl font-black text-gray-800 tracking-tighter uppercase">
                                 {tenant?.nombre || 'PIZZAAPP'}
                             </span>
