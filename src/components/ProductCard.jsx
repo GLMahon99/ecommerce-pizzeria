@@ -5,16 +5,19 @@ import { useCart } from '../context/CartContext';
 const ProductCard = ({ product }) => {
     const { cart, addToCart, decrementQuantity } = useCart();
 
-    const hasVariants = product.precio_chica !== null && product.precio_chica !== undefined;
-    const [selectedVariant, setSelectedVariant] = useState('Normal');
+    const isPizza = product.categoria === 'Pizzas';
+    const isHelado = product.categoria === 'Helados';
+    const hasVariants = (product.precio_chica !== null && product.precio_chica !== undefined) || (product.precio_cuarto !== null && product.precio_cuarto !== undefined);
+    
+    const [selectedVariant, setSelectedVariant] = useState(isPizza || isHelado ? 'Principal' : 'Normal');
 
-    // Usa el precio secundario si existe
-    const getSecondaryPrice = () => {
-        if (product.precio_chica) return product.precio_chica;
+    const getCurrentPrice = () => {
+        if (selectedVariant === 'Opción 2' || selectedVariant === 'Chica' || selectedVariant === '1/2 kg') return product.precio_chica;
+        if (selectedVariant === '1/4 kg') return product.precio_cuarto;
         return product.precio;
     };
 
-    const currentPrice = hasVariants && selectedVariant === 'Opción 2' ? getSecondaryPrice() : product.precio;
+    const currentPrice = getCurrentPrice();
     
     // Generar ID único para el carrito si tiene variantes
     const cartItemId = hasVariants ? `${product.id_producto}-${selectedVariant}` : String(product.id_producto);
@@ -52,8 +55,50 @@ const ProductCard = ({ product }) => {
                     {product.descripcion || 'Sin descripción disponible.'}
                 </p>
 
-                {/* Selectores de Variante */}
-                {hasVariants && (
+                {/* Selectores de Variante Helados (3 opciones) */}
+                {isHelado && (
+                    <div className="flex bg-gray-100 p-1 rounded-xl mb-4 text-[10px]">
+                        <button
+                            onClick={() => setSelectedVariant('1/4 kg')}
+                            className={`flex-1 py-1.5 font-bold rounded-lg transition-all ${selectedVariant === '1/4 kg' ? 'bg-white text-brand shadow-sm' : 'text-gray-400'}`}
+                        >
+                            1/4 kg
+                        </button>
+                        <button
+                            onClick={() => setSelectedVariant('1/2 kg')}
+                            className={`flex-1 py-1.5 font-bold rounded-lg transition-all ${selectedVariant === '1/2 kg' ? 'bg-white text-brand shadow-sm' : 'text-gray-400'}`}
+                        >
+                            1/2 kg
+                        </button>
+                        <button
+                            onClick={() => setSelectedVariant('Principal')}
+                            className={`flex-1 py-1.5 font-bold rounded-lg transition-all ${selectedVariant === 'Principal' ? 'bg-white text-brand shadow-sm' : 'text-gray-400'}`}
+                        >
+                            1 kg
+                        </button>
+                    </div>
+                )}
+
+                {/* Selectores de Variante Pizzas (2 opciones) */}
+                {isPizza && product.precio_chica && (
+                    <div className="flex bg-gray-100 p-1 rounded-xl mb-4">
+                        <button
+                            onClick={() => setSelectedVariant('Chica')}
+                            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${selectedVariant === 'Chica' ? 'bg-white text-brand shadow-sm' : 'text-gray-400'}`}
+                        >
+                            Chica
+                        </button>
+                        <button
+                            onClick={() => setSelectedVariant('Principal')}
+                            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${selectedVariant === 'Principal' ? 'bg-white text-brand shadow-sm' : 'text-gray-400'}`}
+                        >
+                            Grande
+                        </button>
+                    </div>
+                )}
+
+                {/* Selectores Genéricos si tiene precio_chica pero no es ni Pizza ni Helado */}
+                {!isPizza && !isHelado && hasVariants && (
                     <div className="flex bg-gray-100 p-1 rounded-xl mb-4">
                         <button
                             onClick={() => setSelectedVariant('Opción 2')}
