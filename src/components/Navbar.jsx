@@ -46,7 +46,7 @@ const Navbar = ({ onOpenCart }) => {
                                 </div>
                             )}
                             <span className="text-2xl font-black text-brand-secondary tracking-tighter uppercase">
-                                {tenant?.nombre || 'TIENDAAPP'}
+                                {tenant?.nombre || 'A-COMMERR'}
                             </span>
                         </Link>
 

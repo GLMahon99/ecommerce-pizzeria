@@ -21,7 +21,7 @@ const Footer = () => {
                                 </div>
                             )}
                             <span className="text-xl font-black text-brand-secondary tracking-tighter uppercase">
-                                {tenant?.nombre || 'TIENDAAPP'}
+                                {tenant?.nombre || 'A-COMMERR'}
                             </span>
                         </Link>
                         <p className="text-gray-400 text-sm leading-relaxed">
@@ -93,7 +93,7 @@ const Footer = () => {
 
                 {/* Créditos Finales */}
                 <div className="border-t border-gray-50 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-gray-400 font-black uppercase tracking-widest">
-                    <p>© 2026 {tenant?.nombre?.toUpperCase() || 'TIENDAAPP'} - TODOS LOS DERECHOS RESERVADOS</p>
+                    <p>© 2026 {tenant?.nombre?.toUpperCase() || 'A-COMMERR'} - TODOS LOS DERECHOS RESERVADOS</p>
                     <p>DESARROLLADO POR <span className="text-brand-secondary">GASTON MAHON</span></p>
                 </div>
             </div>
