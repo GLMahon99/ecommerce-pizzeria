@@ -8,6 +8,12 @@ const CartDrawer = ({ isOpen, onClose }) => {
     const { tenant } = useTenant(); // Obtener los datos de la pizzería
     const navigate = useNavigate();
 
+    let shippingCost = Number(tenant?.costo_envio || 0);
+    if (tenant?.envio_gratis_desde && total >= Number(tenant.envio_gratis_desde)) {
+        shippingCost = 0;
+    }
+    const finalTotal = total + shippingCost;
+
     if (!isOpen) return null;
 
     return (
@@ -72,14 +78,24 @@ const CartDrawer = ({ isOpen, onClose }) => {
                 {/* Footer con el Total */}
                 {cart.length > 0 && (
                     <div className="p-6 bg-gray-50 border-t border-gray-100 space-y-4 shrink-0 pb-safe">
-                        <div className="flex justify-between items-center">
-                            <span className="text-gray-500 font-bold uppercase text-xs tracking-widest">Subtotal</span>
-                            <span className="text-2xl font-black text-brand-secondary">${total.toLocaleString()}</span>
+                        <div className="flex justify-between items-center text-gray-500 font-bold uppercase text-xs tracking-widest">
+                            <span>Subtotal</span>
+                            <span>${total.toLocaleString()}</span>
+                        </div>
+                        <div className={`flex justify-between items-center font-bold uppercase text-xs tracking-widest ${shippingCost === 0 ? 'text-green-500' : 'text-gray-400'}`}>
+                            <span>Envío</span>
+                            <span>{shippingCost === 0 ? '¡Gratis!' : `$${shippingCost.toLocaleString()}`}</span>
+                        </div>
+                        <div className="flex justify-between items-center border-t border-gray-200 pt-3">
+                            <span className="text-gray-500 font-black uppercase text-sm tracking-widest">Total</span>
+                            <span className="text-2xl font-black text-brand-secondary">${finalTotal.toLocaleString()}</span>
                         </div>
 
-                        <p className="text-[10px] text-gray-400 text-center uppercase font-bold tracking-widest">
-                            🛵 Envío sin cargo en Florida y cercanías
-                        </p>
+                        {shippingCost > 0 && tenant?.envio_gratis_desde && (
+                            <p className="text-[10px] text-brand text-center uppercase font-bold tracking-widest bg-brand/10 p-2 rounded-xl">
+                                🛵 ¡Agregá ${(Number(tenant.envio_gratis_desde) - total).toLocaleString()} más para tener envío gratis!
+                            </p>
+                        )}
 
                         <button
                             onClick={() => {

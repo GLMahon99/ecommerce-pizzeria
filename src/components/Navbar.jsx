@@ -11,9 +11,24 @@ const Navbar = ({ onOpenCart }) => {
     const { tenant } = useTenant(); // Obtener los datos de la pizzería
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+    let topbarMessage = '';
+    if (tenant?.costo_envio == 0) {
+        topbarMessage = '🛵 ¡Envío Gratis a domicilio!';
+    } else if (tenant?.envio_gratis_desde) {
+        topbarMessage = `🛵 ¡Envío Gratis a partir de $${Number(tenant.envio_gratis_desde).toLocaleString()}!`;
+    } else if (tenant?.costo_envio) {
+        topbarMessage = `🛵 Costo de envío: $${Number(tenant.costo_envio).toLocaleString()}`;
+    }
+
     return (
-        <nav className="fixed top-0 left-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <header className="fixed top-0 left-0 w-full z-50">
+            {topbarMessage && (
+                <div className="bg-brand text-white text-[10px] sm:text-xs font-black uppercase tracking-widest py-1.5 text-center">
+                    {topbarMessage}
+                </div>
+            )}
+            <nav className="bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-20">
 
                     {/* LADO IZQUIERDO: Logo y Ubicación */}
@@ -124,7 +139,8 @@ const Navbar = ({ onOpenCart }) => {
                     </div>
                 </div>
             )}
-        </nav>
+            </nav>
+        </header>
     );
 };
 

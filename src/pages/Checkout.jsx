@@ -22,6 +22,12 @@ const Checkout = () => {
     const { tenant } = useTenant(); // Obtener datos del tenant
     const navigate = useNavigate();
 
+    let shippingCost = Number(tenant?.costo_envio || 0);
+    if (tenant?.envio_gratis_desde && total >= Number(tenant.envio_gratis_desde)) {
+        shippingCost = 0;
+    }
+    const finalTotal = total + shippingCost;
+
     // Inicializar MP con la Public Key de ESTA pizzería
     useEffect(() => {
         if (tenant?.mp_public_key) {
@@ -71,7 +77,7 @@ const Checkout = () => {
             // 1. Guardar el pedido en nuestra base de datos
             const orderData = {
                 id_cliente: user.id_cliente, 
-                total: total,
+                total: finalTotal,
                 estado: 'Pendiente', 
                 items: cart.map(item => ({
                     id_producto: item.id_producto,
@@ -231,13 +237,13 @@ const Checkout = () => {
                                 <span>Subtotal</span>
                                 <span>${total.toLocaleString()}</span>
                             </div>
-                            <div className="flex justify-between text-green-400 text-xs font-bold uppercase tracking-widest">
+                            <div className={`flex justify-between text-xs font-bold uppercase tracking-widest ${shippingCost === 0 ? 'text-green-400' : 'text-gray-300'}`}>
                                 <span>Envío</span>
-                                <span>¡Gratis!</span>
+                                <span>{shippingCost === 0 ? '¡Gratis!' : `$${shippingCost.toLocaleString()}`}</span>
                             </div>
                             <div className="flex justify-between items-center pt-2">
                                 <span className="text-xl font-black">Total</span>
-                                <span className="text-3xl font-black text-brand">${total.toLocaleString()}</span>
+                                <span className="text-3xl font-black text-brand">${finalTotal.toLocaleString()}</span>
                             </div>
                         </div>
                     </div>
