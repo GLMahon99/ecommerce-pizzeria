@@ -34,11 +34,9 @@ const Footer = () => {
                         <h4 className="text-xs font-black text-brand-secondary uppercase tracking-widest mb-4 flex items-center gap-2">
                             <Clock size={14} className="text-brand" /> Horarios
                         </h4>
-                        <ul className="text-gray-500 text-sm space-y-2 font-medium">
-                            <li>Mar - Jue: 19:00 a 23:00</li>
-                            <li className="text-brand font-bold">Vie - Dom: 19:00 a 00:00</li>
-                            <li>Lunes: Cerrado</li>
-                        </ul>
+                        <p className="text-gray-500 text-sm font-medium whitespace-pre-line">
+                            {tenant?.horarios_atencion || 'Lunes a Domingo'}
+                        </p>
                     </div>
 
                     {/* Contacto */}

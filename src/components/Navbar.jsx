@@ -135,7 +135,7 @@ const Navbar = ({ onOpenCart }) => {
                                 <span className="text-sm font-black text-brand-secondary uppercase">Hola, {user.nombre}</span>
                             </div>
                         )}
-                        <p className="text-[10px] text-gray-300 font-black uppercase tracking-widest">Abierto hasta las 23:30 hs</p>
+                        <p className="text-[10px] text-gray-300 font-black uppercase tracking-widest text-center">{tenant?.horarios_atencion || 'Lunes a Domingo'}</p>
                     </div>
                 </div>
             )}
