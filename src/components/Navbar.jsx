@@ -38,7 +38,7 @@ const Navbar = ({ onOpenCart }) => {
                                 <img 
                                     src={tenant.logo_url} 
                                     alt={tenant?.nombre} 
-                                    className="h-12 w-auto object-contain rounded-lg transition-transform duration-300 group-hover:scale-105"
+                                    className="h-14 w-auto object-contain rounded-lg transition-transform duration-300 group-hover:scale-105"
                                 />
                             ) : (
                                 <div className="bg-brand p-2 rounded-xl group-hover:rotate-12 transition-transform duration-300">

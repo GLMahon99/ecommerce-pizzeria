@@ -14,7 +14,7 @@ const Footer = () => {
                     <div className="col-span-1 md:col-span-1">
                         <Link to={`/${tenant?.slug}`} className="flex items-center gap-2 mb-4">
                             {tenant?.logo_url ? (
-                                <img src={tenant.logo_url} alt={tenant.nombre} className="h-10 w-auto object-contain" />
+                                <img src={tenant.logo_url} alt={tenant.nombre} className="h-14 w-auto object-contain" />
                             ) : (
                                 <div className="bg-brand p-1.5 rounded-lg">
                                     <Store className="text-white" size={20} />
