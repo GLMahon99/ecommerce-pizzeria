@@ -54,7 +54,7 @@ const Navbar = ({ onOpenCart }) => {
                         <div className="hidden md:flex flex-col gap-0.5">
                             <div className="flex items-center gap-1 text-gray-400 text-[10px] font-black uppercase tracking-widest bg-gray-50 px-3 py-1 rounded-full border border-gray-100 w-fit">
                                 <MapPin size={10} className="text-brand" />
-                                Florida, Vicente López
+                                {tenant?.direccion ? `${tenant.direccion}${tenant.ciudad ? `, ${tenant.ciudad}` : ''}` : 'Florida, Vicente López'}
                             </div>
                             {user && (
                                 <p className="text-[11px] font-black text-brand-secondary uppercase tracking-tight ml-2">

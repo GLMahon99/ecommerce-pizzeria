@@ -44,13 +44,26 @@ const Footer = () => {
                         <h4 className="text-xs font-black text-brand-secondary uppercase tracking-widest mb-4 flex items-center gap-2">
                             <MapPin size={14} className="text-brand" /> Ubicación
                         </h4>
-                        <ul className="text-gray-500 text-sm space-y-2 font-medium">
-                            <li>Florida, Vicente López</li>
-                            <li>Buenos Aires, Argentina</li>
-                            <li className="flex items-center gap-2 mt-4 text-brand-secondary">
+                        <ul className="text-gray-500 text-sm space-y-2 font-medium mb-3">
+                            <li>{tenant?.direccion || 'Florida, Vicente López'}</li>
+                            <li>{tenant?.ciudad || 'Buenos Aires, Argentina'}</li>
+                            <li className="flex items-center gap-2 mt-2 text-brand-secondary">
                                 <Phone size={14} className="text-green-500" /> {tenant?.whatsapp || 'Consultas por WhatsApp'}
                             </li>
                         </ul>
+                        {/* Google Maps Widget */}
+                        <div className="w-full h-32 rounded-2xl overflow-hidden border border-gray-100 shadow-sm mt-3">
+                            <iframe
+                                title="Ubicación local"
+                                width="100%"
+                                height="100%"
+                                style={{ border: 0 }}
+                                loading="lazy"
+                                src={`https://maps.google.com/maps?q=${encodeURIComponent(
+                                    (tenant?.direccion || 'Florida') + ', ' + (tenant?.ciudad || 'Vicente López, Buenos Aires, Argentina')
+                                )}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                            ></iframe>
+                        </div>
                     </div>
 
                     {/* Social */}
