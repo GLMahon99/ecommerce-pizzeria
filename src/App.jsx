@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
 // Componentes
 import Navbar from './components/Navbar';
@@ -43,34 +43,31 @@ function App() {
   // Si no hay usuario y no estamos ya en la página de login, forzamos ir al login.
   const isLoginPage = window.location.pathname.includes('/login');
   if (!user && !isLoginPage && tenant) {
-     window.location.href = `/${tenant.slug}/login`;
-     return null;
+     return <Navigate to={`/${tenant.slug}/login`} replace />;
   }
 
   const toggleCart = () => setIsCartOpen(!isCartOpen);
 
   return (
-    <Router>
-      <div className="flex flex-col min-h-screen bg-gray-50">
-        <Navbar onOpenCart={toggleCart} />
-        <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+    <div className="flex flex-col min-h-screen bg-gray-50">
+      <Navbar onOpenCart={toggleCart} />
+      <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
 
-        <main className="flex-grow">
-          <Routes>
-            {/* ÚNICAS RUTAS VÁLIDAS: Todas requieren un :slug */}
-            <Route path="/:slug" element={<Home />} />
-            <Route path="/:slug/login" element={<Login />} />
-            <Route path="/:slug/checkout" element={<Checkout />} />
-            <Route path="/:slug/status/:result" element={<OrderStatus />} />
-            <Route path="/:slug/status/:result/:id" element={<OrderStatus />} />
-            
-            {/* Cualquier otra ruta que no coincida con lo anterior no mostrará nada o error */}
-          </Routes>
-        </main>
+      <main className="flex-grow">
+        <Routes>
+          {/* ÚNICAS RUTAS VÁLIDAS: Todas requieren un :slug */}
+          <Route path="/:slug" element={<Home />} />
+          <Route path="/:slug/login" element={<Login />} />
+          <Route path="/:slug/checkout" element={<Checkout />} />
+          <Route path="/:slug/status/:result" element={<OrderStatus />} />
+          <Route path="/:slug/status/:result/:id" element={<OrderStatus />} />
+          
+          {/* Cualquier otra ruta que no coincida con lo anterior no mostrará nada o error */}
+        </Routes>
+      </main>
 
-        <Footer />
-      </div>
-    </Router>
+      <Footer />
+    </div>
   );
 }
 
