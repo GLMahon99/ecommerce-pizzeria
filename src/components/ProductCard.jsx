@@ -36,7 +36,7 @@ const ProductCard = ({ product }) => {
     };
 
     return (
-        <div className="bg-white rounded-[2rem] border border-gray-50 shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden">
+        <div className="bg-white rounded-[2rem] border border-gray-50 shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden flex flex-col h-full">
             {/* Imagen con Badge de Precio */}
             <div className="relative h-52 overflow-hidden">
                 <img
@@ -50,7 +50,7 @@ const ProductCard = ({ product }) => {
             </div>
 
             {/* Contenido */}
-            <div className="p-6">
+            <div className="p-6 flex flex-col flex-1">
                 <h3 className="text-xl font-bold text-brand-secondary mb-2">{product.nombre}</h3>
                 <div className="mb-6">
                     <p className={`text-gray-400 text-sm leading-relaxed ${isExpanded ? '' : 'line-clamp-2'}`}>
@@ -128,24 +128,26 @@ const ProductCard = ({ product }) => {
                 )}
 
                 {/* Botón de Acción */}
-                {quantity > 0 ? (
-                    <div className="w-full flex items-center justify-between bg-brand/10 border border-brand/20 py-2 px-2 rounded-2xl">
-                        <button onClick={() => decrementQuantity(cartItemId)} className="p-2 bg-white text-brand rounded-xl hover:bg-brand/10 shadow-sm transition-all active:scale-95">
-                            <Minus size={20} />
+                <div className="mt-auto">
+                    {quantity > 0 ? (
+                        <div className="w-full flex items-center justify-between bg-brand/10 border border-brand/20 py-2 px-2 rounded-2xl">
+                            <button onClick={() => decrementQuantity(cartItemId)} className="p-2 bg-white text-brand rounded-xl hover:bg-brand/10 shadow-sm transition-all active:scale-95">
+                                <Minus size={20} />
+                            </button>
+                            <span className="font-black text-brand-secondary text-lg w-8 text-center">{quantity}</span>
+                            <button onClick={handleAddToCart} className="p-2 bg-brand text-white rounded-xl hover:bg-brand-hover shadow-sm transition-all active:scale-95">
+                                <Plus size={20} />
+                            </button>
+                        </div>
+                    ) : (
+                        <button
+                            onClick={handleAddToCart}
+                            className="w-full flex items-center justify-center gap-2 bg-brand-secondary hover:bg-brand text-white py-4 rounded-2xl font-bold transition-all active:scale-95"
+                        >
+                            <Plus size={20} /> Agregar
                         </button>
-                        <span className="font-black text-brand-secondary text-lg w-8 text-center">{quantity}</span>
-                        <button onClick={handleAddToCart} className="p-2 bg-brand text-white rounded-xl hover:bg-brand-hover shadow-sm transition-all active:scale-95">
-                            <Plus size={20} />
-                        </button>
-                    </div>
-                ) : (
-                    <button
-                        onClick={handleAddToCart}
-                        className="w-full flex items-center justify-center gap-2 bg-brand-secondary hover:bg-brand text-white py-4 rounded-2xl font-bold transition-all active:scale-95"
-                    >
-                        <Plus size={20} /> Agregar
-                    </button>
-                )}
+                    )}
+                </div>
             </div>
         </div>
     );
