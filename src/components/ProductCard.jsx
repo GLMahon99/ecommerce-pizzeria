@@ -10,6 +10,7 @@ const ProductCard = ({ product }) => {
     const hasVariants = (product.precio_chica !== null && product.precio_chica !== undefined) || (product.precio_cuarto !== null && product.precio_cuarto !== undefined);
     
     const [selectedVariant, setSelectedVariant] = useState(isPizza || isHelado ? 'Principal' : 'Normal');
+    const [isExpanded, setIsExpanded] = useState(false);
 
     const getCurrentPrice = () => {
         if (selectedVariant === 'Opción 2' || selectedVariant === 'Chica' || selectedVariant === '1/2 kg') return product.precio_chica;
@@ -51,9 +52,20 @@ const ProductCard = ({ product }) => {
             {/* Contenido */}
             <div className="p-6">
                 <h3 className="text-xl font-bold text-brand-secondary mb-2">{product.nombre}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed mb-6 line-clamp-2">
-                    {product.descripcion || 'Sin descripción disponible.'}
-                </p>
+                <div className="mb-6">
+                    <p className={`text-gray-400 text-sm leading-relaxed ${isExpanded ? '' : 'line-clamp-2'}`}>
+                        {product.descripcion || 'Sin descripción disponible.'}
+                    </p>
+                    {product.descripcion && product.descripcion.length > 70 && (
+                        <button
+                            type="button"
+                            onClick={() => setIsExpanded(!isExpanded)}
+                            className="text-brand text-xs font-bold hover:underline mt-1 cursor-pointer"
+                        >
+                            {isExpanded ? 'Ver menos' : 'Ver más'}
+                        </button>
+                    )}
+                </div>
 
                 {/* Selectores de Variante Helados (3 opciones) */}
                 {isHelado && (
