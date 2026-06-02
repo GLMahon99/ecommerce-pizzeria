@@ -22,7 +22,7 @@ export const TenantProvider = ({ children }) => {
                 }
 
                 // Configurar URL del backend (usando el nombre correcto de tu .env)
-                const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+                const apiUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'https://pizzeria-ecommerce-production.up.railway.app/api';
 
                 const response = await axios.get(`${apiUrl}/admin/config`, {
                     headers: { 'x-tenant': slug }
