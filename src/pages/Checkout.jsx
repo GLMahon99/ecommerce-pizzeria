@@ -37,6 +37,7 @@ const Checkout = () => {
 
     const [loading, setLoading] = useState(false);
     const [preferenceId, setPreferenceId] = useState(null);
+    const [paymentMethod, setPaymentMethod] = useState('mercadopago');
     
     // Estados para edición de dirección
     const [isEditingAddress, setIsEditingAddress] = useState(false);
@@ -101,6 +102,33 @@ const Checkout = () => {
         } catch (error) {
             console.error('Error al procesar el pedido:', error);
             alert('Hubo un error al procesar tu pedido.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleCreateTransferOrder = async () => {
+        setLoading(true);
+        try {
+            const orderData = {
+                id_cliente: user.id_cliente, 
+                total: finalTotal,
+                estado: 'Pendiente', 
+                items: cart.map(item => ({
+                    id_producto: item.id_producto,
+                    cantidad: item.quantity,
+                    precio: item.precio
+                }))
+            };
+
+            const orderResponse = await api.post('/pedidos', orderData);
+            const { id_pedido } = orderResponse.data;
+
+            clearCart();
+            navigate(`/${tenant?.slug}/status/success/${id_pedido}?method=transfer`);
+        } catch (error) {
+            console.error('Error al crear pedido por transferencia:', error);
+            alert('Hubo un error al registrar tu pedido por transferencia.');
         } finally {
             setLoading(false);
         }
@@ -190,27 +218,99 @@ const Checkout = () => {
                         <h2 className="text-xl font-black text-brand-secondary mb-6 flex items-center gap-3">
                             <CreditCard className="text-brand" /> Método de Pago
                         </h2>
-                        
-                        {!preferenceId ? (
+
+                        {/* SELECTOR DE MÉTODO DE PAGO */}
+                        <div className="grid grid-cols-2 gap-4 mb-6">
                             <button
-                                onClick={handleCreatePreference}
-                                disabled={loading}
-                                className="w-full bg-brand hover:bg-brand-hover text-white py-6 rounded-3xl font-black text-xl shadow-xl shadow-brand/10 flex items-center justify-center gap-3 transition-all active:scale-95 animate-in fade-in"
+                                type="button"
+                                onClick={() => setPaymentMethod('mercadopago')}
+                                className={`p-4 rounded-2xl font-black text-xs md:text-sm uppercase tracking-wider transition-all border-2 ${
+                                    paymentMethod === 'mercadopago'
+                                        ? 'border-brand bg-brand/5 text-brand-secondary'
+                                        : 'border-gray-100 hover:border-gray-200 text-gray-500'
+                                }`}
                             >
-                                {loading ? 'Preparando Pago...' : 'Pagar con Mercado Pago'} <CheckCircle2 size={24} />
+                                Mercado Pago
                             </button>
+                            <button
+                                type="button"
+                                onClick={() => setPaymentMethod('transferencia')}
+                                className={`p-4 rounded-2xl font-black text-xs md:text-sm uppercase tracking-wider transition-all border-2 ${
+                                    paymentMethod === 'transferencia'
+                                        ? 'border-brand bg-brand/5 text-brand-secondary'
+                                        : 'border-gray-100 hover:border-gray-200 text-gray-500'
+                                }`}
+                            >
+                                Transferencia CVU
+                            </button>
+                        </div>
+                        
+                        {paymentMethod === 'mercadopago' ? (
+                            <>
+                                {!preferenceId ? (
+                                    <button
+                                        onClick={handleCreatePreference}
+                                        disabled={loading}
+                                        className="w-full bg-brand hover:bg-brand-hover text-white py-6 rounded-3xl font-black text-xl shadow-xl shadow-brand/10 flex items-center justify-center gap-3 transition-all active:scale-95 animate-in fade-in"
+                                    >
+                                        {loading ? 'Preparando Pago...' : 'Pagar con Mercado Pago'} <CheckCircle2 size={24} />
+                                    </button>
+                                ) : (
+                                    <div className="animate-in fade-in slide-in-from-top-4 duration-500">
+                                        <Wallet 
+                                            initialization={{ preferenceId }} 
+                                            customization={{ texts: { valueProp: 'smart_option' } }}
+                                        />
+                                    </div>
+                                )}
+                                
+                                <p className="mt-6 text-[10px] text-gray-400 text-center uppercase font-bold tracking-widest">
+                                    Serás redirigido a la plataforma segura de Mercado Pago
+                                </p>
+                            </>
                         ) : (
-                            <div className="animate-in fade-in slide-in-from-top-4 duration-500">
-                                <Wallet 
-                                    initialization={{ preferenceId }} 
-                                    customization={{ texts: { valueProp: 'smart_option' } }}
-                                />
+                            <div className="space-y-6 animate-in fade-in">
+                                <div className="bg-gray-50 border border-gray-100 p-6 rounded-3xl space-y-4 text-brand-secondary">
+                                    <p className="text-[10px] font-black text-brand uppercase tracking-widest">
+                                        Datos de la Cuenta para Transferir
+                                    </p>
+                                    <div className="space-y-3 font-bold text-sm">
+                                        {tenant?.cvu ? (
+                                            <div className="bg-white p-3 rounded-xl border border-gray-100">
+                                                <span className="text-[10px] text-gray-400 font-black uppercase block mb-1">CVU</span>
+                                                <span className="font-mono text-brand-secondary tracking-wider">{tenant.cvu}</span>
+                                            </div>
+                                        ) : (
+                                            <p className="text-xs text-red-500 font-medium italic">CVU no configurado por el comercio.</p>
+                                        )}
+                                        {tenant?.alias ? (
+                                            <div className="bg-white p-3 rounded-xl border border-gray-100">
+                                                <span className="text-[10px] text-gray-400 font-black uppercase block mb-1">Alias</span>
+                                                <span className="text-brand-secondary">{tenant.alias}</span>
+                                            </div>
+                                        ) : (
+                                            <p className="text-xs text-red-500 font-medium italic">Alias no configurado por el comercio.</p>
+                                        )}
+                                        <div className="bg-white p-3 rounded-xl border border-gray-100">
+                                            <span className="text-[10px] text-gray-400 font-black uppercase block mb-1">Titular</span>
+                                            <span className="text-brand-secondary">{tenant?.nombre}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={handleCreateTransferOrder}
+                                    disabled={loading || (!tenant?.cvu && !tenant?.alias)}
+                                    className="w-full bg-brand hover:bg-brand-hover text-white py-6 rounded-3xl font-black text-xl shadow-xl shadow-brand/10 flex items-center justify-center gap-3 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+                                >
+                                    {loading ? 'Registrando Pedido...' : 'Confirmar Pedido por Transferencia'} <CheckCircle2 size={24} />
+                                </button>
+                                
+                                <p className="text-[10px] text-gray-400 text-center uppercase font-bold tracking-widest leading-relaxed">
+                                    Realizá la transferencia desde tu home banking y luego confirmá el pedido. Tu compra quedará como "Pendiente" hasta confirmarse la acreditación.
+                                </p>
                             </div>
                         )}
-                        
-                        <p className="mt-6 text-[10px] text-gray-400 text-center uppercase font-bold tracking-widest">
-                            Serás redirigido a la plataforma segura de Mercado Pago
-                        </p>
                     </div>
                 </div>
 
