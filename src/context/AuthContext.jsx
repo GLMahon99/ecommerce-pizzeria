@@ -7,11 +7,18 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const savedUser = localStorage.getItem('pizzeria_user');
-        if (savedUser) {
-            setUser(JSON.parse(savedUser));
+        try {
+            const savedUser = localStorage.getItem('pizzeria_user');
+            if (savedUser) {
+                setUser(JSON.parse(savedUser));
+            }
+        } catch (error) {
+            console.error('Error parsing stored user data:', error);
+            localStorage.removeItem('pizzeria_user');
+            localStorage.removeItem('pizzeria_token');
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     }, []);
 
     const login = (userData) => {
