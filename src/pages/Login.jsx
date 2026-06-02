@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { 
+    Mail,
     Phone, 
     ChevronRight, 
     ShieldCheck, 
@@ -17,11 +18,12 @@ const Login = () => {
     const { login } = useAuth();
     const { tenant } = useTenant();
     const navigate = useNavigate();
-    const [step, setStep] = useState(1); // 1: Tel, 2: Registro, 3: OTP
+    const [step, setStep] = useState(1); // 1: Email, 2: Registro, 3: OTP
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     
     const [formData, setFormData] = useState({
+        email: '',
         telefono: '',
         nombre: '',
         direccion: ''
@@ -29,21 +31,29 @@ const Login = () => {
     
     const [otp, setOtp] = useState('');
 
-    const handleCheckPhone = async (e) => {
+    const handleCheckEmail = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError('');
         
         try {
-            const response = await api.get(`/clientes/buscar?telefono=${formData.telefono}`);
+            const response = await api.post('/auth/check-email', { email: formData.email });
             
-            if (response.data) {
+            if (response.data.status === 'registered') {
                 // Cliente existe
-                setFormData({
-                    ...formData,
-                    nombre: response.data.nombre,
-                    direccion: response.data.direccion
-                });
+                try {
+                    const clientRes = await api.get(`/clientes/buscar?email=${formData.email}`);
+                    if (clientRes.data) {
+                        setFormData(prev => ({
+                            ...prev,
+                            nombre: clientRes.data.nombre,
+                            direccion: clientRes.data.direccion_principal || clientRes.data.direccion,
+                            telefono: clientRes.data.telefono
+                        }));
+                    }
+                } catch (clientErr) {
+                    console.error('Error fetching client details:', clientErr);
+                }
                 setStep(3); // Ir directo a OTP
             } else {
                 // Cliente nuevo
@@ -51,52 +61,54 @@ const Login = () => {
             }
         } catch (err) {
             console.error(err);
-            setStep(2); // Asumimos nuevo si falla la búsqueda por ahora
+            setError(err.response?.data?.message || 'Error al verificar el correo electrónico.');
         } finally {
             setLoading(false);
         }
     };
 
-    const handleRegister = (e) => {
+    const handleRegister = async (e) => {
         e.preventDefault();
-        if (formData.nombre && formData.direccion) {
-            setStep(3);
+        setLoading(true);
+        setError('');
+        try {
+            await api.post('/auth/register', {
+                email: formData.email,
+                nombre: formData.nombre,
+                direccion_principal: formData.direccion,
+                telefono: formData.telefono
+            });
+            setStep(3); // Ir a OTP
+        } catch (err) {
+            console.error(err);
+            setError(err.response?.data?.message || 'Error al registrar el usuario.');
+        } finally {
+            setLoading(false);
         }
     };
 
     const handleVerifyOtp = async () => {
         setLoading(true);
-        // Simulamos la verificación de WhatsApp (OTP)
-        setTimeout(async () => {
-            try {
-                // Si el cliente no existía, lo creamos
-                let finalUser;
-                const check = await api.get(`/clientes/buscar?telefono=${formData.telefono}`);
-                
-                if (!check.data) {
-                    const regResponse = await api.post('/clientes/registrar', {
-                        nombre: formData.nombre,
-                        telefono: formData.telefono,
-                        direccion: formData.direccion,
-                        empresa_id: tenant.id_empresa // Vincular al cliente con esta pizzería
-                    });
-                    finalUser = { 
-                        id_cliente: regResponse.data.id_cliente,
-                        ...formData 
-                    };
-                } else {
-                    finalUser = check.data;
-                }
+        setError('');
+        try {
+            const response = await api.post('/auth/verify', {
+                email: formData.email,
+                codigo: otp
+            });
 
-                login(finalUser);
-                // Una vez logueado, lo mandamos al checkout de su pizzería
+            if (response.data.token && response.data.user) {
+                localStorage.setItem('pizzeria_token', response.data.token);
+                login(response.data.user);
                 navigate(`/${tenant?.slug}/checkout`);
-            } catch (err) {
-                setError('Error al iniciar sesión. Intentá de nuevo.');
-            } finally {
-                setLoading(false);
+            } else {
+                setError('Error al recibir credenciales de inicio de sesión.');
             }
-        }, 1500);
+        } catch (err) {
+            console.error(err);
+            setError(err.response?.data?.message || 'El código es incorrecto o ha expirado.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -130,20 +142,20 @@ const Login = () => {
                     <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] mt-2">Acceso Exclusivo Clientes</p>
                 </div>
 
-                {/* Paso 1: Teléfono */}
+                {/* Paso 1: Correo Electrónico */}
                 {step === 1 && (
-                    <form onSubmit={handleCheckPhone} className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <form onSubmit={handleCheckEmail} className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <div className="space-y-2">
-                            <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Tu Celular (WhatsApp)</label>
+                            <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Tu Correo Electrónico</label>
                             <div className="relative">
-                                <Phone className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300" size={20} />
+                                <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300" size={20} />
                                 <input
-                                    type="tel"
+                                    type="email"
                                     required
-                                    placeholder="Ej: 11 1234 5678"
+                                    placeholder="Ej: usuario@gmail.com"
                                     className="w-full bg-gray-50 border-2 border-gray-100 p-5 pl-14 rounded-2xl focus:border-brand focus:bg-white outline-none transition-all font-bold text-lg"
-                                    value={formData.telefono}
-                                    onChange={(e) => setFormData({...formData, telefono: e.target.value})}
+                                    value={formData.email}
+                                    onChange={(e) => setFormData({...formData, email: e.target.value})}
                                 />
                             </div>
                         </div>
@@ -180,6 +192,20 @@ const Login = () => {
                                 </div>
                             </div>
                             <div className="space-y-2">
+                                <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Celular (WhatsApp)</label>
+                                <div className="relative">
+                                    <Phone className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300" size={20} />
+                                    <input
+                                        type="tel"
+                                        required
+                                        placeholder="Ej: 11 1234 5678"
+                                        className="w-full bg-gray-50 border-2 border-gray-100 p-5 pl-14 rounded-2xl focus:border-brand focus:bg-white outline-none transition-all font-bold"
+                                        value={formData.telefono}
+                                        onChange={(e) => setFormData({...formData, telefono: e.target.value})}
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
                                 <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Dirección de Entrega</label>
                                 <div className="relative">
                                     <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300" size={20} />
@@ -195,9 +221,10 @@ const Login = () => {
                         </div>
                         <button
                             type="submit"
+                            disabled={loading}
                             className="w-full bg-brand hover:bg-brand-hover text-white py-5 rounded-2xl font-black text-lg transition-all shadow-xl shadow-brand/10"
                         >
-                            Continuar
+                            {loading ? 'Registrando...' : 'Continuar'}
                         </button>
                     </form>
                 )}
@@ -209,29 +236,29 @@ const Login = () => {
                             <div className="bg-brand/5 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 text-brand border-4 border-white shadow-lg">
                                 <ShieldCheck size={40} />
                             </div>
-                            <h3 className="text-2xl font-black text-brand-secondary tracking-tight">Verificá tu WhatsApp</h3>
+                            <h3 className="text-2xl font-black text-brand-secondary tracking-tight">Verificá tu Correo</h3>
                             <p className="text-gray-400 font-medium text-sm">
-                                Te enviamos un código al <br />
-                                <span className="text-brand-secondary font-black">{formData.telefono}</span>
+                                Te enviamos un código al correo <br />
+                                <span className="text-brand-secondary font-black">{formData.email}</span>
                             </p>
                         </div>
 
                         <div className="space-y-4 max-w-xs mx-auto">
                             <input
                                 type="text"
-                                maxLength="4"
+                                maxLength="6"
                                 value={otp}
                                 onChange={(e) => setOtp(e.target.value)}
-                                placeholder="0000"
-                                className="w-full bg-gray-50 border-2 border-gray-100 p-6 rounded-3xl text-center text-4xl font-black tracking-[0.5em] focus:border-brand focus:bg-white outline-none transition-all placeholder:text-gray-200"
+                                placeholder="000000"
+                                className="w-full bg-gray-50 border-2 border-gray-100 p-6 rounded-3xl text-center text-4xl font-black tracking-[0.3em] focus:border-brand focus:bg-white outline-none transition-all placeholder:text-gray-200"
                             />
                         </div>
 
                         <button
                             onClick={handleVerifyOtp}
-                            disabled={otp.length < 4 || loading}
+                            disabled={otp.length < 6 || loading}
                             className={`w-full py-5 rounded-2xl font-black text-lg transition-all flex items-center justify-center gap-2 shadow-xl ${
-                                otp.length === 4 
+                                otp.length === 6 
                                 ? 'bg-brand text-white shadow-brand/10 hover:bg-brand-hover' 
                                 : 'bg-gray-100 text-gray-300 cursor-not-allowed'
                             }`}
@@ -240,7 +267,7 @@ const Login = () => {
                         </button>
 
                         <button onClick={() => setStep(1)} className="w-full text-center text-gray-400 text-xs font-black uppercase tracking-widest hover:text-brand transition-colors">
-                            ¿Cambiar número?
+                            ¿Cambiar correo?
                         </button>
                     </div>
                 )}

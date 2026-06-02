@@ -28,6 +28,7 @@ export const AuthProvider = ({ children }) => {
     const logout = () => {
         setUser(null);
         localStorage.removeItem('pizzeria_user');
+        localStorage.removeItem('pizzeria_token');
     };
 
     return (
