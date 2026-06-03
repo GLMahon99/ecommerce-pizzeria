@@ -6,7 +6,7 @@ const Footer = () => {
     const { tenant } = useTenant();
 
     return (
-        <footer className="bg-white border-t border-gray-100 pt-16 pb-8">
+        <footer className="bg-gray-50 border-t border-gray-100 pt-16 pb-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
 
@@ -75,7 +75,7 @@ const Footer = () => {
                                     href={`https://wa.me/${tenant.whatsapp}`} 
                                     target="_blank" 
                                     rel="noopener noreferrer"
-                                    className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 hover:text-green-600 hover:bg-green-50 transition-all"
+                                    className="w-10 h-10 bg-white border border-gray-100 rounded-xl flex items-center justify-center text-gray-400 hover:text-green-600 hover:bg-green-50 hover:border-green-100 transition-all shadow-sm"
                                 >
                                     <Phone size={20} />
                                 </a>
@@ -85,7 +85,7 @@ const Footer = () => {
                                     href={tenant.instagram} 
                                     target="_blank" 
                                     rel="noopener noreferrer"
-                                    className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 hover:text-pink-600 hover:bg-pink-50 transition-all font-black"
+                                    className="w-10 h-10 bg-white border border-gray-100 rounded-xl flex items-center justify-center text-gray-400 hover:text-pink-600 hover:bg-pink-50 hover:border-pink-100 transition-all font-black shadow-sm"
                                 >
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
                                 </a>
@@ -95,7 +95,7 @@ const Footer = () => {
                                     href={tenant.facebook} 
                                     target="_blank" 
                                     rel="noopener noreferrer"
-                                    className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all"
+                                    className="w-10 h-10 bg-white border border-gray-100 rounded-xl flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-100 transition-all shadow-sm"
                                 >
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
                                 </a>
