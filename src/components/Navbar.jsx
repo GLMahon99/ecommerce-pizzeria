@@ -45,9 +45,14 @@ const Navbar = ({ onOpenCart }) => {
                                     <Store className="text-white" size={24} />
                                 </div>
                             )}
-                            <span className="text-2xl font-black text-brand-secondary tracking-tighter uppercase">
-                                {tenant?.nombre || 'A-COMMERR'}
-                            </span>
+                            <div className="flex flex-col">
+                                <span className="text-2xl font-black text-brand-secondary tracking-tighter uppercase leading-none">
+                                    {tenant?.nombre || 'A-COMMERR'}
+                                </span>
+                                <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest mt-0.5 self-start">
+                                    by A-COMMERR
+                                </span>
+                            </div>
                         </Link>
 
                         {/* Solo visible en Desktop - El toque local de Florida */}
