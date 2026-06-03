@@ -39,13 +39,6 @@ function App() {
     );
   }
 
-  // VALIDACIÓN GLOBAL DE USUARIO (BASES)
-  // Si no hay usuario y no estamos ya en la página de login, forzamos ir al login.
-  const isLoginPage = window.location.pathname.includes('/login');
-  if (!user && !isLoginPage && tenant) {
-     return <Navigate to={`/${tenant.slug}/login`} replace />;
-  }
-
   const toggleCart = () => setIsCartOpen(!isCartOpen);
 
   return (
@@ -56,13 +49,11 @@ function App() {
       <main className="flex-grow">
         <Routes>
           {/* ÚNICAS RUTAS VÁLIDAS: Todas requieren un :slug */}
-          <Route path="/:slug" element={<Home />} />
+          <Route path="/:slug" element={user ? <Home /> : <Navigate to={`/${tenant?.slug}/login`} replace />} />
           <Route path="/:slug/login" element={<Login />} />
-          <Route path="/:slug/checkout" element={<Checkout />} />
-          <Route path="/:slug/status/:result" element={<OrderStatus />} />
-          <Route path="/:slug/status/:result/:id" element={<OrderStatus />} />
-          
-          {/* Cualquier otra ruta que no coincida con lo anterior no mostrará nada o error */}
+          <Route path="/:slug/checkout" element={user ? <Checkout /> : <Navigate to={`/${tenant?.slug}/login`} replace />} />
+          <Route path="/:slug/status/:result" element={user ? <OrderStatus /> : <Navigate to={`/${tenant?.slug}/login`} replace />} />
+          <Route path="/:slug/status/:result/:id" element={user ? <OrderStatus /> : <Navigate to={`/${tenant?.slug}/login`} replace />} />
         </Routes>
       </main>
 
