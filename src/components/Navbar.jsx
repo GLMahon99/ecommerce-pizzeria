@@ -72,7 +72,7 @@ const Navbar = ({ onOpenCart }) => {
                     {/* CENTRO/DERECHA: Navegación Desktop */}
                     <div className="hidden md:flex items-center gap-8 font-bold text-sm text-gray-600 uppercase tracking-tight">
                         <Link to={`/${tenant?.slug}`} className="hover:text-brand transition-colors">Menú</Link>
-                        <a href="#contacto" className="hover:text-brand transition-colors">Contacto</a>
+                        <Link to={`/${tenant?.slug}/pedidos`} className="hover:text-brand transition-colors">Mis Pedidos</Link>
 
                         {/* Botón Carrito Desktop */}
                         <button
@@ -125,13 +125,13 @@ const Navbar = ({ onOpenCart }) => {
                     >
                         VER EL MENÚ
                     </Link>
-                    <a
-                        href="#contacto"
+                    <Link
+                        to={`/${tenant?.slug}/pedidos`}
                         className="block py-4 text-center font-bold text-lg text-gray-500 hover:text-brand transition-colors"
                         onClick={() => setIsMenuOpen(false)}
                     >
-                        Ubicación y Contacto
-                    </a>
+                        Mis Pedidos
+                    </Link>
 
                     <div className="pt-4 border-t border-gray-50 flex flex-col items-center gap-2">
                         {user && (

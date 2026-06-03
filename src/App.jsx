@@ -10,6 +10,7 @@ import Footer from './components/Footer'; // Si ya lo tenés, si no, lo comentá
 import Home from './pages/Home';
 import Checkout from './pages/Checkout';
 import OrderStatus from './pages/OrderStatus';
+import OrdersHistory from './pages/OrdersHistory';
 
 import { useAuth } from './context/AuthContext';
 import { useTenant } from './context/TenantContext'; // Importar Tenant
@@ -52,6 +53,7 @@ function App() {
           <Route path="/:slug" element={user ? <Home /> : <Navigate to={`/${tenant?.slug}/login`} replace />} />
           <Route path="/:slug/login" element={<Login />} />
           <Route path="/:slug/checkout" element={user ? <Checkout /> : <Navigate to={`/${tenant?.slug}/login`} replace />} />
+          <Route path="/:slug/pedidos" element={user ? <OrdersHistory /> : <Navigate to={`/${tenant?.slug}/login`} replace />} />
           <Route path="/:slug/status/:result" element={user ? <OrderStatus /> : <Navigate to={`/${tenant?.slug}/login`} replace />} />
           <Route path="/:slug/status/:result/:id" element={user ? <OrderStatus /> : <Navigate to={`/${tenant?.slug}/login`} replace />} />
         </Routes>
