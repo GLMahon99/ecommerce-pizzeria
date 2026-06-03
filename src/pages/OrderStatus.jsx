@@ -169,7 +169,9 @@ const OrderStatus = () => {
                     <div className="space-y-4 text-center">
                         <h4 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-4">¿Necesitás ayuda con tu pedido?</h4>
                         <a
-                            href="https://wa.me/tu-numero"
+                            href={`https://wa.me/${tenant?.whatsapp || ''}?text=${encodeURIComponent(
+                                `¡Hola! Quería consultar por mi pedido #${id || ''}`
+                            )}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="w-full flex items-center justify-center gap-3 bg-[#25D366] hover:bg-[#128C7E] text-white py-4 rounded-2xl font-black transition-all shadow-lg shadow-green-100 active:scale-95"
