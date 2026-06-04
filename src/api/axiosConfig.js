@@ -21,4 +21,25 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
+// Interceptor para manejar respuestas de error (ej. token JWT expirado o inválido)
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response && error.response.status === 401) {
+            // Limpiar credenciales del localStorage
+            localStorage.removeItem('pizzeria_token');
+            localStorage.removeItem('pizzeria_user');
+
+            const pathParts = window.location.pathname.split('/');
+            const slug = pathParts[1];
+
+            // Si hay un slug y no estamos ya en la página de login, redirigir
+            if (slug && !window.location.pathname.endsWith('/login')) {
+                window.location.href = `/${slug}/login`;
+            }
+        }
+        return Promise.reject(error);
+    }
+);
+
 export default api;
