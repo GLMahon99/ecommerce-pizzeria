@@ -26,7 +26,11 @@ const OrderStatus = () => {
         if (result === 'success' && cart.length > 0) {
             clearCart();
         }
-    }, [result, clearCart, cart.length]);
+        if (result === 'failure' && id) {
+            api.put(`/pedidos/${id}/estado`, { estado: 'Rechazado' })
+                .catch(err => console.error('Error al actualizar estado a Rechazado:', err));
+        }
+    }, [result, id, clearCart, cart.length]);
 
     useEffect(() => {
         if (!id) {
