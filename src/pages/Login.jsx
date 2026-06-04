@@ -13,6 +13,7 @@ import api from '../api/axiosConfig';
 import { useAuth } from '../context/AuthContext';
 import { useTenant } from '../context/TenantContext';
 import { useNavigate } from 'react-router-dom';
+import { parseAddress } from '../utils/formatters';
 
 const Login = () => {
     const { login } = useAuth();
@@ -27,6 +28,15 @@ const Login = () => {
         telefono: '',
         nombre: '',
         direccion: ''
+    });
+
+    const [addressFields, setAddressFields] = useState({
+        calle: '',
+        altura: '',
+        piso: '',
+        depto: '',
+        cp: '',
+        observaciones: ''
     });
     
     const [otp, setOtp] = useState('');
@@ -47,9 +57,10 @@ const Login = () => {
                         setFormData(prev => ({
                             ...prev,
                             nombre: clientRes.data.nombre,
-                            direccion: clientRes.data.direccion_principal || clientRes.data.direccion,
                             telefono: clientRes.data.telefono
                         }));
+                        const parsedAddr = parseAddress(clientRes.data.direccion_principal || clientRes.data.direccion);
+                        setAddressFields(parsedAddr);
                     }
                 } catch (clientErr) {
                     console.error('Error fetching client details:', clientErr);
@@ -72,10 +83,11 @@ const Login = () => {
         setLoading(true);
         setError('');
         try {
+            const serializedAddr = JSON.stringify(addressFields);
             await api.post('/auth/register', {
                 email: formData.email,
                 nombre: formData.nombre,
-                direccion_principal: formData.direccion,
+                direccion_principal: serializedAddr,
                 telefono: formData.telefono
             });
             setStep(3); // Ir a OTP
@@ -205,17 +217,80 @@ const Login = () => {
                                     />
                                 </div>
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Dirección de Entrega</label>
-                                <div className="relative">
-                                    <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300" size={20} />
-                                    <input
-                                        type="text"
-                                        required
-                                        className="w-full bg-gray-50 border-2 border-gray-100 p-5 pl-14 rounded-2xl focus:border-brand focus:bg-white outline-none transition-all font-bold"
-                                        value={formData.direccion}
-                                        onChange={(e) => setFormData({...formData, direccion: e.target.value})}
-                                    />
+                            <div className="space-y-4 border-t border-gray-100 pt-4">
+                                <p className="text-[10px] font-black text-brand uppercase tracking-widest mb-1 flex items-center gap-1">
+                                    <MapPin size={12} /> Dirección de Entrega
+                                </p>
+                                
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-1 col-span-2">
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Calle</label>
+                                        <input
+                                            type="text"
+                                            required
+                                            placeholder="Ej. Av. Siempreviva"
+                                            className="w-full bg-gray-50 border-2 border-gray-100 p-4 rounded-2xl focus:border-brand focus:bg-white outline-none transition-all font-bold text-sm"
+                                            value={addressFields.calle}
+                                            onChange={(e) => setAddressFields({...addressFields, calle: e.target.value})}
+                                        />
+                                    </div>
+                                    
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Altura / Nro</label>
+                                        <input
+                                            type="text"
+                                            required
+                                            placeholder="Ej. 742"
+                                            className="w-full bg-gray-50 border-2 border-gray-100 p-4 rounded-2xl focus:border-brand focus:bg-white outline-none transition-all font-bold text-sm"
+                                            value={addressFields.altura}
+                                            onChange={(e) => setAddressFields({...addressFields, altura: e.target.value})}
+                                        />
+                                    </div>
+
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Código Postal</label>
+                                        <input
+                                            type="text"
+                                            required
+                                            placeholder="Ej. 1602"
+                                            className="w-full bg-gray-50 border-2 border-gray-100 p-4 rounded-2xl focus:border-brand focus:bg-white outline-none transition-all font-bold text-sm"
+                                            value={addressFields.cp}
+                                            onChange={(e) => setAddressFields({...addressFields, cp: e.target.value})}
+                                        />
+                                    </div>
+
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Piso (Opcional)</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Ej. 3"
+                                            className="w-full bg-gray-50 border-2 border-gray-100 p-4 rounded-2xl focus:border-brand focus:bg-white outline-none transition-all font-bold text-sm"
+                                            value={addressFields.piso}
+                                            onChange={(e) => setAddressFields({...addressFields, piso: e.target.value})}
+                                        />
+                                    </div>
+
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Depto (Opcional)</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Ej. B"
+                                            className="w-full bg-gray-50 border-2 border-gray-100 p-4 rounded-2xl focus:border-brand focus:bg-white outline-none transition-all font-bold text-sm"
+                                            value={addressFields.depto}
+                                            onChange={(e) => setAddressFields({...addressFields, depto: e.target.value})}
+                                        />
+                                    </div>
+
+                                    <div className="space-y-1 col-span-2">
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Observaciones</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Ej. Portón de madera, timbre que no suena..."
+                                            className="w-full bg-gray-50 border-2 border-gray-100 p-4 rounded-2xl focus:border-brand focus:bg-white outline-none transition-all font-bold text-sm"
+                                            value={addressFields.observaciones}
+                                            onChange={(e) => setAddressFields({...addressFields, observaciones: e.target.value})}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>

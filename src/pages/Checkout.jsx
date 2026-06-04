@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import api from '../api/axiosConfig';
 import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
+import { parseAddress, formatAddress } from '../utils/formatters';
 
 const Checkout = () => {
     const { cart, total, clearCart } = useCart();
@@ -40,7 +41,20 @@ const Checkout = () => {
     
     // Estados para edición de dirección
     const [isEditingAddress, setIsEditingAddress] = useState(false);
-    const [newAddress, setNewAddress] = useState(user?.direccion || user?.direccion_principal || '');
+    const [addressFields, setAddressFields] = useState({
+        calle: '',
+        altura: '',
+        piso: '',
+        depto: '',
+        cp: '',
+        observaciones: ''
+    });
+
+    useEffect(() => {
+        if (user) {
+            setAddressFields(parseAddress(user.direccion_principal || user.direccion));
+        }
+    }, [user]);
 
     // 1. SI NO HAY USUARIO, REDIRIGIR AL LOGIN
     useEffect(() => {
@@ -57,11 +71,15 @@ const Checkout = () => {
     }, [cart, navigate, tenant]);
 
     const handleUpdateAddress = async () => {
-        if (!newAddress.trim()) return;
+        if (!addressFields.calle.trim() || !addressFields.altura.trim()) {
+            alert('Por favor ingresa al menos calle y altura.');
+            return;
+        }
         setLoading(true);
         try {
-            await api.put(`/clientes/${user.id_cliente}`, { direccion: newAddress });
-            updateUser({ direccion_principal: newAddress, direccion: newAddress });
+            const serializedAddr = JSON.stringify(addressFields);
+            await api.put(`/clientes/${user.id_cliente}`, { direccion: serializedAddr });
+            updateUser({ direccion_principal: serializedAddr, direccion: serializedAddr });
             setIsEditingAddress(false);
         } catch (error) {
             console.error('Error al actualizar dirección:', error);
@@ -151,34 +169,98 @@ const Checkout = () => {
                             <div className="bg-gray-50 p-5 rounded-3xl border border-gray-100 md:col-span-2 flex flex-col gap-2">
                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Direccion de Envio</p>
                                 {isEditingAddress ? (
-                                    <div className="flex gap-2">
-                                        <input 
-                                            type="text"
-                                            className="flex-1 bg-white border-2 border-brand/20 p-2 rounded-xl outline-none focus:border-brand font-bold text-brand-secondary"
-                                            value={newAddress}
-                                            onChange={(e) => setNewAddress(e.target.value)}
-                                            autoFocus
-                                        />
-                                        <button 
-                                            onClick={handleUpdateAddress}
-                                            disabled={loading}
-                                            className="bg-brand text-white px-4 py-2 rounded-xl font-black text-xs uppercase"
-                                        >
-                                            Guardar
-                                        </button>
-                                        <button 
-                                            onClick={() => setIsEditingAddress(false)}
-                                            className="bg-gray-200 text-gray-600 px-4 py-2 rounded-xl font-black text-xs uppercase"
-                                        >
-                                            X
-                                        </button>
+                                    <div className="flex flex-col gap-4 w-full">
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="col-span-2">
+                                                <label className="text-[9px] font-black text-gray-400 uppercase">Calle</label>
+                                                <input 
+                                                    type="text"
+                                                    className="w-full bg-white border-2 border-brand/20 p-3 rounded-xl outline-none focus:border-brand font-bold text-brand-secondary text-sm"
+                                                    placeholder="Ej. Av. Siempreviva"
+                                                    value={addressFields.calle}
+                                                    onChange={(e) => setAddressFields({...addressFields, calle: e.target.value})}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="text-[9px] font-black text-gray-400 uppercase">Altura / Nro</label>
+                                                <input 
+                                                    type="text"
+                                                    className="w-full bg-white border-2 border-brand/20 p-3 rounded-xl outline-none focus:border-brand font-bold text-brand-secondary text-sm"
+                                                    placeholder="Ej. 742"
+                                                    value={addressFields.altura}
+                                                    onChange={(e) => setAddressFields({...addressFields, altura: e.target.value})}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="text-[9px] font-black text-gray-400 uppercase">Código Postal</label>
+                                                <input 
+                                                    type="text"
+                                                    className="w-full bg-white border-2 border-brand/20 p-3 rounded-xl outline-none focus:border-brand font-bold text-brand-secondary text-sm"
+                                                    placeholder="Ej. 1602"
+                                                    value={addressFields.cp}
+                                                    onChange={(e) => setAddressFields({...addressFields, cp: e.target.value})}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="text-[9px] font-black text-gray-400 uppercase">Piso (Opcional)</label>
+                                                <input 
+                                                    type="text"
+                                                    className="w-full bg-white border-2 border-brand/20 p-3 rounded-xl outline-none focus:border-brand font-bold text-brand-secondary text-sm"
+                                                    placeholder="Ej. 3"
+                                                    value={addressFields.piso}
+                                                    onChange={(e) => setAddressFields({...addressFields, piso: e.target.value})}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="text-[9px] font-black text-gray-400 uppercase">Depto (Opcional)</label>
+                                                <input 
+                                                    type="text"
+                                                    className="w-full bg-white border-2 border-brand/20 p-3 rounded-xl outline-none focus:border-brand font-bold text-brand-secondary text-sm"
+                                                    placeholder="Ej. B"
+                                                    value={addressFields.depto}
+                                                    onChange={(e) => setAddressFields({...addressFields, depto: e.target.value})}
+                                                />
+                                            </div>
+                                            <div className="col-span-2">
+                                                <label className="text-[9px] font-black text-gray-400 uppercase">Observaciones</label>
+                                                <input 
+                                                    type="text"
+                                                    className="w-full bg-white border-2 border-brand/20 p-3 rounded-xl outline-none focus:border-brand font-bold text-brand-secondary text-sm"
+                                                    placeholder="Ej. Portón de madera, tocar timbre que no suena..."
+                                                    value={addressFields.observaciones}
+                                                    onChange={(e) => setAddressFields({...addressFields, observaciones: e.target.value})}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-2 justify-end">
+                                            <button 
+                                                onClick={handleUpdateAddress}
+                                                disabled={loading}
+                                                className="bg-brand text-white px-5 py-2.5 rounded-xl font-black text-xs uppercase shadow-md hover:bg-brand-hover active:scale-95 transition-all"
+                                            >
+                                                Guardar
+                                            </button>
+                                            <button 
+                                                onClick={() => {
+                                                    if (user) {
+                                                        setAddressFields(parseAddress(user.direccion_principal || user.direccion));
+                                                    }
+                                                    setIsEditingAddress(false);
+                                                }}
+                                                className="bg-gray-200 text-gray-600 px-5 py-2.5 rounded-xl font-black text-xs uppercase hover:bg-gray-300 transition-all active:scale-95"
+                                            >
+                                                Cancelar
+                                            </button>
+                                        </div>
                                     </div>
                                 ) : (
-                                    <div className="flex justify-between items-center">
-                                        <p className="font-bold text-brand-secondary">{user?.direccion || user?.direccion_principal}</p>
+                                    <div className="flex justify-between items-start gap-4 w-full">
+                                        <p className="font-bold text-brand-secondary text-base leading-relaxed">
+                                            {formatAddress(parseAddress(user?.direccion || user?.direccion_principal))}
+                                        </p>
                                         <button 
                                             onClick={() => setIsEditingAddress(true)}
-                                            className="text-brand font-bold text-xs uppercase tracking-widest hover:underline"
+                                            className="text-brand font-black text-xs uppercase tracking-widest hover:underline flex-shrink-0 pt-1"
                                         >
                                             Cambiar
                                         </button>
