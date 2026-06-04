@@ -29,22 +29,30 @@ const OrderStatus = () => {
     }, [result, clearCart, cart.length]);
 
     useEffect(() => {
-        if (id) {
-            const fetchOrder = async () => {
-                try {
-                    const response = await api.get(`/pedidos/${id}`);
-                    setOrderData(response.data);
-                    setStatus(response.data.estado.toLowerCase());
-                } catch (error) {
-                    console.error('Error al cargar pedido:', error);
-                } finally {
-                    setLoading(false);
-                }
-            };
-            fetchOrder();
-        } else {
+        if (!id) {
             setLoading(false);
+            return;
         }
+
+        const fetchOrder = async () => {
+            try {
+                const response = await api.get(`/pedidos/${id}`);
+                setOrderData(response.data);
+                setStatus(response.data.estado.toLowerCase());
+            } catch (error) {
+                console.error('Error al cargar pedido:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        // Carga inicial
+        fetchOrder();
+
+        // Polling cada 10 segundos
+        const interval = setInterval(fetchOrder, 10000);
+
+        return () => clearInterval(interval);
     }, [id]);
 
     const steps = [
