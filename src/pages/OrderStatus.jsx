@@ -129,83 +129,85 @@ const OrderStatus = () => {
             )}
 
             {/* Card Principal de Estado */}
-            <div className="bg-white rounded-[2.5rem] shadow-xl shadow-brand/20 border border-brand/10 overflow-hidden">
+            {result !== 'failure' && (
+                <div className="bg-white rounded-[2.5rem] shadow-xl shadow-brand/20 border border-brand/10 overflow-hidden">
 
-                {/* Header Animado */}
-                <div className="bg-brand p-10 text-center text-white relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
-                        <div className="grid grid-cols-6 gap-4 p-4">
-                            {[...Array(12)].map((_, i) => <UtensilsCrossed key={i} size={40} />)}
+                    {/* Header Animado */}
+                    <div className="bg-brand p-10 text-center text-white relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+                            <div className="grid grid-cols-6 gap-4 p-4">
+                                {[...Array(12)].map((_, i) => <UtensilsCrossed key={i} size={40} />)}
+                            </div>
+                        </div>
+
+                        <div className="relative z-10">
+                            <div className="bg-white/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-md">
+                                {currentStepIndex === 0 && <UtensilsCrossed size={32} className="animate-bounce" />}
+                                {currentStepIndex === 1 && (isTakeaway ? <MapPin size={32} className="animate-pulse" /> : <Bike size={32} className="animate-pulse" />)}
+                                {currentStepIndex === 2 && <CheckCircle2 size={32} />}
+                            </div>
+                            <h1 className="text-3xl font-black italic tracking-tighter uppercase mb-1">
+                                {steps[currentStepIndex].label}
+                            </h1>
+                            <p className="text-brand/80 text-sm font-medium">{steps[currentStepIndex].subtext}</p>
                         </div>
                     </div>
 
-                    <div className="relative z-10">
-                        <div className="bg-white/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-md">
-                            {currentStepIndex === 0 && <UtensilsCrossed size={32} className="animate-bounce" />}
-                            {currentStepIndex === 1 && (isTakeaway ? <MapPin size={32} className="animate-pulse" /> : <Bike size={32} className="animate-pulse" />)}
-                            {currentStepIndex === 2 && <CheckCircle2 size={32} />}
+                    {/* Tracker (Línea de tiempo) */}
+                    <div className="p-8 md:p-12">
+                        <div className="relative space-y-10">
+                            {/* Línea vertical de fondo */}
+                            <div className="absolute left-[19px] top-2 bottom-2 w-0.5 bg-gray-100" />
+
+                            {steps.map((step, index) => {
+                                const isCompleted = index <= currentStepIndex;
+                                const isCurrent = index === currentStepIndex;
+
+                                return (
+                                    <div key={step.id} className="flex items-start gap-6 relative">
+                                        <div className={`
+                                            z-10 w-10 h-10 rounded-full flex items-center justify-center border-4 transition-all duration-500
+                                            ${isCompleted ? 'bg-brand border-brand/20 text-white' : 'bg-white border-gray-100 text-gray-200'}
+                                            ${isCurrent ? 'ring-4 ring-orange-100 animate-pulse' : ''}
+                                        `}>
+                                            {step.icon}
+                                        </div>
+
+                                        <div className="flex-1 pt-1">
+                                            <h3 className={`font-black text-lg ${isCompleted ? 'text-brand-secondary' : 'text-gray-300'}`}>
+                                                {step.label}
+                                            </h3>
+                                            <p className={`text-sm font-bold ${isCurrent ? 'text-brand' : 'text-gray-400'}`}>
+                                                {step.subtext}
+                                            </p>
+                                        </div>
+                                    </div>
+                                );
+                            })}
                         </div>
-                        <h1 className="text-3xl font-black italic tracking-tighter uppercase mb-1">
-                            {steps[currentStepIndex].label}
-                        </h1>
-                        <p className="text-brand/80 text-sm font-medium">{steps[currentStepIndex].subtext}</p>
+
+                        <hr className="my-10 border-gray-100" />
+
+                        {/* Acciones de Ayuda */}
+                        <div className="space-y-4 text-center">
+                            <h4 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-4">¿Necesitás ayuda con tu pedido?</h4>
+                            <a
+                                href={`https://wa.me/${tenant?.whatsapp || ''}?text=${encodeURIComponent(
+                                    `¡Hola! Quería consultar por mi pedido #${id || ''}`
+                                )}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full flex items-center justify-center gap-3 bg-[#25D366] hover:bg-[#128C7E] text-white py-4 rounded-2xl font-black transition-all shadow-lg shadow-green-100 active:scale-95"
+                            >
+                                <MessageCircle size={22} fill="white" /> Contactanos por WhatsApp
+                            </a>
+                        </div>
                     </div>
                 </div>
-
-                {/* Tracker (Línea de tiempo) */}
-                <div className="p-8 md:p-12">
-                    <div className="relative space-y-10">
-                        {/* Línea vertical de fondo */}
-                        <div className="absolute left-[19px] top-2 bottom-2 w-0.5 bg-gray-100" />
-
-                        {steps.map((step, index) => {
-                            const isCompleted = index <= currentStepIndex;
-                            const isCurrent = index === currentStepIndex;
-
-                            return (
-                                <div key={step.id} className="flex items-start gap-6 relative">
-                                    <div className={`
-                                        z-10 w-10 h-10 rounded-full flex items-center justify-center border-4 transition-all duration-500
-                                        ${isCompleted ? 'bg-brand border-brand/20 text-white' : 'bg-white border-gray-100 text-gray-200'}
-                                        ${isCurrent ? 'ring-4 ring-orange-100 animate-pulse' : ''}
-                                    `}>
-                                        {step.icon}
-                                    </div>
-
-                                    <div className="flex-1 pt-1">
-                                        <h3 className={`font-black text-lg ${isCompleted ? 'text-brand-secondary' : 'text-gray-300'}`}>
-                                            {step.label}
-                                        </h3>
-                                        <p className={`text-sm font-bold ${isCurrent ? 'text-brand' : 'text-gray-400'}`}>
-                                            {step.subtext}
-                                        </p>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-
-                    <hr className="my-10 border-gray-100" />
-
-                    {/* Acciones de Ayuda */}
-                    <div className="space-y-4 text-center">
-                        <h4 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-4">¿Necesitás ayuda con tu pedido?</h4>
-                        <a
-                            href={`https://wa.me/${tenant?.whatsapp || ''}?text=${encodeURIComponent(
-                                `¡Hola! Quería consultar por mi pedido #${id || ''}`
-                            )}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="w-full flex items-center justify-center gap-3 bg-[#25D366] hover:bg-[#128C7E] text-white py-4 rounded-2xl font-black transition-all shadow-lg shadow-green-100 active:scale-95"
-                        >
-                            <MessageCircle size={22} fill="white" /> Contactanos por WhatsApp
-                        </a>
-                    </div>
-                </div>
-            </div>
+            )}
 
             {/* Resumen Dinámico del Pedido */}
-            {orderData && (
+            {result !== 'failure' && orderData && (
                 <div className="mt-8 bg-brand-secondary rounded-[2rem] p-8 text-white shadow-2xl relative overflow-hidden">
                     <div className="absolute top-0 right-0 p-8 opacity-10">
                         <ClipboardList size={80} />
