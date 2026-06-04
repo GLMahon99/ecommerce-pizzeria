@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 
 // Componentes
 import Navbar from './components/Navbar';
@@ -20,6 +20,8 @@ function App() {
   const { user, loading: authLoading } = useAuth();
   const { tenant, loading: tenantLoading, error: tenantError } = useTenant();
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const location = useLocation();
+  const isLoginPage = location.pathname.endsWith('/login');
 
   if (authLoading || tenantLoading) {
     return (
@@ -44,7 +46,7 @@ function App() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
-      <Navbar onOpenCart={toggleCart} />
+      {!isLoginPage && <Navbar onOpenCart={toggleCart} />}
       <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
 
       <main className="flex-grow">
@@ -59,7 +61,7 @@ function App() {
         </Routes>
       </main>
 
-      <Footer />
+      {!isLoginPage && <Footer />}
     </div>
   );
 }
