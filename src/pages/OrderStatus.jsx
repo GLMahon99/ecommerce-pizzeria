@@ -55,7 +55,13 @@ const OrderStatus = () => {
         return () => clearInterval(interval);
     }, [id]);
 
-    const steps = [
+    const isTakeaway = orderData?.metodo_entrega === 'takeaway';
+
+    const steps = isTakeaway ? [
+        { id: 'recibido', label: 'Pedido Recibido', icon: <CheckCircle2 size={20} />, subtext: 'Estamos preparando tu pedido' },
+        { id: 'listo para retirar', label: 'Listo para retirar', icon: <UtensilsCrossed size={20} />, subtext: '¡Ya podés pasar a retirarlo!' },
+        { id: 'entregado', label: '¡Retirado!', icon: <MapPin size={20} />, subtext: '¡Que lo disfrutes!' },
+    ] : [
         { id: 'recibido', label: 'Pedido Recibido', icon: <CheckCircle2 size={20} />, subtext: 'Estamos preparando su pedido' },
         { id: 'en camino', label: 'Repartidor en camino', icon: <Bike size={20} />, subtext: 'Tu pedido está viajando' },
         { id: 'entregado', label: '¡Entregado!', icon: <MapPin size={20} />, subtext: '¡Que lo disfrutes!' },
@@ -63,13 +69,21 @@ const OrderStatus = () => {
 
     // Mapeo simple de estados del backend a los steps visuales
     const getStepIndex = () => {
-        if (status.includes('recibido') || status.includes('pendiente') || status.includes('preparando')) return 0;
-        if (status.includes('camino')) return 1;
-        if (status.includes('entregado')) return 2;
-        return 0;
+        if (isTakeaway) {
+            if (status.includes('recibido') || status.includes('pendiente') || status.includes('preparando')) return 0;
+            if (status.includes('retirar') || status.includes('listo')) return 1;
+            if (status.includes('entregado')) return 2;
+            return 0;
+        } else {
+            if (status.includes('recibido') || status.includes('pendiente') || status.includes('preparando')) return 0;
+            if (status.includes('camino')) return 1;
+            if (status.includes('entregado')) return 2;
+            return 0;
+        }
     };
 
     const currentStepIndex = getStepIndex();
+
 
     if (loading) {
         return (
@@ -128,7 +142,7 @@ const OrderStatus = () => {
                     <div className="relative z-10">
                         <div className="bg-white/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-md">
                             {currentStepIndex === 0 && <UtensilsCrossed size={32} className="animate-bounce" />}
-                            {currentStepIndex === 1 && <Bike size={32} className="animate-pulse" />}
+                            {currentStepIndex === 1 && (isTakeaway ? <MapPin size={32} className="animate-pulse" /> : <Bike size={32} className="animate-pulse" />)}
                             {currentStepIndex === 2 && <CheckCircle2 size={32} />}
                         </div>
                         <h1 className="text-3xl font-black italic tracking-tighter uppercase mb-1">
