@@ -102,7 +102,8 @@ const OrdersHistory = () => {
             month: 'short',
             year: 'numeric',
             hour: '2-digit',
-            minute: '2-digit'
+            minute: '2-digit',
+            timeZone: 'America/Argentina/Buenos_Aires'
         }) + ' hs';
     };
 
