@@ -82,6 +82,18 @@ const Login = () => {
         e.preventDefault();
         setLoading(true);
         setError('');
+
+        // Validar Código Postal (client-side)
+        if (tenant?.codigos_postales) {
+            const allowedCps = tenant.codigos_postales.split(',').map(item => item.trim()).filter(Boolean);
+            const userCp = addressFields.cp.trim();
+            if (allowedCps.length > 0 && !allowedCps.includes(userCp)) {
+                setError(`Lo sentimos, no realizamos envíos a tu zona (CP ${userCp}). Realizamos envíos a: ${allowedCps.join(', ')}`);
+                setLoading(false);
+                return;
+            }
+        }
+
         try {
             const serializedAddr = JSON.stringify(addressFields);
             await api.post('/auth/register', {
@@ -248,14 +260,14 @@ const Login = () => {
                                     </div>
 
                                     <div className="space-y-1">
-                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Código Postal</label>
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Código Postal (solo número)</label>
                                         <input
                                             type="text"
                                             required
                                             placeholder="Ej. 1602"
                                             className="w-full bg-gray-50 border-2 border-gray-100 p-4 rounded-2xl focus:border-brand focus:bg-white outline-none transition-all font-bold text-sm"
                                             value={addressFields.cp}
-                                            onChange={(e) => setAddressFields({...addressFields, cp: e.target.value})}
+                                            onChange={(e) => setAddressFields({...addressFields, cp: e.target.value.replace(/\D/g, '')})}
                                         />
                                     </div>
 
