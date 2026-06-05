@@ -46,6 +46,17 @@ export const TenantProvider = ({ children }) => {
 
                 if (config.nombre) document.title = config.nombre;
 
+                if (config.logo_url) {
+                    let link = document.querySelector("link[rel~='icon']");
+                    if (!link) {
+                        link = document.createElement('link');
+                        link.rel = 'icon';
+                        document.head.appendChild(link);
+                    }
+                    link.href = config.logo_url;
+                    link.type = config.logo_url.toLowerCase().endsWith('.svg') ? 'image/svg+xml' : 'image/png';
+                }
+
                 setLoading(false);
             } catch (err) {
                 console.error('Error identificando pizzería:', err);
