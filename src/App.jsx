@@ -15,6 +15,7 @@ import OrdersHistory from './pages/OrdersHistory';
 import { useAuth } from './context/AuthContext';
 import { useTenant } from './context/TenantContext'; // Importar Tenant
 import Login from './pages/Login';
+import Terms from './pages/Terms';
 
 function App() {
   const { user, loading: authLoading } = useAuth();
@@ -58,6 +59,7 @@ function App() {
           <Route path="/:slug/pedidos" element={user ? <OrdersHistory /> : <Navigate to={`/${tenant?.slug}/login`} replace />} />
           <Route path="/:slug/status/:result" element={user ? <OrderStatus /> : <Navigate to={`/${tenant?.slug}/login`} replace />} />
           <Route path="/:slug/status/:result/:id" element={user ? <OrderStatus /> : <Navigate to={`/${tenant?.slug}/login`} replace />} />
+          <Route path="/:slug/terminos" element={<Terms />} />
         </Routes>
       </main>
 

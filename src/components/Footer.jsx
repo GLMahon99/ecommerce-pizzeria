@@ -107,6 +107,9 @@ const Footer = () => {
                 {/* Créditos Finales */}
                 <div className="border-t border-gray-50 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-gray-400 font-black uppercase tracking-widest">
                     <p>© 2026 {tenant?.nombre?.toUpperCase() || 'A-COMMERR'} - TODOS LOS DERECHOS RESERVADOS</p>
+                    <Link to={`/${tenant?.slug || ''}/terminos`} className="hover:text-brand transition-colors">
+                        Términos y Condiciones
+                    </Link>
                     <div className="flex items-center gap-1.5 text-gray-400">
                         <span>POTENCIADO POR</span>
                         <span className="text-brand font-black tracking-tighter text-xs bg-brand/5 px-2.5 py-1 rounded-xl border border-brand/10">A-COMMERR</span>
