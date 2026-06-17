@@ -47,7 +47,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
                         cart.map((item) => (
                             <div key={item.cartItemId || item.id_producto} className="flex gap-4">
                                 <div className="w-20 h-20 bg-gray-100 rounded-2xl overflow-hidden shrink-0">
-                                    <img src={item.imagen_url} alt={item.nombre} className="w-full h-full object-cover" />
+                                    <img src={item.img || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=500'} alt={item.nombre} className="w-full h-full object-cover" />
                                 </div>
 
                                 <div className="flex-1 flex flex-col justify-between">
