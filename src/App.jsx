@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 
 // Componentes
@@ -18,11 +18,19 @@ import Login from './pages/Login';
 import Terms from './pages/Terms';
 
 function App() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, logout, loading: authLoading } = useAuth();
   const { tenant, loading: tenantLoading, error: tenantError } = useTenant();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const location = useLocation();
   const isLoginPage = location.pathname.endsWith('/login');
+
+  // Forzar deslogueo automático si el usuario pertenece a otra pizzería (tenant)
+  useEffect(() => {
+    if (user && tenant && user.empresa_id !== tenant.id) {
+      console.warn('Sesión de otra tienda detectada. Deslogueando automáticamente...');
+      logout();
+    }
+  }, [user, tenant, logout]);
 
   if (authLoading || tenantLoading) {
     return (

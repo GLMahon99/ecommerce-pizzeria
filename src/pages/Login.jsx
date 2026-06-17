@@ -50,25 +50,11 @@ const Login = () => {
             const response = await api.post('/auth/check-email', { email: formData.email });
             
             if (response.data.status === 'registered') {
-                // Cliente existe
-                try {
-                    const clientRes = await api.get(`/clientes/buscar?email=${formData.email}`);
-                    if (clientRes.data) {
-                        setFormData(prev => ({
-                            ...prev,
-                            nombre: clientRes.data.nombre,
-                            telefono: clientRes.data.telefono
-                        }));
-                        const parsedAddr = parseAddress(clientRes.data.direccion_principal || clientRes.data.direccion);
-                        setAddressFields(parsedAddr);
-                    }
-                } catch (clientErr) {
-                    console.error('Error fetching client details:', clientErr);
-                }
-                setStep(3); // Ir directo a OTP
+                // Cliente existe: ir directo a la verificación OTP
+                setStep(3);
             } else {
-                // Cliente nuevo
-                setStep(2); // Ir a registro
+                // Cliente nuevo: ir al formulario de registro
+                setStep(2);
             }
         } catch (err) {
             console.error(err);
