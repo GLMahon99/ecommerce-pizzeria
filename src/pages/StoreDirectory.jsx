@@ -36,7 +36,7 @@ const StoreDirectory = () => {
         return (
             <div className="min-h-screen bg-gray-50">
                 {/* Header Skeleton */}
-                <div className="bg-[#FAF7F2] py-20 px-4 animate-pulse text-center flex flex-col items-center">
+                <div className="bg-[#FFF3E0] py-20 px-4 animate-pulse text-center flex flex-col items-center">
                     <div className="h-6 w-32 bg-gray-200 rounded-full mb-6"></div>
                     <div className="h-16 w-48 bg-gray-200 rounded-lg mb-6"></div>
                     <div className="h-12 max-w-md w-full bg-gray-200 rounded-2xl mt-8"></div>
@@ -83,7 +83,7 @@ const StoreDirectory = () => {
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
             {/* Hero Header */}
-            <div className="bg-[#FAF7F2] text-[#2C2520] py-20 px-4 sm:px-6 lg:px-8 text-center relative overflow-hidden border-b border-orange-100/50">
+            <div className="bg-[#FFF3E0] text-[#2C2520] py-20 px-4 sm:px-6 lg:px-8 text-center relative overflow-hidden border-b border-orange-100/50">
                 {/* Fondo de patrón gastronómico/cálido sutil */}
                 <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#d97706_1px,transparent_1px)] [background-size:20px_20px]"></div>
                 
