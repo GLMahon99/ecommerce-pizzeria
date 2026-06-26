@@ -16,6 +16,7 @@ import { useAuth } from './context/AuthContext';
 import { useTenant } from './context/TenantContext'; // Importar Tenant
 import Login from './pages/Login';
 import Terms from './pages/Terms';
+import StoreDirectory from './pages/StoreDirectory';
 
 function App() {
   const { user, logout, loading: authLoading } = useAuth();
@@ -23,6 +24,7 @@ function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const location = useLocation();
   const isLoginPage = location.pathname.endsWith('/login');
+  const isDirectoryPage = location.pathname === '/';
 
   // Forzar deslogueo automático si el usuario pertenece a otra pizzería (tenant)
   useEffect(() => {
@@ -55,11 +57,12 @@ function App() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
-      {!isLoginPage && <Navbar onOpenCart={toggleCart} />}
-      <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      {!isLoginPage && !isDirectoryPage && <Navbar onOpenCart={toggleCart} />}
+      {!isDirectoryPage && <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />}
 
       <main className="flex-grow">
         <Routes>
+          <Route path="/" element={<StoreDirectory />} />
           {/* ÚNICAS RUTAS VÁLIDAS: Todas requieren un :slug */}
           <Route path="/:slug" element={user ? <Home /> : <Navigate to={`/${tenant?.slug}/login`} replace />} />
           <Route path="/:slug/login" element={<Login />} />
@@ -71,7 +74,7 @@ function App() {
         </Routes>
       </main>
 
-      {!isLoginPage && <Footer />}
+      {!isLoginPage && !isDirectoryPage && <Footer />}
     </div>
   );
 }

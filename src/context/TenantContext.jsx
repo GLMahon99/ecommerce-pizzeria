@@ -16,7 +16,8 @@ export const TenantProvider = ({ children }) => {
                 const slug = pathParts[1]; // El primer segmento tras el dominio
 
                 if (!slug) {
-                    setError('Acceso denegado. Se requiere una identificación de pizzería válida.');
+                    setTenant(null);
+                    setError(null);
                     setLoading(false);
                     return;
                 }
