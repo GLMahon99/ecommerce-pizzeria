@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect, useContext } from 'react';
+import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 
 const TenantContext = createContext();
@@ -7,12 +8,13 @@ export const TenantProvider = ({ children }) => {
     const [tenant, setTenant] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const location = useLocation();
 
     useEffect(() => {
         const fetchTenantConfig = async () => {
             try {
                 // Obtenemos el slug de la URL (ej: /la-nona/productos -> la-nona)
-                const pathParts = window.location.pathname.split('/');
+                const pathParts = location.pathname.split('/');
                 const slug = pathParts[1]; // El primer segmento tras el dominio
 
                 if (!slug) {
@@ -67,7 +69,7 @@ export const TenantProvider = ({ children }) => {
         };
 
         fetchTenantConfig();
-    }, [window.location.pathname]); // SE RECARGA SI CAMBIA LA URL
+    }, [location.pathname]); // SE RECARGA SI CAMBIA LA URL
 
     return (
         <TenantContext.Provider value={{ tenant, loading, error }}>

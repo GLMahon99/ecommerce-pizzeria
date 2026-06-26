@@ -36,10 +36,10 @@ const StoreDirectory = () => {
         return (
             <div className="min-h-screen bg-gray-50">
                 {/* Header Skeleton */}
-                <div className="bg-gray-900 py-16 px-4 animate-pulse text-center">
-                    <div className="h-6 w-32 bg-gray-800 rounded-full mx-auto mb-4"></div>
-                    <div className="h-10 w-64 bg-gray-800 rounded-lg mx-auto mb-4"></div>
-                    <div className="h-12 max-w-md bg-gray-800 rounded-2xl mx-auto mt-8"></div>
+                <div className="bg-[#FAF7F2] py-20 px-4 animate-pulse text-center flex flex-col items-center">
+                    <div className="h-6 w-32 bg-gray-200 rounded-full mb-6"></div>
+                    <div className="h-16 w-48 bg-gray-200 rounded-lg mb-6"></div>
+                    <div className="h-12 max-w-md w-full bg-gray-200 rounded-2xl mt-8"></div>
                 </div>
 
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -83,30 +83,34 @@ const StoreDirectory = () => {
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
             {/* Hero Header */}
-            <div className="bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white py-20 px-4 sm:px-6 lg:px-8 text-center relative overflow-hidden border-b border-gray-850">
-                {/* Fondo de patrón sutil */}
-                <div className="absolute inset-0 opacity-5 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+            <div className="bg-[#FAF7F2] text-[#2C2520] py-20 px-4 sm:px-6 lg:px-8 text-center relative overflow-hidden border-b border-orange-100/50">
+                {/* Fondo de patrón gastronómico/cálido sutil */}
+                <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#d97706_1px,transparent_1px)] [background-size:20px_20px]"></div>
                 
                 <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center">
-                    <span className="bg-white/10 text-gray-300 text-[9px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full border border-white/5">
+                    <span className="bg-[#EADFC9]/50 text-[#8C6D3E] text-[9px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full border border-[#DCD0B4] mb-6">
                         Portal de Tiendas
                     </span>
-                    <h1 className="text-4xl sm:text-6xl font-black uppercase tracking-tighter mt-6 mb-4">
-                        A-COMMERR <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Stores</span>
-                    </h1>
-                    <p className="text-gray-400 font-medium text-xs sm:text-sm max-w-md mx-auto">
+                    
+                    <img 
+                        src="/logo-acommerr.png" 
+                        alt="A-COMMERR" 
+                        className="h-16 sm:h-20 w-auto object-contain drop-shadow-sm mb-6 filter brightness-95" 
+                    />
+                    
+                    <p className="text-[#6D6257] font-bold text-xs sm:text-sm max-w-md mx-auto leading-relaxed">
                         Elegí tu sucursal favorita, ordená online en minutos y disfrutá de la mejor experiencia gastronómica.
                     </p>
 
                     {/* Buscador */}
                     <div className="mt-8 w-full max-w-md relative group">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-400 transition-colors" size={18} />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#8C6D3E] transition-colors" size={18} />
                         <input
                             type="text"
                             placeholder="Buscar por nombre o ciudad..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="w-full pl-11 pr-4 py-3.5 bg-white/5 hover:bg-white/10 focus:bg-white text-white focus:text-gray-900 rounded-2xl border border-white/15 focus:border-white transition-all outline-none font-bold text-xs tracking-wide shadow-2xl backdrop-blur-md"
+                            className="w-full pl-11 pr-4 py-3.5 bg-white hover:bg-gray-50 focus:bg-white text-gray-800 rounded-2xl border border-gray-200 focus:border-[#8C6D3E] transition-all outline-none font-bold text-xs tracking-wide shadow-md"
                         />
                     </div>
                 </div>

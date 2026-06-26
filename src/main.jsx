@@ -9,14 +9,14 @@ import { TenantProvider } from './context/TenantContext'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <TenantProvider>
-      <AuthProvider>
-        <CartProvider>
-          <BrowserRouter>
+    <BrowserRouter>
+      <TenantProvider>
+        <AuthProvider>
+          <CartProvider>
             <App />
-          </BrowserRouter>
-        </CartProvider>
-      </AuthProvider>
-    </TenantProvider>
+          </CartProvider>
+        </AuthProvider>
+      </TenantProvider>
+    </BrowserRouter>
   </React.StrictMode>,
 )
