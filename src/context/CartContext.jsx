@@ -1,12 +1,23 @@
-import { createContext, useState, useContext, useEffect, useCallback } from 'react';
+import { createContext, useState, useContext, useEffect, useCallback, useRef } from 'react';
+import { useTenant } from './TenantContext';
 
 const CartContext = createContext();
 
+const getSlugFromPath = () => {
+    const pathParts = window.location.pathname.split('/');
+    return pathParts[1] || 'default';
+};
+
 export const CartProvider = ({ children }) => {
+    const { tenant } = useTenant();
+    const slug = tenant?.slug || getSlugFromPath();
+    const cartKey = `pizza_cart_${slug}`;
+    const activeSlugRef = useRef(slug);
+
     // Estado inicial: intentamos cargar del LocalStorage o empezamos con array vacío
     const [cart, setCart] = useState(() => {
         try {
-            const savedCart = localStorage.getItem('pizza_cart');
+            const savedCart = localStorage.getItem(cartKey);
             const parsed = savedCart ? JSON.parse(savedCart) : [];
             return Array.isArray(parsed) ? parsed : [];
         } catch (e) {
@@ -14,10 +25,24 @@ export const CartProvider = ({ children }) => {
         }
     });
 
-    // Cada vez que el carrito cambie, lo guardamos en el storage (Persistencia)
+    // Cargar el carrito correspondiente cuando cambia la tienda (slug)
     useEffect(() => {
-        localStorage.setItem('pizza_cart', JSON.stringify(cart));
-    }, [cart]);
+        try {
+            const savedCart = localStorage.getItem(cartKey);
+            const parsed = savedCart ? JSON.parse(savedCart) : [];
+            setCart(Array.isArray(parsed) ? parsed : []);
+        } catch (e) {
+            setCart([]);
+        }
+        activeSlugRef.current = slug;
+    }, [cartKey, slug]);
+
+    // Cada vez que el carrito cambie, lo guardamos en el storage de la tienda activa
+    useEffect(() => {
+        if (activeSlugRef.current === slug) {
+            localStorage.setItem(cartKey, JSON.stringify(cart));
+        }
+    }, [cart, cartKey, slug]);
 
     // Función para agregar o incrementar cantidad
     const addToCart = (product) => {
