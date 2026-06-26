@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { Search, MapPin, Clock, ArrowRight, Store } from 'lucide-react';
+import { Search, MapPin, Clock, ArrowRight, Store, Pizza, CupSoda, Utensils, Coffee, Croissant, Cake } from 'lucide-react';
 
 const StoreDirectory = () => {
     const [companies, setCompanies] = useState([]);
@@ -86,6 +86,25 @@ const StoreDirectory = () => {
             <div className="bg-[#FAF7F2] text-[#2C2520] py-20 px-4 sm:px-6 lg:px-8 text-center relative overflow-hidden border-b border-orange-100/50">
                 {/* Fondo de patrón gastronómico/cálido sutil */}
                 <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#d97706_1px,transparent_1px)] [background-size:20px_20px]"></div>
+                
+                {/* Iconos de alimentos intercalados en blanco con opacidad */}
+                <div className="absolute inset-0 pointer-events-none select-none overflow-hidden opacity-45">
+                    {/* Izquierda */}
+                    <Pizza size={40} className="absolute text-white top-8 left-[5%] rotate-12" />
+                    <CupSoda size={32} className="absolute text-white top-28 left-[18%] -rotate-12 hidden md:block" />
+                    <Utensils size={36} className="absolute text-white bottom-8 left-[4%] rotate-45 hidden sm:block" />
+                    <Coffee size={28} className="absolute text-white bottom-24 left-[15%] -rotate-45 hidden lg:block" />
+
+                    {/* Centro */}
+                    <Croissant size={32} className="absolute text-white top-6 left-[35%] rotate-45 hidden xl:block" />
+                    <Cake size={28} className="absolute text-white bottom-6 left-[55%] -rotate-12 hidden xl:block" />
+
+                    {/* Derecha */}
+                    <Pizza size={36} className="absolute text-white top-12 right-[5%] -rotate-12" />
+                    <CupSoda size={40} className="absolute text-white top-28 right-[18%] rotate-12 hidden md:block" />
+                    <Utensils size={32} className="absolute text-white bottom-12 right-[4%] -rotate-45 hidden sm:block" />
+                    <Coffee size={36} className="absolute text-white bottom-28 right-[16%] rotate-45 hidden lg:block" />
+                </div>
                 
                 <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center">
                     <span className="bg-[#EADFC9]/50 text-[#8C6D3E] text-[9px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full border border-[#DCD0B4] mb-6">
