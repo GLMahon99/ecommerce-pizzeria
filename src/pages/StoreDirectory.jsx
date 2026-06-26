@@ -36,7 +36,7 @@ const StoreDirectory = () => {
         return (
             <div className="min-h-screen bg-gray-50">
                 {/* Header Skeleton */}
-                <div className="bg-[#FFF3E0] py-20 px-4 animate-pulse text-center flex flex-col items-center">
+                <div className="bg-[#FFE0B2] py-20 px-4 animate-pulse text-center flex flex-col items-center">
                     <div className="h-6 w-32 bg-gray-200 rounded-full mb-6"></div>
                     <div className="h-16 w-48 bg-gray-200 rounded-lg mb-6"></div>
                     <div className="h-12 max-w-md w-full bg-gray-200 rounded-2xl mt-8"></div>
@@ -79,16 +79,15 @@ const StoreDirectory = () => {
             </div>
         );
     }
-
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
             {/* Hero Header */}
-            <div className="bg-[#FFF3E0] text-[#2C2520] py-20 px-4 sm:px-6 lg:px-8 text-center relative overflow-hidden border-b border-orange-100/50">
+            <div className="bg-[#FFE0B2] text-[#2C2520] py-20 px-4 sm:px-6 lg:px-8 text-center relative overflow-hidden border-b border-orange-200/50">
                 {/* Fondo de patrón gastronómico/cálido sutil */}
                 <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#d97706_1px,transparent_1px)] [background-size:20px_20px]"></div>
                 
                 {/* Iconos de alimentos intercalados en blanco con opacidad */}
-                <div className="absolute inset-0 pointer-events-none select-none overflow-hidden opacity-45">
+                <div className="absolute inset-0 pointer-events-none select-none overflow-hidden opacity-80">
                     {/* Izquierda */}
                     <Pizza size={40} className="absolute text-white top-8 left-[5%] rotate-12" />
                     <CupSoda size={32} className="absolute text-white top-28 left-[18%] -rotate-12 hidden md:block" />
