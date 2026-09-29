@@ -25,6 +25,9 @@ function App() {
   const location = useLocation();
   const isLoginPage = location.pathname.endsWith('/login');
   const isDirectoryPage = location.pathname === '/';
+  const urlSlug = location.pathname.split('/')[1];
+  // Al navegar desde el directorio, el tenant aún es el anterior (o null) hasta que carga el nuevo
+  const tenantPending = !!urlSlug && tenant?.slug !== urlSlug && !tenantError;
 
   // Forzar deslogueo automático si el usuario pertenece a otra pizzería (tenant)
   useEffect(() => {
@@ -34,7 +37,7 @@ function App() {
     }
   }, [user, tenant, logout]);
 
-  if (authLoading || tenantLoading) {
+  if (authLoading || tenantLoading || tenantPending) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 uppercase tracking-[0.3em] font-black text-xs text-brand">
         <div className="w-12 h-12 border-4 border-brand border-t-transparent rounded-full animate-spin mr-4"></div>
@@ -64,12 +67,12 @@ function App() {
         <Routes>
           <Route path="/" element={<StoreDirectory />} />
           {/* ÚNICAS RUTAS VÁLIDAS: Todas requieren un :slug */}
-          <Route path="/:slug" element={user ? <Home /> : <Navigate to={`/${tenant?.slug}/login`} replace />} />
+          <Route path="/:slug" element={user ? <Home /> : <Navigate to={`/${urlSlug}/login`} replace />} />
           <Route path="/:slug/login" element={<Login />} />
-          <Route path="/:slug/checkout" element={user ? <Checkout /> : <Navigate to={`/${tenant?.slug}/login`} replace />} />
-          <Route path="/:slug/pedidos" element={user ? <OrdersHistory /> : <Navigate to={`/${tenant?.slug}/login`} replace />} />
-          <Route path="/:slug/status/:result" element={user ? <OrderStatus /> : <Navigate to={`/${tenant?.slug}/login`} replace />} />
-          <Route path="/:slug/status/:result/:id" element={user ? <OrderStatus /> : <Navigate to={`/${tenant?.slug}/login`} replace />} />
+          <Route path="/:slug/checkout" element={user ? <Checkout /> : <Navigate to={`/${urlSlug}/login`} replace />} />
+          <Route path="/:slug/pedidos" element={user ? <OrdersHistory /> : <Navigate to={`/${urlSlug}/login`} replace />} />
+          <Route path="/:slug/status/:result" element={user ? <OrderStatus /> : <Navigate to={`/${urlSlug}/login`} replace />} />
+          <Route path="/:slug/status/:result/:id" element={user ? <OrderStatus /> : <Navigate to={`/${urlSlug}/login`} replace />} />
           <Route path="/:slug/terminos" element={<Terms />} />
         </Routes>
       </main>
