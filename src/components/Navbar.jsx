@@ -1,13 +1,11 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { useAuth } from '../context/AuthContext';
 import { useTenant } from '../context/TenantContext'; // Importar Tenant
-import { ShoppingCart, Store, Menu, X, MapPin, User as UserIcon } from 'lucide-react';
+import { ShoppingCart, Store, Menu, X, MapPin } from 'lucide-react';
 
 const Navbar = ({ onOpenCart }) => {
     const { itemCount } = useCart();
-    const { user } = useAuth();
     const { tenant } = useTenant(); // Obtener los datos de la pizzería
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -61,11 +59,6 @@ const Navbar = ({ onOpenCart }) => {
                                 <MapPin size={10} className="text-brand" />
                                 {tenant?.direccion ? `${tenant.direccion}${tenant.ciudad ? `, ${tenant.ciudad}` : ''}` : 'Florida, Vicente López'}
                             </div>
-                            {user && (
-                                <p className="text-[11px] font-black text-brand-secondary uppercase tracking-tight ml-2">
-                                    Hola, <span className="text-brand">{user?.nombre?.split(' ')[0]}</span>
-                                </p>
-                            )}
                         </div>
                     </div>
 
@@ -134,12 +127,6 @@ const Navbar = ({ onOpenCart }) => {
                     </Link>
 
                     <div className="pt-4 border-t border-gray-50 flex flex-col items-center gap-2">
-                        {user && (
-                            <div className="flex items-center gap-2 mb-2 bg-gray-50 px-4 py-2 rounded-2xl">
-                                <UserIcon size={16} className="text-brand" />
-                                <span className="text-sm font-black text-brand-secondary uppercase">Hola, {user.nombre}</span>
-                            </div>
-                        )}
                         <p className="text-[10px] text-gray-300 font-black uppercase tracking-widest text-center">{tenant?.horarios_atencion || 'Lunes a Domingo'}</p>
                     </div>
                 </div>

@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { useState } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
 
 // Componentes
 import Navbar from './components/Navbar';
@@ -12,32 +12,20 @@ import Checkout from './pages/Checkout';
 import OrderStatus from './pages/OrderStatus';
 import OrdersHistory from './pages/OrdersHistory';
 
-import { useAuth } from './context/AuthContext';
 import { useTenant } from './context/TenantContext'; // Importar Tenant
-import Login from './pages/Login';
 import Terms from './pages/Terms';
 import StoreDirectory from './pages/StoreDirectory';
 
 function App() {
-  const { user, logout, loading: authLoading } = useAuth();
   const { tenant, loading: tenantLoading, error: tenantError } = useTenant();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const location = useLocation();
-  const isLoginPage = location.pathname.endsWith('/login');
   const isDirectoryPage = location.pathname === '/';
   const urlSlug = location.pathname.split('/')[1];
   // Al navegar desde el directorio, el tenant aún es el anterior (o null) hasta que carga el nuevo
   const tenantPending = !!urlSlug && tenant?.slug !== urlSlug && !tenantError;
 
-  // Forzar deslogueo automático si el usuario pertenece a otra pizzería (tenant)
-  useEffect(() => {
-    if (user && tenant && user.empresa_id !== tenant.id) {
-      console.warn('Sesión de otra tienda detectada. Deslogueando automáticamente...');
-      logout();
-    }
-  }, [user, tenant, logout]);
-
-  if (authLoading || tenantLoading || tenantPending) {
+  if (tenantLoading || tenantPending) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 uppercase tracking-[0.3em] font-black text-xs text-brand">
         <div className="w-12 h-12 border-4 border-brand border-t-transparent rounded-full animate-spin mr-4"></div>
@@ -60,24 +48,23 @@ function App() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
-      {!isLoginPage && !isDirectoryPage && <Navbar onOpenCart={toggleCart} />}
+      {!isDirectoryPage && <Navbar onOpenCart={toggleCart} />}
       {!isDirectoryPage && <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />}
 
       <main className="flex-grow">
         <Routes>
           <Route path="/" element={<StoreDirectory />} />
           {/* ÚNICAS RUTAS VÁLIDAS: Todas requieren un :slug */}
-          <Route path="/:slug" element={user ? <Home /> : <Navigate to={`/${urlSlug}/login`} replace />} />
-          <Route path="/:slug/login" element={<Login />} />
-          <Route path="/:slug/checkout" element={user ? <Checkout /> : <Navigate to={`/${urlSlug}/login`} replace />} />
-          <Route path="/:slug/pedidos" element={user ? <OrdersHistory /> : <Navigate to={`/${urlSlug}/login`} replace />} />
-          <Route path="/:slug/status/:result" element={user ? <OrderStatus /> : <Navigate to={`/${urlSlug}/login`} replace />} />
-          <Route path="/:slug/status/:result/:id" element={user ? <OrderStatus /> : <Navigate to={`/${urlSlug}/login`} replace />} />
+          <Route path="/:slug" element={<Home />} />
+          <Route path="/:slug/checkout" element={<Checkout />} />
+          <Route path="/:slug/pedidos" element={<OrdersHistory />} />
+          <Route path="/:slug/status/:result" element={<OrderStatus />} />
+          <Route path="/:slug/status/:result/:token" element={<OrderStatus />} />
           <Route path="/:slug/terminos" element={<Terms />} />
         </Routes>
       </main>
 
-      {!isLoginPage && !isDirectoryPage && <Footer />}
+      {!isDirectoryPage && <Footer />}
     </div>
   );
 }

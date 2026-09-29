@@ -15,7 +15,7 @@ import { useCart } from '../context/CartContext';
 import { useTenant } from '../context/TenantContext'; // Importar Tenant
 
 const OrderStatus = () => {
-    const { result, id } = useParams();
+    const { result, token } = useParams();
     const { clearCart, cart } = useCart();
     const { tenant } = useTenant(); // Obtener datos del tenant
     const [status, setStatus] = useState('recibido'); 
@@ -26,21 +26,21 @@ const OrderStatus = () => {
         if (result === 'success' && cart.length > 0) {
             clearCart();
         }
-        if (result === 'failure' && id) {
-            api.put(`/pedidos/${id}/estado`, { estado: 'Rechazado' })
+        if (result === 'failure' && token) {
+            api.post(`/pedidos/seguimiento/${token}/rechazar`)
                 .catch(err => console.error('Error al actualizar estado a Rechazado:', err));
         }
-    }, [result, id, clearCart, cart.length]);
+    }, [result, token, clearCart, cart.length]);
 
     useEffect(() => {
-        if (!id) {
+        if (!token) {
             setLoading(false);
             return;
         }
 
         const fetchOrder = async () => {
             try {
-                const response = await api.get(`/pedidos/${id}`);
+                const response = await api.get(`/pedidos/seguimiento/${token}`);
                 setOrderData(response.data);
                 setStatus(response.data.estado.toLowerCase());
             } catch (error) {
@@ -57,7 +57,7 @@ const OrderStatus = () => {
         const interval = setInterval(fetchOrder, 10000);
 
         return () => clearInterval(interval);
-    }, [id]);
+    }, [token]);
 
     const isTakeaway = orderData?.metodo_entrega === 'takeaway';
 
@@ -197,7 +197,7 @@ const OrderStatus = () => {
                             <h4 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-4">¿Necesitás ayuda con tu pedido?</h4>
                             <a
                                 href={`https://wa.me/${tenant?.whatsapp || ''}?text=${encodeURIComponent(
-                                    `¡Hola! Quería consultar por mi pedido #${id || ''}`
+                                    `¡Hola! Quería consultar por mi pedido #${orderData?.id_pedido || ''}`
                                 )}`}
                                 target="_blank"
                                 rel="noopener noreferrer"

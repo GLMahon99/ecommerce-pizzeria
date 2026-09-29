@@ -14,11 +14,10 @@ import {
 } from 'lucide-react';
 import api from '../api/axiosConfig';
 import { useTenant } from '../context/TenantContext';
-import { useAuth } from '../context/AuthContext';
+import { getOrderTokens } from '../utils/guestStore';
 
 const OrdersHistory = () => {
     const { tenant } = useTenant();
-    const { user } = useAuth();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -31,13 +30,18 @@ const OrdersHistory = () => {
     }, [tenant]);
 
     useEffect(() => {
+        if (!tenant?.slug) return;
         const fetchOrders = async () => {
             try {
                 setLoading(true);
-                const response = await api.get('/pedidos/mis-pedidos');
-                setOrders(response.data);
+                // Sin sesión: el historial son los pedidos hechos desde este dispositivo (por token de seguimiento)
+                const tokens = getOrderTokens(tenant.slug);
+                const results = await Promise.allSettled(
+                    tokens.map((token) => api.get(`/pedidos/seguimiento/${token}`).then((r) => ({ ...r.data, token })))
+                );
+                setOrders(results.filter((r) => r.status === 'fulfilled').map((r) => r.value));
             } catch (err) {
-                console.error('Error fetching client orders:', err);
+                console.error('Error fetching orders:', err);
                 setError('No pudimos cargar tu historial de pedidos. Por favor, intentá de nuevo más tarde.');
             } finally {
                 setLoading(false);
@@ -45,7 +49,7 @@ const OrdersHistory = () => {
         };
 
         fetchOrders();
-    }, []);
+    }, [tenant?.slug]);
 
     const toggleExpand = (orderId) => {
         setExpandedOrder(expandedOrder === orderId ? null : orderId);
@@ -126,7 +130,7 @@ const OrdersHistory = () => {
                     Mis <span className="text-brand">Pedidos</span>
                 </h1>
                 <p className="text-gray-400 font-bold uppercase tracking-wider text-xs">
-                    Historial de compras de {user?.nombre || 'Cliente'}
+                    Historial de compras en este dispositivo
                 </p>
             </div>
 
@@ -206,7 +210,7 @@ const OrdersHistory = () => {
                                         <div className="flex items-center gap-2">
                                             {/* Botón de Seguimiento */}
                                             <Link
-                                                to={`/${tenant?.slug}/status/info/${order.id_pedido}`}
+                                                to={`/${tenant?.slug}/status/info/${order.token}`}
                                                 className="bg-brand hover:bg-brand-secondary text-white text-xs font-black uppercase tracking-wider px-4 py-2.5 rounded-xl transition-all shadow-sm active:scale-95"
                                             >
                                                 Seguimiento
