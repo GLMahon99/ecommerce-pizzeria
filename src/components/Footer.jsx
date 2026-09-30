@@ -2,119 +2,91 @@ import { Store, Phone, MapPin, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTenant } from '../context/TenantContext';
 
+const socialClass = 'press w-10 h-10 bg-white border border-line rounded-xl flex items-center justify-center text-muted hover:text-brand-secondary hover:border-brand-secondary';
+
 const Footer = () => {
     const { tenant } = useTenant();
 
     return (
-        <footer className="bg-gray-50 border-t border-gray-100 pt-16 pb-8">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+        <footer className="bg-surface-2 border-t border-line pt-14 pb-8">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6">
+                <div className="grid grid-cols-1 md:grid-cols-[1.2fr_1fr_1.4fr] gap-10 md:gap-14 mb-12">
 
-                    {/* Logo y Eslogan */}
-                    <div className="col-span-1 md:col-span-1">
-                        <Link to={`/${tenant?.slug}`} className="flex items-center gap-2 mb-4">
+                    <div>
+                        <Link to={`/${tenant?.slug}`} className="inline-flex items-center gap-3 mb-4">
                             {tenant?.logo_url ? (
-                                <img src={tenant.logo_url} alt={tenant.nombre} className="h-14 w-auto object-contain" />
+                                <img src={tenant.logo_url} alt="" className="h-12 w-auto object-contain" />
                             ) : (
-                                <div className="bg-brand p-1.5 rounded-lg">
-                                    <Store className="text-white" size={20} />
+                                <div className="bg-brand text-on-brand p-2 rounded-xl">
+                                    <Store size={20} aria-hidden="true" />
                                 </div>
                             )}
-                            <span className="text-xl font-black text-brand-secondary tracking-tighter uppercase">
+                            <span className="font-display text-2xl font-extrabold text-brand-secondary tracking-tight">
                                 {tenant?.nombre || 'A-COMMERR'}
                             </span>
                         </Link>
-                        <p className="text-gray-400 text-sm leading-relaxed">
-                            Los mejores sabores directo a tu casa.
+                        <p className="text-muted text-sm leading-relaxed max-w-[34ch]">
+                            Pedí online y recibilo en tu casa.
                         </p>
-                    </div>
 
-                    {/* Horarios */}
-                    <div>
-                        <h4 className="text-xs font-black text-brand-secondary uppercase tracking-widest mb-4 flex items-center gap-2">
-                            <Clock size={14} className="text-brand" /> Horarios
-                        </h4>
-                        <p className="text-gray-500 text-sm font-medium whitespace-pre-line">
-                            {tenant?.horarios_atencion || 'Lunes a Domingo'}
-                        </p>
-                    </div>
-
-                    {/* Contacto */}
-                    <div>
-                        <h4 className="text-xs font-black text-brand-secondary uppercase tracking-widest mb-4 flex items-center gap-2">
-                            <MapPin size={14} className="text-brand" /> Ubicación
-                        </h4>
-                        <ul className="text-gray-500 text-sm space-y-2 font-medium mb-3">
-                            <li>{tenant?.direccion || 'Florida, Vicente López'}</li>
-                            <li>{tenant?.ciudad || 'Buenos Aires, Argentina'}</li>
-                            <li className="flex items-center gap-2 mt-2 text-brand-secondary">
-                                <Phone size={14} className="text-green-500" /> {tenant?.whatsapp || 'Consultas por WhatsApp'}
-                            </li>
-                        </ul>
-                        {/* Google Maps Widget */}
-                        <div className="w-full h-32 rounded-2xl overflow-hidden border border-gray-100 shadow-sm mt-3">
-                            <iframe
-                                title="Ubicación local"
-                                width="100%"
-                                height="100%"
-                                style={{ border: 0 }}
-                                loading="lazy"
-                                src={`https://maps.google.com/maps?q=${encodeURIComponent(
-                                    (tenant?.direccion || 'Florida') + ', ' + (tenant?.ciudad || 'Vicente López, Buenos Aires, Argentina')
-                                )}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
-                            ></iframe>
-                        </div>
-                    </div>
-
-                    {/* Social */}
-                    <div>
-                        <h4 className="text-xs font-black text-brand-secondary uppercase tracking-widest mb-4">Seguinos</h4>
-                        <div className="flex gap-4">
+                        <div className="flex gap-3 mt-6">
                             {tenant?.whatsapp && (
-                                <a 
-                                    href={`https://wa.me/${tenant.whatsapp}`} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="w-10 h-10 bg-white border border-gray-100 rounded-xl flex items-center justify-center text-gray-400 hover:text-green-600 hover:bg-green-50 hover:border-green-100 transition-all shadow-sm"
-                                >
-                                    <Phone size={20} />
+                                <a href={`https://wa.me/${tenant.whatsapp}`} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" className={socialClass}>
+                                    <Phone size={18} />
                                 </a>
                             )}
                             {tenant?.instagram && (
-                                <a 
-                                    href={tenant.instagram} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="w-10 h-10 bg-white border border-gray-100 rounded-xl flex items-center justify-center text-gray-400 hover:text-pink-600 hover:bg-pink-50 hover:border-pink-100 transition-all font-black shadow-sm"
-                                >
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
+                                <a href={tenant.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className={socialClass}>
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
                                 </a>
                             )}
                             {tenant?.facebook && (
-                                <a 
-                                    href={tenant.facebook} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="w-10 h-10 bg-white border border-gray-100 rounded-xl flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-100 transition-all shadow-sm"
-                                >
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                                <a href={tenant.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className={socialClass}>
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
                                 </a>
                             )}
                         </div>
                     </div>
+
+                    <div className="space-y-6">
+                        <div>
+                            <h4 className="font-display font-bold text-brand-secondary mb-2 flex items-center gap-2">
+                                <Clock size={16} className="text-brand" aria-hidden="true" /> Horarios
+                            </h4>
+                            <p className="text-muted text-sm whitespace-pre-line">
+                                {tenant?.horarios_atencion || 'Lunes a Domingo'}
+                            </p>
+                        </div>
+                        <div>
+                            <h4 className="font-display font-bold text-brand-secondary mb-2 flex items-center gap-2">
+                                <MapPin size={16} className="text-brand" aria-hidden="true" /> Dónde estamos
+                            </h4>
+                            <p className="text-muted text-sm">{tenant?.direccion || 'Florida, Vicente López'}</p>
+                            <p className="text-muted text-sm">{tenant?.ciudad || 'Buenos Aires, Argentina'}</p>
+                            {tenant?.whatsapp && <p className="tabular text-brand-secondary text-sm font-semibold mt-2">{tenant.whatsapp}</p>}
+                        </div>
+                    </div>
+
+                    <div className="w-full h-44 md:h-full min-h-40 rounded-2xl overflow-hidden border border-line">
+                        <iframe
+                            title="Ubicación del local"
+                            width="100%"
+                            height="100%"
+                            style={{ border: 0 }}
+                            loading="lazy"
+                            src={`https://maps.google.com/maps?q=${encodeURIComponent(
+                                (tenant?.direccion || 'Florida') + ', ' + (tenant?.ciudad || 'Vicente López, Buenos Aires, Argentina')
+                            )}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                        ></iframe>
+                    </div>
                 </div>
 
-                {/* Créditos Finales */}
-                <div className="border-t border-gray-50 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-gray-400 font-black uppercase tracking-widest">
-                    <p>© 2026 {tenant?.nombre?.toUpperCase() || 'A-COMMERR'} - TODOS LOS DERECHOS RESERVADOS</p>
-                    <Link to={`/${tenant?.slug || ''}/terminos`} className="hover:text-brand transition-colors">
-                        Términos y Condiciones
+                <div className="border-t border-line pt-6 flex flex-col md:flex-row justify-between items-center gap-3 text-xs text-muted">
+                    <p>© 2026 {tenant?.nombre || 'A-COMMERR'}. Todos los derechos reservados.</p>
+                    <Link to={`/${tenant?.slug || ''}/terminos`} className="underline underline-offset-4 decoration-line hover:text-brand-secondary hover:decoration-brand">
+                        Términos y condiciones
                     </Link>
-                    <div className="flex items-center gap-1.5 text-gray-400">
-                        <span>POTENCIADO POR</span>
-                        <span className="text-brand font-black tracking-tighter text-xs bg-brand/5 px-2.5 py-1 rounded-xl border border-brand/10">A-COMMERR</span>
-                    </div>
-                    <p>DESARROLLADO POR <span className="text-brand-secondary">GASTON MAHON</span></p>
+                    <p>Tienda creada con <span className="font-semibold text-brand-secondary">A-COMMERR</span> · Desarrollado por Gaston Mahon</p>
                 </div>
             </div>
         </footer>

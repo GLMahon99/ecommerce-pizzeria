@@ -2,13 +2,29 @@ import { useState } from 'react';
 import { Plus, Minus } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
-const ProductCard = ({ product }) => {
+const Segmented = ({ options, value, onChange }) => (
+    <div className="flex bg-surface-2 p-1 rounded-xl mb-3 sm:mb-4" role="radiogroup">
+        {options.map(([label, val]) => (
+            <button
+                key={val}
+                role="radio"
+                aria-checked={value === val}
+                onClick={() => onChange(val)}
+                className={`press flex-1 py-2.5 text-xs font-semibold rounded-lg ${value === val ? 'bg-white text-brand-secondary shadow-sm' : 'text-muted hover:text-brand-secondary'}`}
+            >
+                {label}
+            </button>
+        ))}
+    </div>
+);
+
+const ProductCard = ({ product, index = 0 }) => {
     const { cart, addToCart, decrementQuantity } = useCart();
 
     const isPizza = product.categoria === 'Pizzas';
     const isHelado = product.categoria === 'Helados';
     const hasVariants = (product.precio_chica !== null && product.precio_chica !== undefined) || (product.precio_cuarto !== null && product.precio_cuarto !== undefined);
-    
+
     const [selectedVariant, setSelectedVariant] = useState(isPizza || isHelado ? 'Principal' : 'Normal');
     const [isExpanded, setIsExpanded] = useState(false);
 
@@ -19,7 +35,7 @@ const ProductCard = ({ product }) => {
     };
 
     const currentPrice = getCurrentPrice();
-    
+
     // Generar ID único para el carrito si tiene variantes
     const cartItemId = hasVariants ? `${product.id_producto}-${selectedVariant}` : String(product.id_producto);
 
@@ -36,120 +52,96 @@ const ProductCard = ({ product }) => {
     };
 
     return (
-        <div className="bg-white rounded-[2rem] border border-gray-50 shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden flex flex-col h-full">
-            {/* Imagen con Badge de Precio */}
-            <div className="relative h-52 overflow-hidden">
+        <article
+            className="rise-in group flex sm:flex-col h-full bg-white rounded-2xl overflow-hidden shadow-[0_1px_2px_rgb(60_40_10/0.06),0_8px_24px_-12px_rgb(60_40_10/0.12)]"
+            style={{ '--i': Math.min(index, 12) }}
+        >
+            <div className="relative shrink-0 w-28 self-stretch min-h-28 sm:w-auto sm:self-auto sm:min-h-0 sm:aspect-[4/3] overflow-hidden bg-surface-2">
                 <img
                     src={product.img || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=500'}
                     alt={product.nombre}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    loading="lazy"
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-out motion-safe:[@media(hover:hover)]:group-hover:scale-105"
                 />
-                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-2xl shadow-sm">
-                    <span className="text-brand font-black text-lg">${parseFloat(currentPrice).toLocaleString()}</span>
-                </div>
             </div>
 
-            {/* Contenido */}
-            <div className="p-6 flex flex-col flex-1">
-                <h3 className="text-xl font-bold text-brand-secondary mb-2">{product.nombre}</h3>
-                <div className="mb-6">
-                    <p className={`text-gray-400 text-sm leading-relaxed ${isExpanded ? '' : 'line-clamp-2'}`}>
+            <div className="p-3.5 sm:p-5 flex flex-col flex-1 min-w-0">
+                <div className="flex items-start justify-between gap-3 mb-1">
+                    <h3 className="font-display text-base sm:text-lg font-bold text-brand-secondary leading-snug">{product.nombre}</h3>
+                    <span className="tabular font-display text-base sm:text-lg font-extrabold text-brand-secondary shrink-0">
+                        ${parseFloat(currentPrice).toLocaleString()}
+                    </span>
+                </div>
+
+                <div className="mb-3 sm:mb-5">
+                    <p className={`text-muted text-[13px] sm:text-sm leading-snug sm:leading-relaxed ${isExpanded ? '' : 'line-clamp-2'}`}>
                         {product.descripcion || 'Sin descripción disponible.'}
                     </p>
                     {product.descripcion && product.descripcion.length > 70 && (
                         <button
                             type="button"
                             onClick={() => setIsExpanded(!isExpanded)}
-                            className="text-brand text-xs font-bold hover:underline mt-1 cursor-pointer"
+                            className="text-brand-secondary text-xs font-semibold underline underline-offset-4 decoration-line hover:decoration-brand mt-0.5 py-1.5 cursor-pointer"
                         >
                             {isExpanded ? 'Ver menos' : 'Ver más'}
                         </button>
                     )}
                 </div>
 
-                {/* Selectores de Variante Helados (3 opciones) */}
                 {isHelado && (
-                    <div className="flex bg-gray-100 p-1 rounded-xl mb-4 text-[10px]">
-                        <button
-                            onClick={() => setSelectedVariant('1/4 kg')}
-                            className={`flex-1 py-1.5 font-bold rounded-lg transition-all ${selectedVariant === '1/4 kg' ? 'bg-white text-brand shadow-sm' : 'text-gray-400'}`}
-                        >
-                            1/4 kg
-                        </button>
-                        <button
-                            onClick={() => setSelectedVariant('1/2 kg')}
-                            className={`flex-1 py-1.5 font-bold rounded-lg transition-all ${selectedVariant === '1/2 kg' ? 'bg-white text-brand shadow-sm' : 'text-gray-400'}`}
-                        >
-                            1/2 kg
-                        </button>
-                        <button
-                            onClick={() => setSelectedVariant('Principal')}
-                            className={`flex-1 py-1.5 font-bold rounded-lg transition-all ${selectedVariant === 'Principal' ? 'bg-white text-brand shadow-sm' : 'text-gray-400'}`}
-                        >
-                            1 kg
-                        </button>
-                    </div>
+                    <Segmented
+                        value={selectedVariant}
+                        onChange={setSelectedVariant}
+                        options={[['1/4 kg', '1/4 kg'], ['1/2 kg', '1/2 kg'], ['1 kg', 'Principal']]}
+                    />
                 )}
 
-                {/* Selectores de Variante Pizzas (2 opciones) */}
                 {isPizza && product.precio_chica && (
-                    <div className="flex bg-gray-100 p-1 rounded-xl mb-4">
-                        <button
-                            onClick={() => setSelectedVariant('Chica')}
-                            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${selectedVariant === 'Chica' ? 'bg-white text-brand shadow-sm' : 'text-gray-400'}`}
-                        >
-                            Chica
-                        </button>
-                        <button
-                            onClick={() => setSelectedVariant('Principal')}
-                            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${selectedVariant === 'Principal' ? 'bg-white text-brand shadow-sm' : 'text-gray-400'}`}
-                        >
-                            Grande
-                        </button>
-                    </div>
+                    <Segmented
+                        value={selectedVariant}
+                        onChange={setSelectedVariant}
+                        options={[['Chica', 'Chica'], ['Grande', 'Principal']]}
+                    />
                 )}
 
-                {/* Selectores Genéricos si tiene precio_chica pero no es ni Pizza ni Helado */}
                 {!isPizza && !isHelado && hasVariants && (
-                    <div className="flex bg-gray-100 p-1 rounded-xl mb-4">
-                        <button
-                            onClick={() => setSelectedVariant('Opción 2')}
-                            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${selectedVariant === 'Opción 2' ? 'bg-white text-brand shadow-sm' : 'text-gray-400'}`}
-                        >
-                            Secundario
-                        </button>
-                        <button
-                            onClick={() => setSelectedVariant('Normal')}
-                            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${selectedVariant === 'Normal' ? 'bg-white text-brand shadow-sm' : 'text-gray-400'}`}
-                        >
-                            Principal
-                        </button>
-                    </div>
+                    <Segmented
+                        value={selectedVariant}
+                        onChange={setSelectedVariant}
+                        options={[['Secundario', 'Opción 2'], ['Principal', 'Normal']]}
+                    />
                 )}
 
-                {/* Botón de Acción */}
                 <div className="mt-auto">
                     {quantity > 0 ? (
-                        <div className="w-full flex items-center justify-between bg-brand/10 border border-brand/20 py-2 px-2 rounded-2xl">
-                            <button onClick={() => decrementQuantity(cartItemId)} className="p-2 bg-white text-brand rounded-xl hover:bg-brand/10 shadow-sm transition-all active:scale-95">
-                                <Minus size={20} />
+                        <div className="w-full flex items-center justify-between bg-brand/10 p-1 rounded-xl">
+                            <button
+                                onClick={() => decrementQuantity(cartItemId)}
+                                aria-label="Quitar uno"
+                                className="press w-11 h-11 flex items-center justify-center bg-white text-brand-secondary rounded-lg shadow-sm"
+                            >
+                                <Minus size={18} />
                             </button>
-                            <span className="font-black text-brand-secondary text-lg w-8 text-center">{quantity}</span>
-                            <button onClick={handleAddToCart} className="p-2 bg-brand text-white rounded-xl hover:bg-brand-hover shadow-sm transition-all active:scale-95">
-                                <Plus size={20} />
+                            <span className="tabular font-bold text-brand-secondary text-lg w-10 text-center">{quantity}</span>
+                            <button
+                                onClick={handleAddToCart}
+                                aria-label="Agregar uno más"
+                                className="press w-11 h-11 flex items-center justify-center bg-brand text-on-brand rounded-lg hover:bg-brand-hover shadow-sm"
+                            >
+                                <Plus size={18} />
                             </button>
                         </div>
                     ) : (
                         <button
                             onClick={handleAddToCart}
-                            className="w-full flex items-center justify-center gap-2 bg-brand-secondary hover:bg-brand text-white py-4 rounded-2xl font-bold transition-all active:scale-95"
+                            className="press w-full flex items-center justify-center gap-2 bg-brand-secondary hover:bg-brand hover:text-on-brand text-white h-12 rounded-xl font-semibold text-sm"
                         >
-                            <Plus size={20} /> Agregar
+                            <Plus size={18} /> Agregar
                         </button>
                     )}
                 </div>
             </div>
-        </div>
+        </article>
     );
 };
 

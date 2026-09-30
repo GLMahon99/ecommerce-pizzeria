@@ -1,27 +1,43 @@
 import { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { useNavigate } from 'react-router-dom';
-import { useTenant } from '../context/TenantContext'; // Importar Tenant
-import {
-    MapPin,
-    CheckCircle2,
-    MessageCircle,
-    ArrowLeft,
-    ShieldCheck,
-    CreditCard
-} from 'lucide-react';
+import { useTenant } from '../context/TenantContext';
+import { ArrowLeft, Bike, Store, ShieldCheck, AlertCircle } from 'lucide-react';
 import api from '../api/axiosConfig';
 import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
 import { getBuyer, saveBuyer, addOrderToken } from '../utils/guestStore';
 
 const EMPTY_ADDRESS = { calle: '', altura: '', piso: '', depto: '', cp: '', observaciones: '' };
 
-const inputClass = 'w-full bg-gray-50 border-2 border-gray-100 p-4 rounded-2xl focus:border-brand focus:bg-white outline-none transition-all font-bold text-sm text-brand-secondary disabled:opacity-60';
-const labelClass = 'text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1';
+const inputClass = 'w-full bg-white border border-line px-4 h-12 rounded-xl outline-none transition-colors text-base text-brand-secondary placeholder:text-stone-400 focus:border-brand focus:ring-2 focus:ring-brand/20 disabled:opacity-60 disabled:bg-surface-2';
+
+const Field = ({ label, className = '', children }) => (
+    <label className={`block ${className}`}>
+        <span className="block text-sm font-semibold text-brand-secondary mb-1.5">{label}</span>
+        {children}
+    </label>
+);
+
+const DeliveryOption = ({ active, disabled, onClick, icon, title, text }) => (
+    <button
+        type="button"
+        role="radio"
+        aria-checked={active}
+        disabled={disabled}
+        onClick={onClick}
+        className={`press p-4 rounded-xl border text-left flex gap-3 items-start disabled:opacity-60 ${active ? 'border-brand bg-brand/5 ring-1 ring-brand' : 'border-line bg-white hover:border-stone-300'}`}
+    >
+        <span className={active ? 'text-brand' : 'text-muted'}>{icon}</span>
+        <span>
+            <span className="block font-semibold text-brand-secondary">{title}</span>
+            <span className="block text-sm text-muted mt-0.5">{text}</span>
+        </span>
+    </button>
+);
 
 const Checkout = () => {
     const { cart, total } = useCart();
-    const { tenant } = useTenant(); // Obtener datos del tenant
+    const { tenant } = useTenant();
     const navigate = useNavigate();
 
     const [deliveryMethod, setDeliveryMethod] = useState('delivery'); // 'delivery' or 'takeaway'
@@ -37,7 +53,7 @@ const Checkout = () => {
     }
     const finalTotal = total + shippingCost;
 
-    // Inicializar MP con la Public Key de ESTA pizzería
+    // Inicializar MP con la Public Key de ESTA tienda
     useEffect(() => {
         if (tenant?.mp_public_key) {
             initMercadoPago(tenant.mp_public_key);
@@ -127,170 +143,102 @@ const Checkout = () => {
     const setAddressField = (field) => (e) => setAddress({ ...address, [field]: e.target.value });
 
     return (
-        <div className="pt-28 pb-20 px-4 max-w-5xl mx-auto min-h-screen">
+        <div className="pt-28 pb-8 px-4 sm:px-6 max-w-5xl mx-auto min-h-screen">
 
-            {/* Header de Checkout */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
-                <div>
-                    <button onClick={() => navigate(`/${tenant?.slug}`)} className="flex items-center gap-2 text-gray-400 font-bold text-xs uppercase tracking-widest hover:text-brand transition-colors mb-2">
-                        <ArrowLeft size={14} /> Volver al Menú
-                    </button>
-                    <h1 className="text-4xl font-black italic tracking-tighter text-brand-secondary">FINALIZAR COMPRA</h1>
-                </div>
-                <div className="bg-brand/10 border border-brand/20 px-6 py-3 rounded-2xl flex items-center gap-3">
-                    <div className="bg-brand p-2 rounded-full text-white">
-                        <ShieldCheck size={20} />
-                    </div>
-                    <div>
-                        <p className="text-[10px] font-black text-brand uppercase tracking-widest">Compra Segura</p>
-                        <p className="text-xs font-bold text-gray-700">Sin registro, solo tus datos</p>
-                    </div>
+            <div className="pt-4 mb-8">
+                <button onClick={() => navigate(`/${tenant?.slug}`)} className="press inline-flex items-center gap-1.5 min-h-11 text-muted text-sm font-semibold hover:text-brand-secondary mb-1">
+                    <ArrowLeft size={16} /> Volver al menú
+                </button>
+                <div className="flex flex-wrap items-end justify-between gap-3">
+                    <h1 className="font-display text-4xl sm:text-5xl font-extrabold tracking-[-0.03em] text-brand-secondary">Finalizar compra</h1>
+                    <p className="flex items-center gap-2 text-sm text-muted pb-1.5">
+                        <ShieldCheck size={16} className="text-brand" aria-hidden="true" /> Sin registro, solo tus datos
+                    </p>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_22rem] gap-8 items-start">
 
-                {/* LADO IZQUIERDO: Datos de Entrega */}
-                <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
-                        <h2 className="text-xl font-black text-brand-secondary mb-6 flex items-center gap-3">
-                            <MapPin className="text-brand" /> Tus Datos
-                        </h2>
-
-                        {/* Selector de Método de Entrega */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                            <button
-                                type="button"
-                                disabled={locked}
+                <div className="space-y-10">
+                    <section>
+                        <h2 className="font-display text-xl font-bold text-brand-secondary mb-4">Cómo lo recibís</h2>
+                        <div role="radiogroup" aria-label="Método de entrega" className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+                            <DeliveryOption
+                                active={deliveryMethod === 'delivery'} disabled={locked}
                                 onClick={() => setDeliveryMethod('delivery')}
-                                className={`p-6 rounded-[2rem] border-2 text-left transition-all duration-300 flex flex-col gap-2 ${
-                                    deliveryMethod === 'delivery'
-                                    ? 'border-brand bg-brand/5 shadow-lg shadow-brand/5'
-                                    : 'border-gray-100 hover:border-gray-200 bg-white'
-                                }`}
-                            >
-                                <span className={`text-xs font-black uppercase tracking-widest ${deliveryMethod === 'delivery' ? 'text-brand' : 'text-gray-400'}`}>
-                                    Envío a Domicilio 🛵
-                                </span>
-                                <span className="text-xs text-gray-500 font-medium">
-                                    Enviamos tu pedido directo a tu casa.
-                                </span>
-                            </button>
-                            <button
-                                type="button"
-                                disabled={locked}
+                                icon={<Bike size={22} aria-hidden="true" />} title="Envío a domicilio" text="Lo llevamos hasta tu casa."
+                            />
+                            <DeliveryOption
+                                active={deliveryMethod === 'takeaway'} disabled={locked}
                                 onClick={() => setDeliveryMethod('takeaway')}
-                                className={`p-6 rounded-[2rem] border-2 text-left transition-all duration-300 flex flex-col gap-2 ${
-                                    deliveryMethod === 'takeaway'
-                                    ? 'border-brand bg-brand/5 shadow-lg shadow-brand/5'
-                                    : 'border-gray-100 hover:border-gray-200 bg-white'
-                                }`}
-                            >
-                                <span className={`text-xs font-black uppercase tracking-widest ${deliveryMethod === 'takeaway' ? 'text-brand' : 'text-gray-400'}`}>
-                                    Retiro por Local 🛍️
-                                </span>
-                                <span className="text-xs text-gray-500 font-medium">
-                                    Retirás tu pedido listo en nuestra sucursal.
-                                </span>
-                            </button>
+                                icon={<Store size={22} aria-hidden="true" />} title="Retiro en el local" text="Pasás a buscarlo, ya listo."
+                            />
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-1">
-                                <label className={labelClass}>Nombre completo</label>
+                        <h2 className="font-display text-xl font-bold text-brand-secondary mb-4">Tus datos</h2>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <Field label="Nombre completo">
                                 <input type="text" autoComplete="name" disabled={locked} className={inputClass}
                                     value={buyer.nombre} onChange={setBuyerField('nombre')} />
-                            </div>
-                            <div className="space-y-1">
-                                <label className={labelClass}>DNI</label>
-                                <input type="text" inputMode="numeric" maxLength={10} placeholder="Ej. 30123456" disabled={locked} className={inputClass}
+                            </Field>
+                            <Field label="DNI">
+                                <input type="text" inputMode="numeric" maxLength={10} placeholder="30123456" disabled={locked} className={`${inputClass} tabular`}
                                     value={buyer.dni} onChange={(e) => setBuyer({ ...buyer, dni: e.target.value.replace(/[^\d.]/g, '') })} />
-                            </div>
-                            <div className="space-y-1">
-                                <label className={labelClass}>Celular (WhatsApp)</label>
-                                <input type="tel" autoComplete="tel" placeholder="Ej: 11 1234 5678" disabled={locked} className={inputClass}
+                            </Field>
+                            <Field label="Celular (WhatsApp)">
+                                <input type="tel" autoComplete="tel" placeholder="11 1234 5678" disabled={locked} className={`${inputClass} tabular`}
                                     value={buyer.telefono} onChange={setBuyerField('telefono')} />
-                            </div>
-                            <div className="space-y-1">
-                                <label className={labelClass}>Email (opcional)</label>
-                                <input type="email" autoComplete="email" placeholder="Ej: usuario@gmail.com" disabled={locked} className={inputClass}
+                            </Field>
+                            <Field label="Email (opcional)">
+                                <input type="email" autoComplete="email" placeholder="nombre@gmail.com" disabled={locked} className={inputClass}
                                     value={buyer.email} onChange={setBuyerField('email')} />
-                            </div>
+                            </Field>
                         </div>
+                    </section>
 
-                        {isTakeaway ? (
-                            <div className="bg-gray-50 p-6 rounded-3xl border border-gray-100 mt-6 flex flex-col gap-2 animate-in fade-in duration-300">
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Punto de Retiro (Sucursal)</p>
-                                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 w-full">
-                                    <div>
-                                        <p className="font-black text-brand-secondary text-base leading-relaxed">
-                                            {tenant?.nombre || 'Nuestra Sucursal'}
-                                        </p>
-                                        <p className="font-bold text-gray-500 text-sm">
-                                            {tenant?.direccion}, {tenant?.ciudad}
-                                        </p>
-                                    </div>
-                                    <span className="bg-brand/10 text-brand px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest">
-                                        Retirar por acá
-                                    </span>
-                                </div>
+                    {isTakeaway ? (
+                        <section className="fade-in bg-surface-2 rounded-xl p-5">
+                            <h2 className="font-display text-xl font-bold text-brand-secondary mb-2">Dónde retirarlo</h2>
+                            <p className="font-semibold text-brand-secondary">{tenant?.nombre || 'Nuestro local'}</p>
+                            <p className="text-muted text-sm">{[tenant?.direccion, tenant?.ciudad].filter(Boolean).join(', ')}</p>
+                        </section>
+                    ) : (
+                        <section className="fade-in">
+                            <h2 className="font-display text-xl font-bold text-brand-secondary mb-4">Dirección de entrega</h2>
+                            <div className="grid grid-cols-2 gap-4">
+                                <Field label="Calle" className="col-span-2">
+                                    <input type="text" autoComplete="address-line1" placeholder="Av. Siempreviva" disabled={locked} className={inputClass}
+                                        value={address.calle} onChange={setAddressField('calle')} />
+                                </Field>
+                                <Field label="Altura">
+                                    <input type="text" placeholder="742" disabled={locked} className={`${inputClass} tabular`}
+                                        value={address.altura} onChange={setAddressField('altura')} />
+                                </Field>
+                                <Field label="Código postal">
+                                    <input type="text" inputMode="numeric" autoComplete="postal-code" placeholder="1602" disabled={locked} className={`${inputClass} tabular`}
+                                        value={address.cp} onChange={(e) => setAddress({ ...address, cp: e.target.value.replace(/\D/g, '') })} />
+                                </Field>
+                                <Field label="Piso (opcional)">
+                                    <input type="text" placeholder="3" disabled={locked} className={inputClass}
+                                        value={address.piso} onChange={setAddressField('piso')} />
+                                </Field>
+                                <Field label="Depto (opcional)">
+                                    <input type="text" placeholder="B" disabled={locked} className={inputClass}
+                                        value={address.depto} onChange={setAddressField('depto')} />
+                                </Field>
+                                <Field label="Observaciones (opcional)" className="col-span-2">
+                                    <input type="text" placeholder="Portón de madera, el timbre no suena…" disabled={locked} className={inputClass}
+                                        value={address.observaciones} onChange={setAddressField('observaciones')} />
+                                </Field>
                             </div>
-                        ) : (
-                            <div className="mt-6 pt-6 border-t border-gray-100 space-y-4">
-                                <p className="text-[10px] font-black text-brand uppercase tracking-widest flex items-center gap-1">
-                                    <MapPin size={12} /> Dirección de Entrega
-                                </p>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-1 col-span-2">
-                                        <label className={labelClass}>Calle</label>
-                                        <input type="text" placeholder="Ej. Av. Siempreviva" disabled={locked} className={inputClass}
-                                            value={address.calle} onChange={setAddressField('calle')} />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className={labelClass}>Altura / Nro</label>
-                                        <input type="text" placeholder="Ej. 742" disabled={locked} className={inputClass}
-                                            value={address.altura} onChange={setAddressField('altura')} />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className={labelClass}>Código Postal (solo número)</label>
-                                        <input type="text" inputMode="numeric" placeholder="Ej. 1602" disabled={locked} className={inputClass}
-                                            value={address.cp} onChange={(e) => setAddress({ ...address, cp: e.target.value.replace(/\D/g, '') })} />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className={labelClass}>Piso (Opcional)</label>
-                                        <input type="text" placeholder="Ej. 3" disabled={locked} className={inputClass}
-                                            value={address.piso} onChange={setAddressField('piso')} />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className={labelClass}>Depto (Opcional)</label>
-                                        <input type="text" placeholder="Ej. B" disabled={locked} className={inputClass}
-                                            value={address.depto} onChange={setAddressField('depto')} />
-                                    </div>
-                                    <div className="space-y-1 col-span-2">
-                                        <label className={labelClass}>Observaciones</label>
-                                        <input type="text" placeholder="Ej. Portón de madera, timbre que no suena..." disabled={locked} className={inputClass}
-                                            value={address.observaciones} onChange={setAddressField('observaciones')} />
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </div>
+                        </section>
+                    )}
 
-                    <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
-                        <h2 className="text-xl font-black text-brand-secondary mb-6 flex items-center gap-3">
-                            <CreditCard className="text-brand" /> Método de Pago
-                        </h2>
+                    <section>
+                        <h2 className="font-display text-xl font-bold text-brand-secondary mb-4">Pago</h2>
 
-                        {!preferenceId ? (
-                            <button
-                                onClick={handleCreatePreference}
-                                disabled={loading}
-                                className="w-full bg-brand hover:bg-brand-hover text-white py-6 rounded-3xl font-black text-xl shadow-xl shadow-brand/10 flex items-center justify-center gap-3 transition-all active:scale-95 animate-in fade-in disabled:opacity-70"
-                            >
-                                {loading ? 'Preparando Pago...' : 'Pagar con Mercado Pago'} <CheckCircle2 size={24} />
-                            </button>
-                        ) : (
-                            <div className="animate-in fade-in slide-in-from-top-4 duration-500 space-y-4">
+                        {preferenceId && (
+                            <div className="fade-in space-y-4 mb-4">
                                 <Wallet
                                     initialization={{ preferenceId }}
                                     customization={{ texts: { valueProp: 'smart_option' } }}
@@ -298,57 +246,68 @@ const Checkout = () => {
                                 <button
                                     type="button"
                                     onClick={() => setPreferenceId(null)}
-                                    className="w-full text-center text-gray-400 text-xs font-black uppercase tracking-widest hover:text-brand transition-colors"
+                                    className="press w-full min-h-11 text-center text-muted text-sm font-semibold underline underline-offset-4 hover:text-brand-secondary"
                                 >
                                     Modificar mis datos
                                 </button>
                             </div>
                         )}
 
-                        {error && (
-                            <p className="mt-4 text-red-500 text-center text-xs font-bold">{error}</p>
-                        )}
-
-                        <p className="mt-6 text-[10px] text-gray-400 text-center uppercase font-bold tracking-widest">
-                            Serás redirigido a la plataforma segura de Mercado Pago
+                        <p className="text-sm text-muted">
+                            Te llevamos a Mercado Pago para pagar de forma segura.
                         </p>
-                    </div>
-                </div>
+                    </section>
 
-                {/* LADO DERECHO: Resumen */}
-                <div className="lg:col-span-1">
-                    <div className="bg-brand-secondary rounded-[2.5rem] p-8 text-white sticky top-28 shadow-xl">
-                        <h3 className="text-lg font-black uppercase tracking-widest mb-6 flex items-center gap-2">
-                            <MessageCircle className="text-brand" size={20} /> Resumen
-                        </h3>
-
-                        <div className="space-y-4 mb-8 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
-                            {cart.map((item) => (
-                                <div key={item.cartItemId || item.id_producto} className="flex justify-between items-center text-sm">
-                                    <span className="text-gray-400 font-medium">
-                                        <span className="text-white font-bold">{item.quantity}x</span> {item.nombre}
-                                    </span>
-                                    <span className="font-bold">${(item.precio * item.quantity).toLocaleString()}</span>
+                    {!preferenceId && (
+                        <div className="sticky bottom-0 z-30 -mx-4 px-4 pt-3 pb-safe bg-surface/95 backdrop-blur-sm border-t border-line sm:mx-0 sm:px-0 sm:pt-0 sm:pb-0 sm:bg-transparent sm:border-0 sm:static">
+                            {error && (
+                                <div role="alert" className="fade-in mb-3 flex items-start gap-3 bg-red-50 text-red-900 rounded-xl p-3.5 text-sm">
+                                    <AlertCircle size={18} className="text-red-600 shrink-0 mt-0.5" aria-hidden="true" />
+                                    {error}
                                 </div>
-                            ))}
+                            )}
+                            <button
+                                onClick={handleCreatePreference}
+                                disabled={loading}
+                                className="press w-full bg-brand hover:bg-brand-hover text-on-brand h-14 rounded-xl font-semibold text-base sm:text-lg disabled:opacity-70"
+                            >
+                                {loading ? 'Preparando el pago…' : `Pagar $${finalTotal.toLocaleString()}`}
+                            </button>
                         </div>
+                    )}
+                </div>
 
-                        <div className="border-t border-gray-800 pt-6 space-y-3">
-                            <div className="flex justify-between text-gray-400 text-xs font-bold uppercase tracking-widest">
-                                <span>Subtotal</span>
-                                <span>${total.toLocaleString()}</span>
-                            </div>
-                            <div className={`flex justify-between text-xs font-bold uppercase tracking-widest ${shippingCost === 0 ? 'text-green-400' : 'text-gray-300'}`}>
-                                <span>Envío</span>
-                                <span>{shippingCost === 0 ? '¡Gratis!' : `$${shippingCost.toLocaleString()}`}</span>
-                            </div>
-                            <div className="flex justify-between items-center pt-2">
-                                <span className="text-xl font-black">Total</span>
-                                <span className="text-3xl font-black text-brand">${finalTotal.toLocaleString()}</span>
-                            </div>
+                <aside className="order-first lg:order-none lg:sticky lg:top-32 bg-white rounded-2xl p-5 sm:p-6 shadow-[0_1px_2px_rgb(60_40_10/0.06),0_8px_24px_-12px_rgb(60_40_10/0.12)]">
+                    <h2 className="font-display text-xl font-bold text-brand-secondary mb-3 lg:mb-5">Tu pedido <span className="lg:hidden text-muted font-sans text-sm font-medium">· {cart.reduce((n, i) => n + i.quantity, 0)} productos</span></h2>
+
+                    <ul className="hidden lg:block space-y-3 mb-6 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
+                        {cart.map((item) => (
+                            <li key={item.cartItemId || item.id_producto} className="flex justify-between gap-4 text-sm">
+                                <span className="text-brand-secondary">
+                                    <span className="tabular font-semibold">{item.quantity}×</span> {item.nombre}
+                                </span>
+                                <span className="tabular font-semibold shrink-0">${(item.precio * item.quantity).toLocaleString()}</span>
+                            </li>
+                        ))}
+                    </ul>
+
+                    <div className="border-t border-line pt-4 space-y-2 text-sm">
+                        <div className="flex justify-between text-muted">
+                            <span>Subtotal</span>
+                            <span className="tabular">${total.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between text-muted">
+                            <span>Envío</span>
+                            <span className={`tabular ${shippingCost === 0 ? 'text-green-700 font-semibold' : ''}`}>
+                                {shippingCost === 0 ? 'Gratis' : `$${shippingCost.toLocaleString()}`}
+                            </span>
+                        </div>
+                        <div className="flex justify-between items-baseline pt-3 border-t border-line">
+                            <span className="font-semibold text-brand-secondary">Total</span>
+                            <span className="tabular font-display text-3xl font-extrabold text-brand-secondary">${finalTotal.toLocaleString()}</span>
                         </div>
                     </div>
-                </div>
+                </aside>
 
             </div>
         </div>

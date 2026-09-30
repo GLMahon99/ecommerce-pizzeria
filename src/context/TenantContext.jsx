@@ -40,7 +40,15 @@ export const TenantProvider = ({ children }) => {
 
                 if (config.color_primario) {
                     document.documentElement.style.setProperty('--brand-color', config.color_primario);
-                    document.documentElement.style.setProperty('--brand-hover', config.color_primario + 'DD');
+                    document.documentElement.style.setProperty('--brand-hover', `color-mix(in oklab, ${config.color_primario} 88%, black)`);
+                    // Texto legible sobre el color de marca (blanco u oscuro según luminancia)
+                    const hex = /^#([0-9a-f]{6})$/i.exec(config.color_primario.trim());
+                    if (hex) {
+                        const n = parseInt(hex[1], 16);
+                        const lin = (c) => { c /= 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
+                        const lum = 0.2126 * lin((n >> 16) & 255) + 0.7152 * lin((n >> 8) & 255) + 0.0722 * lin(n & 255);
+                        document.documentElement.style.setProperty('--brand-on', lum > 0.45 ? '#1c1917' : '#ffffff');
+                    }
                 }
 
                 if (config.color_secundario) {

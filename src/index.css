@@ -4,21 +4,59 @@
   --color-brand: var(--brand-color);
   --color-brand-hover: var(--brand-hover);
   --color-brand-secondary: var(--brand-secondary);
+  --color-on-brand: var(--brand-on);
+
+  /* Superficies cálidas: una sola familia de neutros para todas las tiendas */
+  --color-surface: #faf7f2;
+  --color-surface-2: #f2ede4;
+  --color-line: #e8e1d5;
+  --color-muted: #6b6257;
+
+  --font-display: "Bricolage Grotesque", "Inter", system-ui, sans-serif;
+  --font-sans: "Figtree", "Inter", system-ui, sans-serif;
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 :root {
   --brand-color: #374151; /* Gris oscuro neutral por defecto hasta que cargue el tenant */
-  --brand-hover: #1f2937;
+  --brand-hover: color-mix(in oklab, var(--brand-color) 88%, black);
   --brand-secondary: #1f2937;
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --brand-on: #ffffff;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
-  background-color: #f9fafb; /* match App.jsx background */
+  background-color: var(--color-surface);
   color: var(--brand-secondary);
+  text-wrap: pretty;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  text-wrap: balance;
+}
+
+/* Números de precio alineados */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Superficies del navegador tematizadas con la marca */
+::selection {
+  background: color-mix(in oklab, var(--brand-color) 22%, white);
+  color: var(--brand-secondary);
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand-color);
+  outline-offset: 2px;
+  border-radius: 6px;
 }
 
 /* Custom scrollbar utility */
@@ -40,3 +78,71 @@ body {
   background-color: #374151; /* gray-700 */
   border-radius: 20px;
 }
+
+/* ---------- Motion ---------- */
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes drawer-in {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes drawer-out {
+  from { transform: translateX(0); }
+  to   { transform: translateX(100%); }
+}
+
+@keyframes shimmer {
+  to { background-position: -200% 0; }
+}
+
+/* Entrada escalonada de la grilla: se ve una vez, no bloquea la interacción */
+.rise-in {
+  opacity: 0;
+  animation: rise-in 360ms var(--ease-out) forwards;
+  animation-delay: calc(var(--i, 0) * 45ms);
+}
+
+.fade-in { animation: fade-in 200ms ease-out both; }
+.drawer-in { animation: drawer-in 320ms var(--ease-drawer) both; }
+.drawer-out { animation: drawer-out 200ms var(--ease-out) both; }
+.fade-out { animation: fade-in 200ms ease-out reverse both; }
+
+.skeleton {
+  background: linear-gradient(90deg, var(--color-surface-2) 30%, #fbf8f3 50%, var(--color-surface-2) 70%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+
+/* Feedback de presión en todo lo clickeable */
+.press {
+  transition: transform 140ms var(--ease-out), background-color 160ms ease, color 160ms ease, box-shadow 200ms ease;
+}
+.press:active { transform: scale(0.97); }
+
+@media (prefers-reduced-motion: reduce) {
+  .rise-in, .drawer-in, .drawer-out, .fade-in, .fade-out {
+    animation-duration: 1ms;
+    animation-delay: 0ms;
+  }
+  .skeleton { animation: none; }
+  html { scroll-behavior: auto; }
+}
+
+/* ---------- Mobile ---------- */
+
+/* Respeta la barra de gestos de iOS/Android en elementos pegados abajo */
+.pb-safe { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
+
+/* Sin zoom accidental ni delay de doble toque en controles */
+button, a, input, select, textarea { touch-action: manipulation; }
+html { -webkit-tap-highlight-color: transparent; }

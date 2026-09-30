@@ -1,136 +1,152 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useRef, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { useTenant } from '../context/TenantContext'; // Importar Tenant
-import { ShoppingCart, Store, Menu, X, MapPin } from 'lucide-react';
+import { useTenant } from '../context/TenantContext';
+import { ShoppingBag, Store, Menu, X, MapPin, Bike } from 'lucide-react';
 
 const Navbar = ({ onOpenCart }) => {
     const { itemCount } = useCart();
-    const { tenant } = useTenant(); // Obtener los datos de la pizzería
+    const { tenant } = useTenant();
+    const { pathname } = useLocation();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const headerRef = useRef(null);
+
+    // Publica la altura real del header para que la barra de categorías se pegue justo debajo
+    useEffect(() => {
+        const el = headerRef.current;
+        if (!el) return;
+        const set = () => document.documentElement.style.setProperty('--nav-h', `${el.offsetHeight}px`);
+        set();
+        const ro = new ResizeObserver(set);
+        ro.observe(el);
+        return () => ro.disconnect();
+    }, []);
+
+    const base = `/${tenant?.slug}`;
+    const isMenu = pathname === base;
+    const isOrders = pathname.startsWith(`${base}/pedidos`);
 
     let topbarMessage = '';
     if (tenant?.costo_envio == 0) {
-        topbarMessage = '🛵 ¡Envío Gratis a domicilio!';
+        topbarMessage = 'Envío gratis a domicilio';
     } else if (tenant?.envio_gratis_desde) {
-        topbarMessage = `🛵 ¡Envío Gratis a partir de $${Number(tenant.envio_gratis_desde).toLocaleString()}!`;
+        topbarMessage = `Envío gratis a partir de $${Number(tenant.envio_gratis_desde).toLocaleString()}`;
     } else if (tenant?.costo_envio) {
-        topbarMessage = `🛵 Costo de envío: $${Number(tenant.costo_envio).toLocaleString()}`;
+        topbarMessage = `Costo de envío: $${Number(tenant.costo_envio).toLocaleString()}`;
     }
 
+    const linkClass = (active) =>
+        `relative py-2 text-sm font-semibold transition-colors ${active ? 'text-brand-secondary' : 'text-muted hover:text-brand-secondary'}`;
+
     return (
-        <header className="fixed top-0 left-0 w-full z-50">
+        <header ref={headerRef} className="fixed top-0 left-0 w-full z-50">
             {topbarMessage && (
-                <div className="bg-brand text-white text-[10px] sm:text-xs font-black uppercase tracking-widest py-1.5 text-center">
+                <div className="bg-brand text-on-brand text-xs font-semibold py-1.5 px-4 flex items-center justify-center gap-2">
+                    <Bike size={14} strokeWidth={2} aria-hidden="true" />
                     {topbarMessage}
                 </div>
             )}
-            <nav className="bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between items-center h-20">
+            <nav className="bg-surface/90 backdrop-blur-md border-b border-line">
+                <div className="max-w-6xl mx-auto px-4 sm:px-6">
+                    <div className="flex justify-between items-center h-16 sm:h-[72px]">
 
-                    {/* LADO IZQUIERDO: Logo y Ubicación */}
-                    <div className="flex items-center gap-8">
-                        <Link to={`/${tenant?.slug}`} className="flex items-center gap-3 group">
-                            {tenant?.logo_url ? (
-                                <img 
-                                    src={tenant.logo_url} 
-                                    alt={tenant?.nombre} 
-                                    className="h-14 w-auto object-contain rounded-lg transition-transform duration-300 group-hover:scale-105"
-                                />
-                            ) : (
-                                <div className="bg-brand p-2 rounded-xl group-hover:rotate-12 transition-transform duration-300">
-                                    <Store className="text-white" size={24} />
-                                </div>
-                            )}
-                            <div className="flex flex-col">
-                                <span className="text-2xl font-black text-brand-secondary tracking-tighter uppercase leading-none">
+                        {/* Marca */}
+                        <div className="flex items-center gap-6 min-w-0">
+                            <Link to={base} className="flex items-center gap-3 min-w-0 press rounded-xl">
+                                {tenant?.logo_url ? (
+                                    <img
+                                        src={tenant.logo_url}
+                                        alt=""
+                                        className="h-10 sm:h-12 w-auto object-contain rounded-lg"
+                                    />
+                                ) : (
+                                    <div className="bg-brand text-on-brand p-2 rounded-xl">
+                                        <Store size={22} aria-hidden="true" />
+                                    </div>
+                                )}
+                                <span className="font-display text-xl sm:text-2xl font-extrabold text-brand-secondary tracking-tight leading-none truncate">
                                     {tenant?.nombre || 'A-COMMERR'}
                                 </span>
-                                <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest mt-0.5 self-start">
-                                    by A-COMMERR
-                                </span>
-                            </div>
-                        </Link>
+                            </Link>
 
-                        {/* Solo visible en Desktop - El toque local de Florida */}
-                        <div className="hidden md:flex flex-col gap-0.5">
-                            <div className="flex items-center gap-1 text-gray-400 text-[10px] font-black uppercase tracking-widest bg-gray-50 px-3 py-1 rounded-full border border-gray-100 w-fit">
-                                <MapPin size={10} className="text-brand" />
-                                {tenant?.direccion ? `${tenant.direccion}${tenant.ciudad ? `, ${tenant.ciudad}` : ''}` : 'Florida, Vicente López'}
+                            <div className="hidden lg:flex items-center gap-1.5 text-muted text-xs font-medium">
+                                <MapPin size={13} className="text-brand shrink-0" aria-hidden="true" />
+                                <span className="truncate max-w-[16rem]">
+                                    {tenant?.direccion ? `${tenant.direccion}${tenant.ciudad ? `, ${tenant.ciudad}` : ''}` : 'Florida, Vicente López'}
+                                </span>
                             </div>
                         </div>
-                    </div>
 
-                    {/* CENTRO/DERECHA: Navegación Desktop */}
-                    <div className="hidden md:flex items-center gap-8 font-bold text-sm text-gray-600 uppercase tracking-tight">
-                        <Link to={`/${tenant?.slug}`} className="hover:text-brand transition-colors">Menú</Link>
-                        <Link to={`/${tenant?.slug}/pedidos`} className="hover:text-brand transition-colors">Mis Pedidos</Link>
+                        {/* Navegación desktop */}
+                        <div className="hidden md:flex items-center gap-8">
+                            <Link to={base} aria-current={isMenu ? 'page' : undefined} className={linkClass(isMenu)}>
+                                Menú
+                                {isMenu && <span className="absolute left-0 right-0 -bottom-0.5 h-0.5 rounded-full bg-brand" />}
+                            </Link>
+                            <Link to={`${base}/pedidos`} aria-current={isOrders ? 'page' : undefined} className={linkClass(isOrders)}>
+                                Mis pedidos
+                                {isOrders && <span className="absolute left-0 right-0 -bottom-0.5 h-0.5 rounded-full bg-brand" />}
+                            </Link>
 
-                        {/* Botón Carrito Desktop */}
-                        <button
-                            onClick={onOpenCart}
-                            className="relative bg-brand-secondary text-white p-3 rounded-2xl hover:bg-black transition-all shadow-lg shadow-gray-200 active:scale-95 flex items-center gap-2"
-                        >
-                            <ShoppingCart size={18} />
-                            <span className="hidden lg:block text-xs">Tu Pedido</span>
-                            {itemCount > 0 && (
-                                <span className="absolute -top-2 -right-2 bg-brand text-white text-[10px] font-black w-6 h-6 flex items-center justify-center rounded-full border-4 border-white animate-in zoom-in">
-                                    {itemCount}
-                                </span>
-                            )}
-                        </button>
-                    </div>
+                            <button
+                                onClick={onOpenCart}
+                                className="press relative bg-brand-secondary text-white pl-4 pr-5 py-2.5 rounded-xl hover:bg-black flex items-center gap-2 text-sm font-semibold"
+                            >
+                                <ShoppingBag size={18} aria-hidden="true" />
+                                Tu pedido
+                                {itemCount > 0 && (
+                                    <span className="tabular bg-brand text-on-brand text-[11px] font-bold min-w-5 h-5 px-1 flex items-center justify-center rounded-full">
+                                        {itemCount}
+                                    </span>
+                                )}
+                            </button>
+                        </div>
 
-                    {/* MOBILE: Botones de acción rápida */}
-                    <div className="md:hidden flex items-center gap-3">
-                        {/* Botón Carrito Mobile */}
-                        <button
-                            onClick={onOpenCart}
-                            className="relative p-2.5 bg-brand/10 text-brand rounded-xl"
-                        >
-                            <ShoppingCart size={22} />
-                            {itemCount > 0 && (
-                                <span className="absolute -top-1 -right-1 bg-brand text-white text-[9px] font-black w-5 h-5 flex items-center justify-center rounded-full border-2 border-white">
-                                    {itemCount}
-                                </span>
-                            )}
-                        </button>
-
-                        {/* Botón Hamburguesa */}
-                        <button
-                            onClick={() => setIsMenuOpen(!isMenuOpen)}
-                            className="p-2 text-brand-secondary hover:bg-gray-100 rounded-xl transition-colors"
-                        >
-                            {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            {/* MENÚ DESPLEGABLE MOBILE */}
-            {isMenuOpen && (
-                <div className="md:hidden bg-white border-t border-gray-100 p-6 space-y-4 shadow-xl animate-in slide-in-from-top duration-300">
-                    <Link
-                        to={`/${tenant?.slug}`}
-                        className="block py-4 px-6 text-center font-black text-lg text-brand-secondary bg-brand/10 rounded-2xl border border-brand/20"
-                        onClick={() => setIsMenuOpen(false)}
-                    >
-                        VER EL MENÚ
-                    </Link>
-                    <Link
-                        to={`/${tenant?.slug}/pedidos`}
-                        className="block py-4 text-center font-bold text-lg text-gray-500 hover:text-brand transition-colors"
-                        onClick={() => setIsMenuOpen(false)}
-                    >
-                        Mis Pedidos
-                    </Link>
-
-                    <div className="pt-4 border-t border-gray-50 flex flex-col items-center gap-2">
-                        <p className="text-[10px] text-gray-300 font-black uppercase tracking-widest text-center">{tenant?.horarios_atencion || 'Lunes a Domingo'}</p>
+                        {/* Mobile */}
+                        <div className="md:hidden flex items-center gap-1">
+                            <button
+                                onClick={onOpenCart}
+                                aria-label={`Abrir pedido, ${itemCount} productos`}
+                                className="press relative p-2.5 text-brand-secondary rounded-xl"
+                            >
+                                <ShoppingBag size={24} aria-hidden="true" />
+                                {itemCount > 0 && (
+                                    <span className="tabular absolute top-0.5 right-0 bg-brand text-on-brand text-[10px] font-bold min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full">
+                                        {itemCount}
+                                    </span>
+                                )}
+                            </button>
+                            <button
+                                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                                aria-label={isMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+                                aria-expanded={isMenuOpen}
+                                className="press p-2.5 text-brand-secondary rounded-xl"
+                            >
+                                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                            </button>
+                        </div>
                     </div>
                 </div>
-            )}
+
+                {isMenuOpen && (
+                    <div className="md:hidden border-t border-line px-4 py-4 space-y-1 rise-in" style={{ '--i': 0 }}>
+                        <Link
+                            to={base}
+                            onClick={() => setIsMenuOpen(false)}
+                            className={`block px-4 py-3 rounded-xl font-semibold ${isMenu ? 'bg-brand/10 text-brand-secondary' : 'text-muted'}`}
+                        >
+                            Menú
+                        </Link>
+                        <Link
+                            to={`${base}/pedidos`}
+                            onClick={() => setIsMenuOpen(false)}
+                            className={`block px-4 py-3 rounded-xl font-semibold ${isOrders ? 'bg-brand/10 text-brand-secondary' : 'text-muted'}`}
+                        >
+                            Mis pedidos
+                        </Link>
+                        <p className="px-4 pt-3 text-xs text-muted">{tenant?.horarios_atencion || 'Lunes a Domingo'}</p>
+                    </div>
+                )}
             </nav>
         </header>
     );
