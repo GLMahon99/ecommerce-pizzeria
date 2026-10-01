@@ -18,7 +18,7 @@ const SkeletonCard = () => (
 );
 
 const Home = () => {
-    const { tenant } = useTenant();
+    const { tenant, localAbierto } = useTenant();
     const [activeCategory, setActiveCategory] = useState('Todas');
     const [productos, setProductos] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -55,8 +55,16 @@ const Home = () => {
                 <p className="mt-2 sm:mt-4 text-muted text-[15px] sm:text-lg leading-relaxed max-w-[52ch]">
                     Elegí del menú de {tenant?.nombre || 'la casa'} y lo recibís en tu puerta.
                 </p>
-                {(address || tenant?.horarios_atencion) && (
+                {(address || tenant?.horarios_atencion || tenant?.estado) && (
                     <div className="mt-3 sm:mt-5 flex flex-wrap gap-x-6 gap-y-1.5 text-[13px] sm:text-sm text-muted">
+                        {tenant?.estado && (
+                            <span className={`inline-flex items-center gap-2 font-semibold ${localAbierto ? 'text-green-700' : 'text-red-700'}`}>
+                                <span className={`w-2 h-2 rounded-full ${localAbierto ? 'bg-green-500' : 'bg-red-500'}`} aria-hidden="true" />
+                                {localAbierto
+                                    ? (tenant.estado.cierra_a ? `Abierto · cierra ${tenant.estado.cierra_a}` : 'Abierto')
+                                    : 'Cerrado'}
+                            </span>
+                        )}
                         {tenant?.horarios_atencion && (
                             <span className="flex items-center gap-2">
                                 <Clock size={16} className="text-brand shrink-0" aria-hidden="true" />

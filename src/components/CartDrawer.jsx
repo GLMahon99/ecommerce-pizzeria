@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 const CartDrawer = ({ isOpen, onClose }) => {
     const { cart, addToCart, decrementQuantity, removeFromCart, total } = useCart();
-    const { tenant } = useTenant();
+    const { tenant, localAbierto } = useTenant();
     const navigate = useNavigate();
     const [closing, setClosing] = useState(false);
 
@@ -158,11 +158,17 @@ const CartDrawer = ({ isOpen, onClose }) => {
                             <span className="tabular font-display text-2xl font-extrabold text-brand-secondary">${finalTotal.toLocaleString()}</span>
                         </div>
 
+                        {!localAbierto && (
+                            <p role="alert" className="bg-red-50 text-red-900 rounded-xl p-3 text-sm font-medium">
+                                {tenant?.estado?.mensaje || 'El local está cerrado.'}
+                            </p>
+                        )}
                         <button
                             onClick={() => requestClose(() => navigate(`/${tenant?.slug}/checkout`))}
-                            className="press w-full bg-brand hover:bg-brand-hover text-on-brand h-14 rounded-xl font-semibold text-base"
+                            disabled={!localAbierto}
+                            className="press w-full bg-brand hover:bg-brand-hover text-on-brand h-14 rounded-xl font-semibold text-base disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            Finalizar compra
+                            {localAbierto ? 'Finalizar compra' : 'Local cerrado'}
                         </button>
                     </div>
                 )}

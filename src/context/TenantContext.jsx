@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useContext } from 'react';
+import { createContext, useState, useEffect, useContext, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 
@@ -79,8 +79,30 @@ export const TenantProvider = ({ children }) => {
         fetchTenantConfig();
     }, [location.pathname]); // SE RECARGA SI CAMBIA LA URL
 
+    // Estado abierto/cerrado del local: se refresca cada minuto (puede abrir o cerrar con la página abierta)
+    const slugActual = tenant?.slug;
+    const refreshEstado = useCallback(async () => {
+        if (!slugActual) return;
+        try {
+            const apiUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'https://pizzeria-ecommerce-production.up.railway.app/api';
+            const response = await axios.get(`${apiUrl}/admin/config`, { headers: { 'x-tenant': slugActual } });
+            setTenant(prev => (prev && prev.slug === slugActual ? { ...prev, estado: response.data.estado } : prev));
+        } catch (err) {
+            console.error('Error actualizando estado del local:', err);
+        }
+    }, [slugActual]);
+
+    useEffect(() => {
+        if (!slugActual) return;
+        const id = setInterval(refreshEstado, 60 * 1000);
+        return () => clearInterval(id);
+    }, [slugActual, refreshEstado]);
+
+    // Sin estado (backend viejo o error) se asume abierto: el servidor valida igual al comprar
+    const localAbierto = tenant?.estado ? tenant.estado.abierto : true;
+
     return (
-        <TenantContext.Provider value={{ tenant, loading, error }}>
+        <TenantContext.Provider value={{ tenant, loading, error, localAbierto, refreshEstado }}>
             {children}
         </TenantContext.Provider>
     );

@@ -148,6 +148,12 @@ const StoreDirectory = () => {
                                             <div className="min-w-0 flex-1">
                                                 <h2 className="font-display text-xl font-bold text-stone-900 leading-tight truncate">{company.nombre}</h2>
                                                 <p className="text-sm text-muted truncate">{company.ciudad || 'Pedidos online'}</p>
+                                                {company.estado && (
+                                                    <span className={`mt-1 inline-flex items-center gap-1.5 text-xs font-semibold ${company.estado.abierto ? 'text-green-700' : 'text-red-700'}`}>
+                                                        <span className={`w-1.5 h-1.5 rounded-full ${company.estado.abierto ? 'bg-green-500' : 'bg-red-500'}`} aria-hidden="true" />
+                                                        {company.estado.abierto ? 'Abierto ahora' : 'Cerrado'}
+                                                    </span>
+                                                )}
                                             </div>
                                             <span
                                                 className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 text-white transition-transform duration-200 motion-safe:[@media(hover:hover)]:group-hover:translate-x-0.5 motion-safe:[@media(hover:hover)]:group-hover:-translate-y-0.5"

@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import CartDrawer from '../components/CartDrawer';
+import StoreClosedBanner from '../components/StoreClosedBanner';
 import { useState } from 'react';
 
 const MainLayout = () => {
@@ -17,6 +18,7 @@ const MainLayout = () => {
 
             {/* Espacio para que el contenido no quede debajo del Navbar fijo */}
             <main className="flex-grow pt-20">
+                <StoreClosedBanner />
                 <Outlet />
             </main>
 

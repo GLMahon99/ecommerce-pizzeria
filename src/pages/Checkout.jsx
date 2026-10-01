@@ -37,7 +37,7 @@ const DeliveryOption = ({ active, disabled, onClick, icon, title, text }) => (
 
 const Checkout = () => {
     const { cart, total } = useCart();
-    const { tenant } = useTenant();
+    const { tenant, localAbierto, refreshEstado } = useTenant();
     const navigate = useNavigate();
 
     const [deliveryMethod, setDeliveryMethod] = useState('delivery'); // 'delivery' or 'takeaway'
@@ -99,6 +99,10 @@ const Checkout = () => {
     };
 
     const handleCreatePreference = async () => {
+        if (!localAbierto) {
+            setError(tenant?.estado?.mensaje || 'El local está cerrado.');
+            return;
+        }
         const validationError = validate();
         if (validationError) {
             setError(validationError);
@@ -133,6 +137,8 @@ const Checkout = () => {
             setPreferenceId(paymentResponse.data.id);
         } catch (err) {
             console.error('Error al procesar el pedido:', err);
+            // El local cerró mientras el cliente completaba el pedido
+            if (err.response?.data?.code === 'LOCAL_CERRADO') refreshEstado();
             setError(err.response?.data?.message || 'Hubo un error al procesar tu pedido.');
         } finally {
             setLoading(false);
@@ -266,12 +272,18 @@ const Checkout = () => {
                                     {error}
                                 </div>
                             )}
+                            {!localAbierto && !error && (
+                                <div role="alert" className="mb-3 flex items-start gap-3 bg-red-50 text-red-900 rounded-xl p-3.5 text-sm">
+                                    <AlertCircle size={18} className="text-red-600 shrink-0 mt-0.5" aria-hidden="true" />
+                                    {tenant?.estado?.mensaje || 'El local está cerrado.'} No podemos tomar tu pedido ahora.
+                                </div>
+                            )}
                             <button
                                 onClick={handleCreatePreference}
-                                disabled={loading}
+                                disabled={loading || !localAbierto}
                                 className="press w-full bg-brand hover:bg-brand-hover text-on-brand h-14 rounded-xl font-semibold text-base sm:text-lg disabled:opacity-70"
                             >
-                                {loading ? 'Preparando el pago…' : `Pagar $${finalTotal.toLocaleString()}`}
+                                {loading ? 'Preparando el pago…' : !localAbierto ? 'Local cerrado' : `Pagar $${finalTotal.toLocaleString()}`}
                             </button>
                         </div>
                     )}
