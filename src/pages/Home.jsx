@@ -3,6 +3,8 @@ import { Clock, MapPin } from 'lucide-react';
 import CategoryBar from '../components/CategoryBar';
 import ProductCard from '../components/ProductCard';
 import { useTenant } from '../context/TenantContext';
+import HorariosModal from '../components/HorariosModal';
+import { diaHoyArgentina, textoTurnosDelDia } from '../utils/horarios';
 import api from '../api/axiosConfig';
 
 const SkeletonCard = () => (
@@ -19,6 +21,7 @@ const SkeletonCard = () => (
 
 const Home = () => {
     const { tenant, localAbierto } = useTenant();
+    const [horariosOpen, setHorariosOpen] = useState(false);
     const [activeCategory, setActiveCategory] = useState('Todas');
     const [productos, setProductos] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -65,7 +68,19 @@ const Home = () => {
                                     : 'Cerrado'}
                             </span>
                         )}
-                        {tenant?.horarios_atencion && (
+                        {tenant?.horarios ? (
+                            <span className="flex items-center gap-2">
+                                <Clock size={16} className="text-brand shrink-0" aria-hidden="true" />
+                                <span>Hoy: <span className="tabular">{textoTurnosDelDia(tenant.horarios, diaHoyArgentina()) || 'Cerrado'}</span></span>
+                                <button
+                                    type="button"
+                                    onClick={() => setHorariosOpen(true)}
+                                    className="press font-semibold text-brand underline underline-offset-4 decoration-brand/40 hover:decoration-brand"
+                                >
+                                    Horarios
+                                </button>
+                            </span>
+                        ) : tenant?.horarios_atencion && (
                             <span className="flex items-center gap-2">
                                 <Clock size={16} className="text-brand shrink-0" aria-hidden="true" />
                                 <span className="whitespace-pre-line">{tenant.horarios_atencion}</span>
@@ -80,6 +95,10 @@ const Home = () => {
                     </div>
                 )}
             </header>
+
+            {horariosOpen && (
+                <HorariosModal horarios={tenant?.horarios} estado={tenant?.estado} onClose={() => setHorariosOpen(false)} />
+            )}
 
             <CategoryBar activeCategory={activeCategory} setActiveCategory={setActiveCategory} />
 
