@@ -1,48 +1,40 @@
 import { useState } from 'react';
 import { Plus, Minus } from 'lucide-react';
 import { useCart } from '../context/CartContext';
-
-const Segmented = ({ options, value, onChange }) => (
-    <div className="flex bg-surface-2 p-1 rounded-xl mb-3 sm:mb-4" role="radiogroup">
-        {options.map(([label, val]) => (
-            <button
-                key={val}
-                role="radio"
-                aria-checked={value === val}
-                onClick={() => onChange(val)}
-                className={`press flex-1 py-2.5 text-xs font-semibold rounded-lg ${value === val ? 'bg-white text-brand-secondary shadow-sm' : 'text-muted hover:text-brand-secondary'}`}
-            >
-                {label}
-            </button>
-        ))}
-    </div>
-);
+import Segmented from './Segmented';
+import ArmarProductoSheet from './ArmarProductoSheet';
 
 const ProductCard = ({ product, index = 0 }) => {
     const { cart, addToCart, decrementQuantity } = useCart();
 
-    const isPizza = product.categoria === 'Pizzas';
-    const isHelado = product.categoria === 'Helados';
-    const hasVariants = (product.precio_chica !== null && product.precio_chica !== undefined) || (product.precio_cuarto !== null && product.precio_cuarto !== undefined);
+    // Pizza con tamaño chico cargado: selector Chica / Grande ('Principal' = grande, igual que en carritos guardados)
+    const pizza = product.tipo === 'PIZZA' ? product.pizza : null;
+    const hasVariants = pizza?.precio_chica != null;
+    // Helado y hamburguesa se arman en una ventana (gustos, guarnición, toppings...)
+    const seArma = product.tipo === 'HELADO' || product.tipo === 'HAMBURGUESA';
 
-    const [selectedVariant, setSelectedVariant] = useState(isPizza || isHelado ? 'Principal' : 'Normal');
+    const [selectedVariant, setSelectedVariant] = useState('Principal');
     const [isExpanded, setIsExpanded] = useState(false);
+    const [armando, setArmando] = useState(false);
 
-    const getCurrentPrice = () => {
-        if (selectedVariant === 'Opción 2' || selectedVariant === 'Chica' || selectedVariant === '1/2 kg') return product.precio_chica;
-        if (selectedVariant === '1/4 kg') return product.precio_cuarto;
-        return product.precio;
-    };
-
-    const currentPrice = getCurrentPrice();
+    const currentPrice = hasVariants && selectedVariant === 'Chica'
+        ? pizza.precio_chica
+        : Number(pizza ? pizza.precio_grande : product.precio);
 
     // Generar ID único para el carrito si tiene variantes
     const cartItemId = hasVariants ? `${product.id_producto}-${selectedVariant}` : String(product.id_producto);
 
     const cartItem = cart.find((item) => (item.cartItemId || String(item.id_producto)) === cartItemId);
-    const quantity = cartItem ? cartItem.quantity : 0;
+    // Los productos que se arman tienen una línea por combinación: se cuenta el total del producto
+    const quantity = seArma
+        ? cart.filter(item => item.id_producto === product.id_producto).reduce((acc, item) => acc + item.quantity, 0)
+        : (cartItem ? cartItem.quantity : 0);
 
     const handleAddToCart = () => {
+        if (seArma) {
+            setArmando(true);
+            return;
+        }
         addToCart({
             ...product,
             precio: currentPrice, // el precio final
@@ -88,15 +80,7 @@ const ProductCard = ({ product, index = 0 }) => {
                     )}
                 </div>
 
-                {isHelado && (
-                    <Segmented
-                        value={selectedVariant}
-                        onChange={setSelectedVariant}
-                        options={[['1/4 kg', '1/4 kg'], ['1/2 kg', '1/2 kg'], ['1 kg', 'Principal']]}
-                    />
-                )}
-
-                {isPizza && product.precio_chica && (
+                {hasVariants && (
                     <Segmented
                         value={selectedVariant}
                         onChange={setSelectedVariant}
@@ -104,16 +88,8 @@ const ProductCard = ({ product, index = 0 }) => {
                     />
                 )}
 
-                {!isPizza && !isHelado && hasVariants && (
-                    <Segmented
-                        value={selectedVariant}
-                        onChange={setSelectedVariant}
-                        options={[['Secundario', 'Opción 2'], ['Principal', 'Normal']]}
-                    />
-                )}
-
                 <div className="mt-auto">
-                    {quantity > 0 ? (
+                    {quantity > 0 && !seArma ? (
                         <div className="w-full flex items-center justify-between bg-brand/10 p-1 rounded-xl">
                             <button
                                 onClick={() => decrementQuantity(cartItemId)}
@@ -136,11 +112,16 @@ const ProductCard = ({ product, index = 0 }) => {
                             onClick={handleAddToCart}
                             className="press w-full flex items-center justify-center gap-2 bg-brand-secondary hover:bg-brand hover:text-on-brand text-white h-12 rounded-xl font-semibold text-sm"
                         >
-                            <Plus size={18} /> Agregar
+                            <Plus size={18} />
+                            {seArma
+                                ? (quantity > 0 ? `Agregar otro · ${quantity} en tu pedido` : 'Elegir y agregar')
+                                : 'Agregar'}
                         </button>
                     )}
                 </div>
             </div>
+
+            {armando && <ArmarProductoSheet product={product} onClose={() => setArmando(false)} />}
         </article>
     );
 };

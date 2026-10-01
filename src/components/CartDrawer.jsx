@@ -3,6 +3,8 @@ import { X, Minus, Plus, ShoppingBag, Trash2, Bike } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useTenant } from '../context/TenantContext';
 import { useNavigate } from 'react-router-dom';
+import AclaracionItem from './AclaracionItem';
+import { textoTamano } from '../utils/producto';
 
 const CartDrawer = ({ isOpen, onClose }) => {
     const { cart, addToCart, decrementQuantity, removeFromCart, total } = useCart();
@@ -97,9 +99,13 @@ const CartDrawer = ({ isOpen, onClose }) => {
                                             <div className="flex justify-between gap-2">
                                                 <div className="min-w-0">
                                                     <h3 className="font-display font-bold text-brand-secondary leading-tight">{item.nombre}</h3>
-                                                    {item.tamano && item.tamano !== 'Normal' && item.tamano !== 'Principal' && (
-                                                        <span className="text-xs text-muted">{item.tamano}</span>
+                                                    {textoTamano(item.tamano) && (
+                                                        <span className="text-xs text-muted">{textoTamano(item.tamano)}</span>
                                                     )}
+                                                    {(item.detalleTexto || []).map(l => (
+                                                        <p key={l} className="text-xs text-muted leading-snug">{l}</p>
+                                                    ))}
+                                                    <AclaracionItem item={item} />
                                                 </div>
                                                 <button
                                                     onClick={() => removeFromCart(id)}

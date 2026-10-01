@@ -11,6 +11,7 @@ import {
 import { Link, useParams } from 'react-router-dom';
 import api from '../api/axiosConfig';
 import { useCart } from '../context/CartContext';
+import { lineasDetallePedido } from '../utils/producto';
 import { useTenant } from '../context/TenantContext'; // Importar Tenant
 
 const OrderStatus = () => {
@@ -191,6 +192,9 @@ const OrderStatus = () => {
                             <li key={idx} className="flex justify-between gap-4 py-3 text-sm first:pt-0 last:pb-0">
                                 <span className="text-brand-secondary">
                                     <span className="tabular font-semibold">{item.cantidad}×</span> {item.producto_nombre}
+                                    {item.variante && <span className="text-muted"> ({item.variante})</span>}
+                                    {lineasDetallePedido(item).map(l => <span key={l} className="block text-xs text-muted">{l}</span>)}
+                                    {item.observacion && <span className="block text-xs text-amber-800">“{item.observacion}”</span>}
                                 </span>
                                 <span className="tabular text-muted shrink-0">${(item.cantidad * item.precio_unitario).toLocaleString()}</span>
                             </li>

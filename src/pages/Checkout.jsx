@@ -6,6 +6,7 @@ import { ArrowLeft, Bike, Store, ShieldCheck, AlertCircle } from 'lucide-react';
 import api from '../api/axiosConfig';
 import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
 import { getBuyer, saveBuyer, addOrderToken } from '../utils/guestStore';
+import { textoTamano } from '../utils/producto';
 
 const EMPTY_ADDRESS = { calle: '', altura: '', piso: '', depto: '', cp: '', observaciones: '' };
 
@@ -124,7 +125,14 @@ const Checkout = () => {
                 items: cart.map((item) => ({
                     id_producto: item.id_producto,
                     cantidad: item.quantity,
-                    precio: item.precio
+                    precio: item.precio,
+                    variante: item.tamano === 'Chica' ? 'Chica' : undefined,
+                    gustos: item.gustos,
+                    toppings: item.toppings,
+                    aderezos: item.aderezos,
+                    guarnicion: item.guarnicion,
+                    carnes_extra: item.carnes_extra,
+                    observacion: item.observacion
                 }))
             });
             const { token_seguimiento } = orderResponse.data;
@@ -297,6 +305,9 @@ const Checkout = () => {
                             <li key={item.cartItemId || item.id_producto} className="flex justify-between gap-4 text-sm">
                                 <span className="text-brand-secondary">
                                     <span className="tabular font-semibold">{item.quantity}×</span> {item.nombre}
+                                    {textoTamano(item.tamano) && <span className="text-muted"> ({textoTamano(item.tamano)})</span>}
+                                    {(item.detalleTexto || []).map(l => <span key={l} className="block text-xs text-muted">{l}</span>)}
+                                    {item.observacion && <span className="block text-xs text-amber-800">“{item.observacion}”</span>}
                                 </span>
                                 <span className="tabular font-semibold shrink-0">${(item.precio * item.quantity).toLocaleString()}</span>
                             </li>

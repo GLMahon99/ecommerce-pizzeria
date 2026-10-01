@@ -44,8 +44,8 @@ export const CartProvider = ({ children }) => {
         }
     }, [cart, cartKey, slug]);
 
-    // Función para agregar o incrementar cantidad
-    const addToCart = (product) => {
+    // Función para agregar o incrementar cantidad (qty > 1 desde la ventana de armado)
+    const addToCart = (product, qty = 1) => {
         // Obtenemos el cartItemId (si viene) o creamos uno por defecto seguro.
         const cId = product.cartItemId || String(product.id_producto);
         
@@ -54,11 +54,11 @@ export const CartProvider = ({ children }) => {
             if (existing) {
                 return prev.map((item) =>
                     (item.cartItemId || String(item.id_producto)) === cId
-                        ? { ...item, quantity: item.quantity + 1 }
+                        ? { ...item, quantity: item.quantity + qty }
                         : item
                 );
             }
-            return [...prev, { ...product, quantity: 1, cartItemId: cId }];
+            return [...prev, { ...product, quantity: qty, cartItemId: cId }];
         });
     };
 
@@ -78,6 +78,25 @@ export const CartProvider = ({ children }) => {
         setCart((prev) => prev.filter((item) => (item.cartItemId || String(item.id_producto)) !== String(cId)));
     };
 
+    // Aclaración del comprador en un ítem (ej: "sin rúcula").
+    // El ítem pasa a tener su propio ID, así el agregado rápido de la tarjeta crea otro sin aclaración;
+    // si ya había uno idéntico con la misma aclaración, se juntan.
+    const setObservacion = (cId, texto) => {
+        const observacion = String(texto || '').trim().slice(0, 150);
+        setCart((prev) => {
+            const item = prev.find((i) => (i.cartItemId || String(i.id_producto)) === String(cId));
+            if (!item) return prev;
+            const base = String(item.cartItemId || item.id_producto).split('#obs:')[0];
+            const nuevoId = observacion ? `${base}#obs:${observacion.toLowerCase()}` : base;
+            const resto = prev.filter((i) => i !== item);
+            const igual = resto.find((i) => (i.cartItemId || String(i.id_producto)) === nuevoId);
+            if (igual) {
+                return resto.map((i) => (i === igual ? { ...i, quantity: i.quantity + item.quantity } : i));
+            }
+            return prev.map((i) => (i === item ? { ...i, observacion: observacion || undefined, cartItemId: nuevoId } : i));
+        });
+    };
+
     // Vaciar carrito (después de una compra exitosa)
     const clearCart = useCallback(() => setCart([]), []);
 
@@ -92,6 +111,7 @@ export const CartProvider = ({ children }) => {
                 addToCart,
                 decrementQuantity,
                 removeFromCart,
+                setObservacion,
                 clearCart,
                 total,
                 itemCount
