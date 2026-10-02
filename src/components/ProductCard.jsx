@@ -12,6 +12,8 @@ const ProductCard = ({ product, index = 0 }) => {
     const hasVariants = pizza?.precio_chica != null;
     // Helado y hamburguesa se arman en una ventana (gustos, guarnición, toppings...)
     const seArma = product.tipo === 'HELADO' || product.tipo === 'HAMBURGUESA';
+    // Pausado por el local (ej: sin stock momentáneo): se muestra pero no se puede agregar
+    const pausado = !!product.pausado;
 
     const [selectedVariant, setSelectedVariant] = useState('Principal');
     const [isExpanded, setIsExpanded] = useState(false);
@@ -45,7 +47,7 @@ const ProductCard = ({ product, index = 0 }) => {
 
     return (
         <article
-            className="rise-in group flex sm:flex-col h-full bg-white rounded-2xl overflow-hidden shadow-[0_1px_2px_rgb(60_40_10/0.06),0_8px_24px_-12px_rgb(60_40_10/0.12)]"
+            className={`rise-in group flex sm:flex-col h-full bg-white rounded-2xl overflow-hidden shadow-[0_1px_2px_rgb(60_40_10/0.06),0_8px_24px_-12px_rgb(60_40_10/0.12)] ${pausado ? 'opacity-60' : ''}`}
             style={{ '--i': Math.min(index, 12) }}
         >
             <div className="relative shrink-0 w-28 self-stretch min-h-28 sm:w-auto sm:self-auto sm:min-h-0 sm:aspect-[4/3] overflow-hidden bg-surface-2">
@@ -80,7 +82,7 @@ const ProductCard = ({ product, index = 0 }) => {
                     )}
                 </div>
 
-                {hasVariants && (
+                {hasVariants && !pausado && (
                     <Segmented
                         value={selectedVariant}
                         onChange={setSelectedVariant}
@@ -89,7 +91,15 @@ const ProductCard = ({ product, index = 0 }) => {
                 )}
 
                 <div className="mt-auto">
-                    {quantity > 0 && !seArma ? (
+                    {pausado ? (
+                        <button
+                            type="button"
+                            disabled
+                            className="w-full h-12 rounded-xl font-semibold text-sm bg-surface-2 text-muted cursor-not-allowed"
+                        >
+                            Sin stock por ahora
+                        </button>
+                    ) : quantity > 0 && !seArma ? (
                         <div className="w-full flex items-center justify-between bg-brand/10 p-1 rounded-xl">
                             <button
                                 onClick={() => decrementQuantity(cartItemId)}
