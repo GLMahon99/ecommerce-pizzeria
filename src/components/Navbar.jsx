@@ -27,7 +27,9 @@ const Navbar = ({ onOpenCart }) => {
     const isOrders = pathname.startsWith(`${base}/pedidos`);
 
     let topbarMessage = '';
-    if (tenant?.costo_envio == 0) {
+    if (tenant?.acepta_delivery === false) {
+        topbarMessage = 'Retiro en el local';
+    } else if (tenant?.costo_envio == 0) {
         topbarMessage = 'Envío gratis a domicilio';
     } else if (tenant?.envio_gratis_desde) {
         topbarMessage = `Envío gratis a partir de $${Number(tenant.envio_gratis_desde).toLocaleString()}`;

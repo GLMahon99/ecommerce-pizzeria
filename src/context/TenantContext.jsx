@@ -86,7 +86,9 @@ export const TenantProvider = ({ children }) => {
         try {
             const apiUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'https://pizzeria-ecommerce-production.up.railway.app/api';
             const response = await axios.get(`${apiUrl}/admin/config`, { headers: { 'x-tenant': slugActual } });
-            setTenant(prev => (prev && prev.slug === slugActual ? { ...prev, estado: response.data.estado } : prev));
+            setTenant(prev => (prev && prev.slug === slugActual
+                ? { ...prev, estado: response.data.estado, acepta_delivery: response.data.acepta_delivery, acepta_retiro: response.data.acepta_retiro }
+                : prev));
         } catch (err) {
             console.error('Error actualizando estado del local:', err);
         }

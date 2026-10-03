@@ -56,7 +56,7 @@ const Home = () => {
                     ¿Qué comemos <span className="text-brand">hoy?</span>
                 </h1>
                 <p className="mt-2 sm:mt-4 text-muted text-[15px] sm:text-lg leading-relaxed max-w-[52ch]">
-                    Elegí del menú de {tenant?.nombre || 'la casa'} y lo recibís en tu puerta.
+                    Elegí del menú de {tenant?.nombre || 'la casa'} y {tenant?.acepta_delivery === false ? 'lo retirás en el local' : tenant?.acepta_retiro === false ? 'lo recibís en tu puerta' : 'lo recibís en tu puerta o lo retirás'}.
                 </p>
                 {(address || tenant?.horarios_atencion || tenant?.estado) && (
                     <div className="mt-3 sm:mt-5 flex flex-wrap gap-x-6 gap-y-1.5 text-[13px] sm:text-sm text-muted">

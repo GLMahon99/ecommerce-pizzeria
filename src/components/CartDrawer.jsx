@@ -34,7 +34,9 @@ const CartDrawer = ({ isOpen, onClose }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isOpen]);
 
-    let shippingCost = Number(tenant?.costo_envio || 0);
+    // Un local que no hace envíos no cobra ni muestra costo de envío
+    const hayDelivery = tenant?.acepta_delivery !== false;
+    let shippingCost = hayDelivery ? Number(tenant?.costo_envio || 0) : 0;
     if (tenant?.envio_gratis_desde && total >= Number(tenant.envio_gratis_desde)) {
         shippingCost = 0;
     }
@@ -134,7 +136,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
 
                 {cart.length > 0 && (
                     <div className="px-6 pt-5 pb-6 bg-white border-t border-line space-y-3 shrink-0 pb-safe">
-                        {shippingCost > 0 && tenant?.envio_gratis_desde && (
+                        {hayDelivery && shippingCost > 0 && tenant?.envio_gratis_desde && (
                             <div className="pb-2">
                                 <p className="flex items-center gap-2 text-sm text-brand-secondary mb-2">
                                     <Bike size={16} className="text-brand" aria-hidden="true" />
@@ -153,12 +155,14 @@ const CartDrawer = ({ isOpen, onClose }) => {
                             <span>Subtotal</span>
                             <span className="tabular">${total.toLocaleString()}</span>
                         </div>
-                        <div className="flex justify-between text-sm text-muted">
-                            <span>Envío</span>
-                            <span className={`tabular ${shippingCost === 0 ? 'text-green-700 font-semibold' : ''}`}>
-                                {shippingCost === 0 ? 'Gratis' : `$${shippingCost.toLocaleString()}`}
-                            </span>
-                        </div>
+                        {hayDelivery && (
+                            <div className="flex justify-between text-sm text-muted">
+                                <span>Envío</span>
+                                <span className={`tabular ${shippingCost === 0 ? 'text-green-700 font-semibold' : ''}`}>
+                                    {shippingCost === 0 ? 'Gratis' : `$${shippingCost.toLocaleString()}`}
+                                </span>
+                            </div>
+                        )}
                         <div className="flex justify-between items-baseline border-t border-line pt-3">
                             <span className="font-semibold text-brand-secondary">Total</span>
                             <span className="tabular font-display text-2xl font-extrabold text-brand-secondary">${finalTotal.toLocaleString()}</span>

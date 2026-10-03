@@ -41,7 +41,11 @@ const Checkout = () => {
     const { tenant, localAbierto, refreshEstado } = useTenant();
     const navigate = useNavigate();
 
-    const [deliveryMethod, setDeliveryMethod] = useState('delivery'); // 'delivery' or 'takeaway'
+    // Métodos de entrega que ofrece el local (sin dato = ambos). Si ofrece uno solo, ese es el que corresponde.
+    const aceptaDelivery = tenant?.acepta_delivery !== false;
+    const aceptaRetiro = tenant?.acepta_retiro !== false;
+    const [metodoElegido, setMetodoElegido] = useState('delivery'); // 'delivery' or 'takeaway'
+    const deliveryMethod = !aceptaDelivery ? 'takeaway' : !aceptaRetiro ? 'delivery' : metodoElegido;
     const [buyer, setBuyer] = useState({ dni: '', nombre: '', telefono: '', email: '' });
     const [address, setAddress] = useState(EMPTY_ADDRESS);
     const [loading, setLoading] = useState(false);
@@ -146,7 +150,7 @@ const Checkout = () => {
         } catch (err) {
             console.error('Error al procesar el pedido:', err);
             // El local cerró mientras el cliente completaba el pedido
-            if (err.response?.data?.code === 'LOCAL_CERRADO') refreshEstado();
+            if (['LOCAL_CERRADO', 'METODO_NO_DISPONIBLE'].includes(err.response?.data?.code)) refreshEstado();
             setError(err.response?.data?.message || 'Hubo un error al procesar tu pedido.');
         } finally {
             setLoading(false);
@@ -176,18 +180,34 @@ const Checkout = () => {
                 <div className="space-y-10">
                     <section>
                         <h2 className="font-display text-xl font-bold text-brand-secondary mb-4">Cómo lo recibís</h2>
-                        <div role="radiogroup" aria-label="Método de entrega" className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
-                            <DeliveryOption
-                                active={deliveryMethod === 'delivery'} disabled={locked}
-                                onClick={() => setDeliveryMethod('delivery')}
-                                icon={<Bike size={22} aria-hidden="true" />} title="Envío a domicilio" text="Lo llevamos hasta tu casa."
-                            />
-                            <DeliveryOption
-                                active={deliveryMethod === 'takeaway'} disabled={locked}
-                                onClick={() => setDeliveryMethod('takeaway')}
-                                icon={<Store size={22} aria-hidden="true" />} title="Retiro en el local" text="Pasás a buscarlo, ya listo."
-                            />
-                        </div>
+                        {aceptaDelivery && aceptaRetiro ? (
+                            <div role="radiogroup" aria-label="Método de entrega" className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+                                <DeliveryOption
+                                    active={deliveryMethod === 'delivery'} disabled={locked}
+                                    onClick={() => setMetodoElegido('delivery')}
+                                    icon={<Bike size={22} aria-hidden="true" />} title="Envío a domicilio" text="Lo llevamos hasta tu casa."
+                                />
+                                <DeliveryOption
+                                    active={deliveryMethod === 'takeaway'} disabled={locked}
+                                    onClick={() => setMetodoElegido('takeaway')}
+                                    icon={<Store size={22} aria-hidden="true" />} title="Retiro en el local" text="Pasás a buscarlo, ya listo."
+                                />
+                            </div>
+                        ) : (
+                            <div className="mb-8 p-4 rounded-xl border border-line bg-white flex gap-3 items-start">
+                                <span className="text-brand">
+                                    {aceptaDelivery ? <Bike size={22} aria-hidden="true" /> : <Store size={22} aria-hidden="true" />}
+                                </span>
+                                <span>
+                                    <span className="block font-semibold text-brand-secondary">
+                                        {aceptaDelivery ? 'Solo envío a domicilio' : 'Solo retiro en el local'}
+                                    </span>
+                                    <span className="block text-sm text-muted">
+                                        {aceptaDelivery ? 'Este local entrega en tu domicilio.' : 'Este local no hace envíos: pasás a buscarlo, ya listo.'}
+                                    </span>
+                                </span>
+                            </div>
+                        )}
 
                         <h2 className="font-display text-xl font-bold text-brand-secondary mb-4">Tus datos</h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -319,12 +339,14 @@ const Checkout = () => {
                             <span>Subtotal</span>
                             <span className="tabular">${total.toLocaleString()}</span>
                         </div>
-                        <div className="flex justify-between text-muted">
-                            <span>Envío</span>
-                            <span className={`tabular ${shippingCost === 0 ? 'text-green-700 font-semibold' : ''}`}>
-                                {shippingCost === 0 ? 'Gratis' : `$${shippingCost.toLocaleString()}`}
-                            </span>
-                        </div>
+                        {aceptaDelivery && (
+                            <div className="flex justify-between text-muted">
+                                <span>Envío</span>
+                                <span className={`tabular ${shippingCost === 0 ? 'text-green-700 font-semibold' : ''}`}>
+                                    {shippingCost === 0 ? 'Gratis' : `$${shippingCost.toLocaleString()}`}
+                                </span>
+                            </div>
+                        )}
                         <div className="flex justify-between items-baseline pt-3 border-t border-line">
                             <span className="font-semibold text-brand-secondary">Total</span>
                             <span className="tabular font-display text-3xl font-extrabold text-brand-secondary">${finalTotal.toLocaleString()}</span>
