@@ -34,13 +34,13 @@ const CartDrawer = ({ isOpen, onClose }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isOpen]);
 
-    // Un local que no hace envíos no cobra ni muestra costo de envío
+    // El carrito no suma el envío: si va a haber envío o retiro se define en el checkout, que lo calcula.
+    // Acá solo se usa para la barra de "envío gratis" (y no se muestra en un local sin envíos).
     const hayDelivery = tenant?.acepta_delivery !== false;
     let shippingCost = hayDelivery ? Number(tenant?.costo_envio || 0) : 0;
     if (tenant?.envio_gratis_desde && total >= Number(tenant.envio_gratis_desde)) {
         shippingCost = 0;
     }
-    const finalTotal = total + shippingCost;
     const missingForFree = tenant?.envio_gratis_desde ? Number(tenant.envio_gratis_desde) - total : 0;
     const freeProgress = tenant?.envio_gratis_desde
         ? Math.min(100, Math.max(0, (total / Number(tenant.envio_gratis_desde)) * 100))
@@ -156,16 +156,11 @@ const CartDrawer = ({ isOpen, onClose }) => {
                             <span className="tabular">${total.toLocaleString()}</span>
                         </div>
                         {hayDelivery && (
-                            <div className="flex justify-between text-sm text-muted">
-                                <span>Envío</span>
-                                <span className={`tabular ${shippingCost === 0 ? 'text-green-700 font-semibold' : ''}`}>
-                                    {shippingCost === 0 ? 'Gratis' : `$${shippingCost.toLocaleString()}`}
-                                </span>
-                            </div>
+                            <p className="text-xs text-muted">El envío, si corresponde, se calcula al finalizar la compra.</p>
                         )}
                         <div className="flex justify-between items-baseline border-t border-line pt-3">
                             <span className="font-semibold text-brand-secondary">Total</span>
-                            <span className="tabular font-display text-2xl font-extrabold text-brand-secondary">${finalTotal.toLocaleString()}</span>
+                            <span className="tabular font-display text-2xl font-extrabold text-brand-secondary">${total.toLocaleString()}</span>
                         </div>
 
                         {!localAbierto && (
