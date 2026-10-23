@@ -8,7 +8,7 @@ import {
     ChevronLeft,
     X
 } from 'lucide-react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, Navigate, useParams } from 'react-router-dom';
 import api from '../api/axiosConfig';
 import { useCart } from '../context/CartContext';
 import { lineasDetallePedido } from '../utils/producto';
@@ -60,6 +60,8 @@ const OrderStatus = () => {
     }, [token]);
 
     const isTakeaway = orderData?.metodo_entrega === 'takeaway';
+    const esperandoPagoTransferencia = orderData?.metodo_pago === 'transferencia'
+        && ['Esperando transferencia', 'Transferencia informada', 'Pago no confirmado', 'Vencido'].includes(orderData.estado);
 
     const steps = isTakeaway ? [
         { id: 'recibido', label: 'Pedido Recibido', icon: <CheckCircle2 size={20} />, subtext: 'Estamos preparando tu pedido' },
@@ -98,6 +100,10 @@ const OrderStatus = () => {
                 </div>
             </div>
         );
+    }
+
+    if (esperandoPagoTransferencia) {
+        return <Navigate to={`/${tenant?.slug}/status/transfer/${token}`} replace />;
     }
 
     const shadow = 'shadow-[0_1px_2px_rgb(60_40_10/0.06),0_8px_24px_-12px_rgb(60_40_10/0.12)]';

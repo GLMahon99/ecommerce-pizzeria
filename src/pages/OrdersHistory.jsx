@@ -7,6 +7,10 @@ import { getOrderTokens } from '../utils/guestStore';
 
 const getStatusStyle = (status) => {
     const s = status.toLowerCase();
+    if (s === 'esperando transferencia') return { cls: 'bg-amber-50 text-amber-900', dot: 'bg-amber-500', label: 'Esperando tu pago' };
+    if (s === 'transferencia informada') return { cls: 'bg-amber-50 text-amber-900', dot: 'bg-amber-500', label: 'Verificando pago' };
+    if (s === 'pago no confirmado') return { cls: 'bg-red-50 text-red-900', dot: 'bg-red-500', label: 'Pago no confirmado' };
+    if (s === 'vencido') return { cls: 'bg-red-50 text-red-900', dot: 'bg-red-500', label: 'Vencido' };
     if (s.includes('pendiente')) return { cls: 'bg-amber-50 text-amber-900', dot: 'bg-amber-500', label: 'Pendiente' };
     if (s.includes('aprobado') || s.includes('preparando')) return { cls: 'bg-sky-50 text-sky-900', dot: 'bg-sky-500', label: 'Preparando' };
     if (s.includes('camino')) return { cls: 'bg-indigo-50 text-indigo-900', dot: 'bg-indigo-500', label: 'En camino' };

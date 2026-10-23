@@ -12,6 +12,7 @@ import Footer from './components/Footer'; // Si ya lo tenés, si no, lo comentá
 import Home from './pages/Home';
 import Checkout from './pages/Checkout';
 import OrderStatus from './pages/OrderStatus';
+import TransferPayment from './pages/TransferPayment';
 import OrdersHistory from './pages/OrdersHistory';
 
 import { useTenant } from './context/TenantContext'; // Importar Tenant
@@ -66,6 +67,7 @@ function App() {
           <Route path="/:slug/pedidos" element={<OrdersHistory />} />
           <Route path="/:slug/status/:result" element={<OrderStatus />} />
           <Route path="/:slug/status/:result/:token" element={<OrderStatus />} />
+          <Route path="/:slug/status/transfer/:token" element={<TransferPayment />} />
           <Route path="/:slug/terminos" element={<Terms />} />
         </Routes>
       </main>

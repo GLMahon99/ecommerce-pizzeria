@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { useNavigate } from 'react-router-dom';
 import { useTenant } from '../context/TenantContext';
-import { ArrowLeft, Bike, Store, ShieldCheck, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Bike, Store, ShieldCheck, AlertCircle, Landmark } from 'lucide-react';
 import api from '../api/axiosConfig';
 import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
 import { getBuyer, saveBuyer, addOrderToken } from '../utils/guestStore';
@@ -52,11 +52,20 @@ const Checkout = () => {
     const [error, setError] = useState('');
     const [preferenceId, setPreferenceId] = useState(null);
 
+    // Medio de pago: la transferencia solo se ofrece si el local la activó (el servidor lo valida igual)
+    const aceptaTransferencia = !!tenant?.acepta_transferencia;
+    const descuentoPct = aceptaTransferencia ? Number(tenant?.transferencia_descuento_pct || 0) : 0;
+    const [pagoElegido, setPagoElegido] = useState('mercadopago');
+    const metodoPago = aceptaTransferencia ? pagoElegido : 'mercadopago';
+    const esTransferencia = metodoPago === 'transferencia';
+
     let shippingCost = deliveryMethod === 'takeaway' ? 0 : Number(tenant?.costo_envio || 0);
     if (deliveryMethod !== 'takeaway' && tenant?.envio_gratis_desde && total >= Number(tenant.envio_gratis_desde)) {
         shippingCost = 0;
     }
-    const finalTotal = total + shippingCost;
+    // Descuento por transferencia sobre los productos (no sobre el envío); el total definitivo lo calcula el servidor
+    const descuentoTransferencia = esTransferencia ? Math.round(total * descuentoPct) / 100 : 0;
+    const finalTotal = Math.round((total - descuentoTransferencia + shippingCost) * 100) / 100;
 
     // Inicializar MP con la Public Key de ESTA tienda
     useEffect(() => {
@@ -125,6 +134,7 @@ const Checkout = () => {
                     email: buyer.email || undefined
                 },
                 metodo_entrega: deliveryMethod,
+                metodo_pago: metodoPago,
                 direccion: isTakeaway ? undefined : address,
                 items: cart.map((item) => ({
                     id_producto: item.id_producto,
@@ -144,13 +154,19 @@ const Checkout = () => {
             saveBuyer(tenant.slug, { buyer, address });
             addOrderToken(tenant.slug, token_seguimiento);
 
+            // Transferencia: se muestran los datos para pagar (el carrito se vacía en esa pantalla)
+            if (orderResponse.data.metodo_pago === 'transferencia') {
+                navigate(`/${tenant.slug}/status/transfer/${token_seguimiento}`);
+                return;
+            }
+
             // 2. Crear la preferencia de Mercado Pago (items y total salen del pedido guardado)
             const paymentResponse = await api.post('/payments/create-preference', { token: token_seguimiento });
             setPreferenceId(paymentResponse.data.id);
         } catch (err) {
             console.error('Error al procesar el pedido:', err);
             // El local cerró mientras el cliente completaba el pedido
-            if (['LOCAL_CERRADO', 'METODO_NO_DISPONIBLE'].includes(err.response?.data?.code)) refreshEstado();
+            if (['LOCAL_CERRADO', 'METODO_NO_DISPONIBLE', 'METODO_PAGO_NO_DISPONIBLE'].includes(err.response?.data?.code)) refreshEstado();
             setError(err.response?.data?.message || 'Hubo un error al procesar tu pedido.');
         } finally {
             setLoading(false);
@@ -287,8 +303,27 @@ const Checkout = () => {
                             </div>
                         )}
 
+                        {aceptaTransferencia && !preferenceId && (
+                            <div role="radiogroup" aria-label="Medio de pago" className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                                <DeliveryOption
+                                    active={metodoPago === 'mercadopago'} disabled={locked}
+                                    onClick={() => setPagoElegido('mercadopago')}
+                                    icon={<ShieldCheck size={22} aria-hidden="true" />} title="Mercado Pago" text="Tarjeta, débito o dinero en cuenta."
+                                />
+                                <DeliveryOption
+                                    active={metodoPago === 'transferencia'} disabled={locked}
+                                    onClick={() => setPagoElegido('transferencia')}
+                                    icon={<Landmark size={22} aria-hidden="true" />}
+                                    title={descuentoPct > 0 ? `Transferencia · ${descuentoPct}% off` : 'Transferencia'}
+                                    text="Transferís desde tu banco o billetera."
+                                />
+                            </div>
+                        )}
+
                         <p className="text-sm text-muted">
-                            Te llevamos a Mercado Pago para pagar de forma segura.
+                            {esTransferencia
+                                ? 'Te mostramos el alias o CVU del local para transferir. El local confirma el pago y empieza a preparar tu pedido.'
+                                : 'Te llevamos a Mercado Pago para pagar de forma segura.'}
                         </p>
                     </section>
 
@@ -311,7 +346,7 @@ const Checkout = () => {
                                 disabled={loading || !localAbierto}
                                 className="press w-full bg-brand hover:bg-brand-hover text-on-brand h-14 rounded-xl font-semibold text-base sm:text-lg disabled:opacity-70"
                             >
-                                {loading ? 'Preparando el pago…' : !localAbierto ? 'Local cerrado' : `Pagar $${finalTotal.toLocaleString()}`}
+                                {loading ? 'Preparando el pago…' : !localAbierto ? 'Local cerrado' : esTransferencia ? `Continuar · transferir $${finalTotal.toLocaleString()}` : `Pagar $${finalTotal.toLocaleString()}`}
                             </button>
                         </div>
                     )}
@@ -345,6 +380,12 @@ const Checkout = () => {
                                 <span className={`tabular ${shippingCost === 0 ? 'text-green-700 font-semibold' : ''}`}>
                                     {shippingCost === 0 ? 'Gratis' : `$${shippingCost.toLocaleString()}`}
                                 </span>
+                            </div>
+                        )}
+                        {descuentoTransferencia > 0 && (
+                            <div className="flex justify-between text-green-700 font-semibold">
+                                <span>Descuento transferencia ({descuentoPct}%)</span>
+                                <span className="tabular">-${descuentoTransferencia.toLocaleString()}</span>
                             </div>
                         )}
                         <div className="flex justify-between items-baseline pt-3 border-t border-line">
