@@ -1,5 +1,7 @@
 import { createContext, useState, useContext, useEffect, useCallback, useRef } from 'react';
 import { useTenant } from './TenantContext';
+import api from '../api/axiosConfig';
+import { calcularPromos } from '../utils/promos';
 
 const CartContext = createContext();
 
@@ -100,8 +102,42 @@ export const CartProvider = ({ children }) => {
     // Vaciar carrito (después de una compra exitosa)
     const clearCart = useCallback(() => setCart([]), []);
 
-    // Cálculos derivados (Data Analysis puro)
+    // Promociones vigentes del local: se refrescan cada 5 minutos y al volver a la pestaña
+    // Se guardan junto al slug para no mostrar las de otra tienda mientras carga
+    const [promosState, setPromosState] = useState({ slug: null, lista: [] });
+    const promos = promosState.slug === slug ? promosState.lista : [];
+    const refreshPromos = useCallback(async () => {
+        if (!slug || slug === 'default') return [];
+        try {
+            const { data } = await api.get('/promociones');
+            const lista = Array.isArray(data) ? data : [];
+            setPromosState({ slug, lista });
+            return lista;
+        } catch (e) {
+            console.error('Error al cargar promociones:', e);
+            return [];
+        }
+    }, [slug]);
+
+    useEffect(() => {
+        refreshPromos();
+        const id = setInterval(refreshPromos, 5 * 60 * 1000);
+        const onVisible = () => { if (document.visibilityState === 'visible') refreshPromos(); };
+        document.addEventListener('visibilitychange', onVisible);
+        return () => {
+            clearInterval(id);
+            document.removeEventListener('visibilitychange', onVisible);
+        };
+    }, [refreshPromos]);
+
+    // Cálculos derivados
     const total = cart.reduce((acc, item) => acc + item.precio * item.quantity, 0);
+    // Descuento por promociones (el servidor vuelve a calcularlo al comprar)
+    const { lineas: lineasPromo, total: descuento } = calcularPromos(
+        cart.map((item) => ({ id_producto: item.id_producto, cantidad: item.quantity, precio: item.precio })),
+        promos
+    );
+    const totalNeto = Math.round((total - descuento) * 100) / 100;
     const itemCount = cart.reduce((acc, item) => acc + item.quantity, 0);
 
     return (
@@ -114,7 +150,12 @@ export const CartProvider = ({ children }) => {
                 setObservacion,
                 clearCart,
                 total,
-                itemCount
+                itemCount,
+                promos,
+                refreshPromos,
+                lineasPromo,
+                descuento,
+                totalNeto
             }}
         >
             {children}

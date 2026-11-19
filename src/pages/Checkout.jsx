@@ -37,7 +37,8 @@ const DeliveryOption = ({ active, disabled, onClick, icon, title, text }) => (
 );
 
 const Checkout = () => {
-    const { cart, total } = useCart();
+    const { cart, totalNeto, descuento: descuentoPromos, lineasPromo, refreshPromos } = useCart();
+    const total = totalNeto; // lo que se paga por los productos, ya con promociones
     const { tenant, localAbierto, refreshEstado } = useTenant();
     const navigate = useNavigate();
 
@@ -63,7 +64,7 @@ const Checkout = () => {
     if (deliveryMethod !== 'takeaway' && tenant?.envio_gratis_desde && total >= Number(tenant.envio_gratis_desde)) {
         shippingCost = 0;
     }
-    // Descuento por transferencia sobre los productos (no sobre el envío); el total definitivo lo calcula el servidor
+    // Descuento por transferencia sobre los productos con promociones (no sobre el envío); el total definitivo lo calcula el servidor
     const descuentoTransferencia = esTransferencia ? Math.round(total * descuentoPct) / 100 : 0;
     const finalTotal = Math.round((total - descuentoTransferencia + shippingCost) * 100) / 100;
 
@@ -136,6 +137,7 @@ const Checkout = () => {
                 metodo_entrega: deliveryMethod,
                 metodo_pago: metodoPago,
                 direccion: isTakeaway ? undefined : address,
+                descuento_promociones_esperado: descuentoPromos,
                 items: cart.map((item) => ({
                     id_producto: item.id_producto,
                     cantidad: item.quantity,
@@ -166,6 +168,8 @@ const Checkout = () => {
         } catch (err) {
             console.error('Error al procesar el pedido:', err);
             // El local cerró mientras el cliente completaba el pedido
+            // Una promoción cambió o venció mientras compraba: se actualizan los precios para que revise el total
+            if (err.response?.data?.code === 'PROMO_CAMBIO') refreshPromos();
             if (['LOCAL_CERRADO', 'METODO_NO_DISPONIBLE', 'METODO_PAGO_NO_DISPONIBLE'].includes(err.response?.data?.code)) refreshEstado();
             setError(err.response?.data?.message || 'Hubo un error al procesar tu pedido.');
         } finally {
@@ -356,13 +360,14 @@ const Checkout = () => {
                     <h2 className="font-display text-xl font-bold text-brand-secondary mb-3 lg:mb-5">Tu pedido <span className="lg:hidden text-muted font-sans text-sm font-medium">· {cart.reduce((n, i) => n + i.quantity, 0)} productos</span></h2>
 
                     <ul className="hidden lg:block space-y-3 mb-6 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
-                        {cart.map((item) => (
+                        {cart.map((item, idx) => (
                             <li key={item.cartItemId || item.id_producto} className="flex justify-between gap-4 text-sm">
                                 <span className="text-brand-secondary">
                                     <span className="tabular font-semibold">{item.quantity}×</span> {item.nombre}
                                     {textoTamano(item.tamano) && <span className="text-muted"> ({textoTamano(item.tamano)})</span>}
                                     {(item.detalleTexto || []).map(l => <span key={l} className="block text-xs text-muted">{l}</span>)}
                                     {item.observacion && <span className="block text-xs text-amber-800">“{item.observacion}”</span>}
+                                    {lineasPromo[idx]?.descuento > 0 && <span className="block text-xs font-semibold text-green-700">{lineasPromo[idx].promo.nombre}: -${lineasPromo[idx].descuento.toLocaleString()}</span>}
                                 </span>
                                 <span className="tabular font-semibold shrink-0">${(item.precio * item.quantity).toLocaleString()}</span>
                             </li>
@@ -372,8 +377,14 @@ const Checkout = () => {
                     <div className="border-t border-line pt-4 space-y-2 text-sm">
                         <div className="flex justify-between text-muted">
                             <span>Subtotal</span>
-                            <span className="tabular">${total.toLocaleString()}</span>
+                            <span className="tabular">${(total + descuentoPromos).toLocaleString()}</span>
                         </div>
+                        {descuentoPromos > 0 && (
+                            <div className="flex justify-between text-green-700 font-semibold">
+                                <span>Promociones</span>
+                                <span className="tabular">-${descuentoPromos.toLocaleString()}</span>
+                            </div>
+                        )}
                         {aceptaDelivery && (
                             <div className="flex justify-between text-muted">
                                 <span>Envío</span>

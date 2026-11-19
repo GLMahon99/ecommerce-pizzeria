@@ -208,6 +208,9 @@ const TransferPayment = () => {
                         <span className="text-sm font-semibold text-brand-secondary">Monto exacto a transferir</span>
                         <span className="tabular font-display text-3xl font-extrabold text-brand-secondary">{pesos(pedido.total)}</span>
                     </div>
+                    {Number(pedido.descuento_promociones) > 0 && (
+                        <p className="text-sm text-green-700 font-semibold -mt-3 mb-5">Incluye {pesos(pedido.descuento_promociones)} de descuento por promociones.</p>
+                    )}
                     {Number(pedido.descuento_transferencia) > 0 && (
                         <p className="text-sm text-green-700 font-semibold -mt-3 mb-5">Incluye {pesos(pedido.descuento_transferencia)} de descuento por pagar con transferencia.</p>
                     )}

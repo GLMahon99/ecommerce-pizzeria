@@ -3,9 +3,10 @@ import { Plus, Minus } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import Segmented from './Segmented';
 import ArmarProductoSheet from './ArmarProductoSheet';
+import { promoDeProducto, etiquetaPromo } from '../utils/promos';
 
 const ProductCard = ({ product, index = 0 }) => {
-    const { cart, addToCart, decrementQuantity } = useCart();
+    const { cart, addToCart, decrementQuantity, promos } = useCart();
 
     // Pizza con tamaño chico cargado: selector Chica / Grande ('Principal' = grande, igual que en carritos guardados)
     const pizza = product.tipo === 'PIZZA' ? product.pizza : null;
@@ -22,6 +23,12 @@ const ProductCard = ({ product, index = 0 }) => {
     const currentPrice = hasVariants && selectedVariant === 'Chica'
         ? pizza.precio_chica
         : Number(pizza ? pizza.precio_grande : product.precio);
+
+    // Promoción vigente: insignia en la foto; con porcentaje se muestra el precio anterior tachado
+    const promo = pausado ? null : promoDeProducto(product.id_producto, promos);
+    const precioPromo = promo?.tipo === 'PORCENTAJE'
+        ? Math.round(currentPrice * (1 - Number(promo.porcentaje) / 100) * 100) / 100
+        : null;
 
     // Generar ID único para el carrito si tiene variantes
     const cartItemId = hasVariants ? `${product.id_producto}-${selectedVariant}` : String(product.id_producto);
@@ -57,15 +64,33 @@ const ProductCard = ({ product, index = 0 }) => {
                     loading="lazy"
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-out motion-safe:[@media(hover:hover)]:group-hover:scale-105"
                 />
+                {promo && (
+                    <span className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-brand text-on-brand text-xs sm:text-sm font-extrabold tracking-tight px-2.5 py-1 rounded-lg shadow-md">
+                        {etiquetaPromo(promo)}
+                    </span>
+                )}
             </div>
 
             <div className="p-3.5 sm:p-5 flex flex-col flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-3 mb-1">
                     <h3 className="font-display text-base sm:text-lg font-bold text-brand-secondary leading-snug">{product.nombre}</h3>
-                    <span className="tabular font-display text-base sm:text-lg font-extrabold text-brand-secondary shrink-0">
-                        ${parseFloat(currentPrice).toLocaleString()}
+                    <span className="tabular font-display text-base sm:text-lg font-extrabold text-brand-secondary shrink-0 text-right">
+                        {precioPromo != null ? (
+                            <>
+                                <span className="block text-xs sm:text-sm font-semibold text-muted line-through">${parseFloat(currentPrice).toLocaleString()}</span>
+                                ${precioPromo.toLocaleString()}
+                            </>
+                        ) : (
+                            <>${parseFloat(currentPrice).toLocaleString()}</>
+                        )}
                     </span>
                 </div>
+                {promo && (
+                    <p className="text-xs sm:text-[13px] font-semibold text-brand mb-1.5">
+                        {promo.tipo === 'NXM' ? `Llevá ${promo.lleva} y pagá ${promo.paga}` : promo.nombre}
+                        {promo.fecha_hasta && <span className="text-muted font-medium"> · hasta el {promo.fecha_hasta.split('-').reverse().slice(0, 2).join('/')}</span>}
+                    </p>
+                )}
 
                 <div className="mb-3 sm:mb-5">
                     <p className={`text-muted text-[13px] sm:text-sm leading-snug sm:leading-relaxed ${isExpanded ? '' : 'line-clamp-2'}`}>

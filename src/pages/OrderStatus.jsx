@@ -201,11 +201,18 @@ const OrderStatus = () => {
                                     {item.variante && <span className="text-muted"> ({item.variante})</span>}
                                     {lineasDetallePedido(item).map(l => <span key={l} className="block text-xs text-muted">{l}</span>)}
                                     {item.observacion && <span className="block text-xs text-amber-800">“{item.observacion}”</span>}
+                                    {Number(item.descuento) > 0 && <span className="block text-xs font-semibold text-green-700">{item.promo_nombre || 'Promoción'}: -${Number(item.descuento).toLocaleString()}</span>}
                                 </span>
-                                <span className="tabular text-muted shrink-0">${(item.cantidad * item.precio_unitario).toLocaleString()}</span>
+                                <span className="tabular text-muted shrink-0">${(item.cantidad * item.precio_unitario - Number(item.descuento || 0)).toLocaleString()}</span>
                             </li>
                         ))}
                     </ul>
+                    {Number(orderData.descuento_promociones) > 0 && (
+                        <p className="mt-4 pt-4 border-t border-line flex justify-between text-sm font-semibold text-green-700">
+                            <span>Promociones</span>
+                            <span className="tabular">-${Number(orderData.descuento_promociones).toLocaleString()}</span>
+                        </p>
+                    )}
                 </section>
             )}
         </div>

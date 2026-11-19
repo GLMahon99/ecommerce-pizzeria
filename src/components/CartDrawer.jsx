@@ -5,9 +5,10 @@ import { useTenant } from '../context/TenantContext';
 import { useNavigate } from 'react-router-dom';
 import AclaracionItem from './AclaracionItem';
 import { textoTamano } from '../utils/producto';
+import { aplicaA, sugerenciaNxM } from '../utils/promos';
 
 const CartDrawer = ({ isOpen, onClose }) => {
-    const { cart, addToCart, decrementQuantity, removeFromCart, total } = useCart();
+    const { cart, addToCart, decrementQuantity, removeFromCart, total, totalNeto, descuento, lineasPromo, promos } = useCart();
     const { tenant, localAbierto } = useTenant();
     const navigate = useNavigate();
     const [closing, setClosing] = useState(false);
@@ -38,13 +39,28 @@ const CartDrawer = ({ isOpen, onClose }) => {
     // Acá solo se usa para la barra de "envío gratis" (y no se muestra en un local sin envíos).
     const hayDelivery = tenant?.acepta_delivery !== false;
     let shippingCost = hayDelivery ? Number(tenant?.costo_envio || 0) : 0;
-    if (tenant?.envio_gratis_desde && total >= Number(tenant.envio_gratis_desde)) {
+    // El envío gratis se mide sobre lo que paga el cliente, ya con las promociones
+    if (tenant?.envio_gratis_desde && totalNeto >= Number(tenant.envio_gratis_desde)) {
         shippingCost = 0;
     }
-    const missingForFree = tenant?.envio_gratis_desde ? Number(tenant.envio_gratis_desde) - total : 0;
+    const missingForFree = tenant?.envio_gratis_desde ? Number(tenant.envio_gratis_desde) - totalNeto : 0;
     const freeProgress = tenant?.envio_gratis_desde
-        ? Math.min(100, Math.max(0, (total / Number(tenant.envio_gratis_desde)) * 100))
+        ? Math.min(100, Math.max(0, (totalNeto / Number(tenant.envio_gratis_desde)) * 100))
         : 0;
+
+    // Unidades por producto, para avisar cuando falta poco para un regalo (2x1, 3x2...)
+    const unidadesPorProducto = cart.reduce((acc, i) => {
+        acc[i.id_producto] = (acc[i.id_producto] || 0) + i.quantity;
+        return acc;
+    }, {});
+    const sugerencia = (item) => {
+        const nxm = promos.filter((p) => p.tipo === 'NXM' && aplicaA(p, item.id_producto));
+        for (const p of nxm) {
+            const s = sugerenciaNxM(p, unidadesPorProducto[item.id_producto]);
+            if (s) return { ...s, promo: p };
+        }
+        return null;
+    };
 
     if (!isOpen) return null;
 
@@ -85,8 +101,10 @@ const CartDrawer = ({ isOpen, onClose }) => {
                         </div>
                     ) : (
                         <ul className="divide-y divide-line">
-                            {cart.map((item) => {
+                            {cart.map((item, idx) => {
                                 const id = item.cartItemId || item.id_producto;
+                                const linea = lineasPromo[idx];
+                                const aviso = sugerencia(item);
                                 return (
                                     <li key={id} className="flex gap-4 py-5 first:pt-0">
                                         <div className="w-20 h-20 bg-surface-2 rounded-xl overflow-hidden shrink-0">
@@ -124,8 +142,21 @@ const CartDrawer = ({ isOpen, onClose }) => {
                                                     <span className="tabular font-bold text-sm w-5 text-center">{item.quantity}</span>
                                                     <button onClick={() => addToCart(item)} aria-label="Agregar uno más" className="press w-10 h-10 flex items-center justify-center text-brand-secondary"><Plus size={14} /></button>
                                                 </div>
-                                                <span className="tabular font-bold text-brand-secondary">${(item.precio * item.quantity).toLocaleString()}</span>
+                                                <span className="tabular font-bold text-brand-secondary text-right">
+                                                    {linea?.descuento > 0 && (
+                                                        <span className="block text-xs font-semibold text-muted line-through">${(item.precio * item.quantity).toLocaleString()}</span>
+                                                    )}
+                                                    ${(item.precio * item.quantity - (linea?.descuento || 0)).toLocaleString()}
+                                                </span>
                                             </div>
+                                            {linea?.descuento > 0 && (
+                                                <p className="text-xs font-semibold text-green-700 mt-1.5">{linea.promo.nombre} · ahorrás ${linea.descuento.toLocaleString()}</p>
+                                            )}
+                                            {aviso && (
+                                                <p className="text-xs font-semibold text-brand mt-1.5">
+                                                    Sumá {aviso.faltan} más y {aviso.regalo === 1 ? 'te llevás 1 gratis' : `te llevás ${aviso.regalo} gratis`}
+                                                </p>
+                                            )}
                                         </div>
                                     </li>
                                 );
@@ -155,12 +186,18 @@ const CartDrawer = ({ isOpen, onClose }) => {
                             <span>Subtotal</span>
                             <span className="tabular">${total.toLocaleString()}</span>
                         </div>
+                        {descuento > 0 && (
+                            <div className="flex justify-between text-sm text-green-700 font-semibold">
+                                <span>Promociones</span>
+                                <span className="tabular">-${descuento.toLocaleString()}</span>
+                            </div>
+                        )}
                         {hayDelivery && (
                             <p className="text-xs text-muted">El envío, si corresponde, se calcula al finalizar la compra.</p>
                         )}
                         <div className="flex justify-between items-baseline border-t border-line pt-3">
                             <span className="font-semibold text-brand-secondary">Total</span>
-                            <span className="tabular font-display text-2xl font-extrabold text-brand-secondary">${total.toLocaleString()}</span>
+                            <span className="tabular font-display text-2xl font-extrabold text-brand-secondary">${totalNeto.toLocaleString()}</span>
                         </div>
 
                         {!localAbierto && (
