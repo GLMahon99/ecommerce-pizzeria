@@ -65,7 +65,7 @@ const ProductCard = ({ product, index = 0 }) => {
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-out motion-safe:[@media(hover:hover)]:group-hover:scale-105"
                 />
                 {promo && (
-                    <span className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-brand text-on-brand text-xs sm:text-sm font-extrabold tracking-tight px-2.5 py-1 rounded-lg shadow-md">
+                    <span className="promo-badge absolute top-0 left-0 font-display text-lg sm:text-2xl font-extrabold tracking-tight leading-none pl-3 pr-4 py-2 sm:py-2.5 rounded-br-2xl shadow-lg">
                         {etiquetaPromo(promo)}
                     </span>
                 )}
@@ -78,7 +78,7 @@ const ProductCard = ({ product, index = 0 }) => {
                         {precioPromo != null ? (
                             <>
                                 <span className="block text-xs sm:text-sm font-semibold text-muted line-through">${parseFloat(currentPrice).toLocaleString()}</span>
-                                ${precioPromo.toLocaleString()}
+                                <span className="text-red-700">${precioPromo.toLocaleString()}</span>
                             </>
                         ) : (
                             <>${parseFloat(currentPrice).toLocaleString()}</>
@@ -86,9 +86,9 @@ const ProductCard = ({ product, index = 0 }) => {
                     </span>
                 </div>
                 {promo && (
-                    <p className="text-xs sm:text-[13px] font-semibold text-brand mb-1.5">
-                        {promo.tipo === 'NXM' ? `Llevá ${promo.lleva} y pagá ${promo.paga}` : promo.nombre}
-                        {promo.fecha_hasta && <span className="text-muted font-medium"> · hasta el {promo.fecha_hasta.split('-').reverse().slice(0, 2).join('/')}</span>}
+                    <p className="inline-flex flex-wrap items-center gap-x-1.5 self-start text-xs sm:text-[13px] font-bold text-red-700 bg-red-50 border border-red-100 rounded-lg px-2.5 py-1 mb-2">
+                        <span>{promo.tipo === 'NXM' ? `Llevá ${promo.lleva} y pagá ${promo.paga}` : promo.nombre}</span>
+                        {promo.fecha_hasta && <span className="font-medium text-red-700/80">· hasta el {promo.fecha_hasta.split('-').reverse().slice(0, 2).join('/')}</span>}
                     </p>
                 )}
 

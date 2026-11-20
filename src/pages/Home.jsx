@@ -2,7 +2,10 @@ import { useState, useEffect } from 'react';
 import { Clock, MapPin } from 'lucide-react';
 import CategoryBar from '../components/CategoryBar';
 import ProductCard from '../components/ProductCard';
+import PromoBanner from '../components/PromoBanner';
 import { useTenant } from '../context/TenantContext';
+import { useCart } from '../context/CartContext';
+import { aplicaA } from '../utils/promos';
 import HorariosModal from '../components/HorariosModal';
 import { diaHoyArgentina, textoTurnosDelDia } from '../utils/horarios';
 import api from '../api/axiosConfig';
@@ -21,6 +24,9 @@ const SkeletonCard = () => (
 
 const Home = () => {
     const { tenant, localAbierto } = useTenant();
+    const { promos } = useCart();
+    const [promoActiva, setPromoActiva] = useState(null);
+    const [bannerRoto, setBannerRoto] = useState(false);
     const [horariosOpen, setHorariosOpen] = useState(false);
     const [activeCategory, setActiveCategory] = useState('Todas');
     const [productos, setProductos] = useState([]);
@@ -41,9 +47,13 @@ const Home = () => {
         fetchProductos();
     }, []);
 
-    const filteredProducts = activeCategory === 'Todas'
-        ? productos
-        : productos.filter(p => p.categoria === activeCategory);
+    // Si se filtra por una promo que ya no está vigente, el filtro se ignora
+    const promoFiltro = promos.find(p => p.id_promocion === promoActiva) || null;
+    const filteredProducts = productos
+        .filter(p => activeCategory === 'Todas' || p.categoria === activeCategory)
+        .filter(p => !promoFiltro || aplicaA(promoFiltro, p.id_producto));
+    const verTodo = () => { setActiveCategory('Todas'); setPromoActiva(null); };
+    const hayPortada = !!tenant?.banner_url && !bannerRoto;
 
     const address = tenant?.direccion
         ? `${tenant.direccion}${tenant.ciudad ? `, ${tenant.ciudad}` : ''}`
@@ -51,11 +61,28 @@ const Home = () => {
 
     return (
         <div className="pt-28 px-4 sm:px-6 max-w-6xl mx-auto min-h-screen">
-            <header className="pt-3 sm:pt-10 pb-5 sm:pb-10 max-w-2xl">
-                <h1 className="font-display text-[2.5rem] sm:text-6xl font-extrabold tracking-[-0.03em] leading-[1.02] text-brand-secondary">
-                    ¿Qué comemos <span className="text-brand">hoy?</span>
-                </h1>
-                <p className="mt-2 sm:mt-4 text-muted text-[15px] sm:text-lg leading-relaxed max-w-[52ch]">
+            <header className={hayPortada ? 'pt-3 sm:pt-6 pb-5 sm:pb-8' : 'pt-3 sm:pt-10 pb-5 sm:pb-10 max-w-2xl'}>
+                {hayPortada ? (
+                    <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-surface-2 aspect-[16/10] sm:aspect-[16/6] shadow-[0_1px_2px_rgb(60_40_10/0.06),0_12px_32px_-12px_rgb(60_40_10/0.25)]">
+                        <img
+                            src={tenant.banner_url}
+                            alt={`Portada de ${tenant?.nombre || 'la tienda'}`}
+                            onError={() => setBannerRoto(true)}
+                            className="absolute inset-0 w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-stone-950/75 via-stone-950/25 to-transparent" aria-hidden="true" />
+                        <div className="absolute inset-x-0 bottom-0 p-5 sm:p-10">
+                            <h1 className="font-display text-[2rem] sm:text-6xl font-extrabold tracking-[-0.03em] leading-[1.02] text-white drop-shadow-sm">
+                                ¿Qué comemos hoy?
+                            </h1>
+                        </div>
+                    </div>
+                ) : (
+                    <h1 className="font-display text-[2.5rem] sm:text-6xl font-extrabold tracking-[-0.03em] leading-[1.02] text-brand-secondary">
+                        ¿Qué comemos <span className="text-brand">hoy?</span>
+                    </h1>
+                )}
+                <p className={`mt-3 sm:mt-4 text-muted text-[15px] sm:text-lg leading-relaxed max-w-[52ch]`}>
                     Elegí del menú de {tenant?.nombre || 'la casa'} y {tenant?.acepta_delivery === false ? 'lo retirás en el local' : tenant?.acepta_retiro === false ? 'lo recibís en tu puerta' : 'lo recibís en tu puerta o lo retirás'}.
                 </p>
                 {(address || tenant?.horarios_atencion || tenant?.estado) && (
@@ -100,6 +127,8 @@ const Home = () => {
                 <HorariosModal horarios={tenant?.horarios} estado={tenant?.estado} onClose={() => setHorariosOpen(false)} />
             )}
 
+            <PromoBanner promos={promos} activa={promoFiltro?.id_promocion ?? null} onSelect={setPromoActiva} />
+
             <CategoryBar activeCategory={activeCategory} setActiveCategory={setActiveCategory} />
 
             <div
@@ -110,9 +139,9 @@ const Home = () => {
                     Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
                 ) : filteredProducts.length === 0 ? (
                     <div className="col-span-full py-20 text-center">
-                        <p className="font-display text-xl font-bold text-brand-secondary">No hay productos en esta categoría</p>
+                        <p className="font-display text-xl font-bold text-brand-secondary">{promoFiltro ? 'No hay productos de esta promo en esta categoría' : 'No hay productos en esta categoría'}</p>
                         <button
-                            onClick={() => setActiveCategory('Todas')}
+                            onClick={verTodo}
                             className="press mt-4 text-sm font-semibold text-brand-secondary underline underline-offset-4"
                         >
                             Ver todo el menú
